@@ -37,6 +37,14 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);over
   font-variant-numeric:tabular-nums;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .plate i{width:1px;height:14px;background:var(--line)}
 #roadLabel{color:var(--amber)}
+#lb{width:210px;max-width:52vw;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 9px;text-shadow:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#lb .ph{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim)}
+#lbList{list-style:none;margin:4px 0 0;padding:0;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+#lbList li{display:flex;gap:6px;align-items:baseline}
+#lbList li i{font-style:normal;color:var(--ink-dim);width:14px}
+#lbList li b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+#lbList li.me b,#lbList li.me span{color:var(--amber)}
+#lbNote{font-size:11.5px;color:var(--ink-dim);margin-top:4px}
 #netStat{color:var(--ink-dim)}
 #netStat.on{color:#6fd3ff}
 #netStat.off{color:var(--ink-dim)}
@@ -186,6 +194,14 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 #thr .zr{flex:43;background:rgba(226,72,58,.36)}
 #thr .trk i{position:absolute;left:-1px;right:-1px;height:4px;margin-top:-2px;top:50%;background:var(--ink);box-shadow:0 0 6px rgba(0,0,0,.7)}
 #ammo{font-family:var(--display);font-style:normal;font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#7fe8ff;margin-top:6px}
+#hp{width:150px;height:7px;border-radius:4px;background:var(--panel);border:1px solid var(--line);overflow:hidden;margin:8px 0 0 auto}
+#hp i{display:block;height:100%;width:100%;background:#7ee04b}
+.is-touch #hp{margin:8px auto 0}
+#wreck{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;
+  font-family:var(--display);text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+#wreck b{font-style:italic;font-weight:700;font-size:clamp(44px,9vw,84px);color:var(--road);line-height:.9}
+#wreck span{font-weight:600;font-size:20px;letter-spacing:.14em}
+:root[data-veh="foot"] #pad button:not([data-v~="foot"]){display:none}
 #lock{position:fixed;left:0;top:0;width:74px;height:74px;margin:-37px 0 0 -37px;border:2px solid rgba(127,232,255,.75);border-radius:50%;pointer-events:none;
   transition:width .15s,height .15s,margin .15s}
 #lock.locked{width:54px;height:54px;margin:-27px 0 0 -27px;border-color:var(--road);border-radius:6px}
@@ -248,10 +264,12 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
     <div class="lcol">
       <div class="plate"><span id="roadLabel">Country road</span><i></i><span id="clock">07:00</span><i></i><span id="odo">0.0 km</span><i></i><span id="netStat" class="wait">Connecting</span></div>
       <div class="plate" id="lap" hidden><span>Lap</span><i></i><span id="lapT"></span></div>
+      <div id="lb" hidden><div class="ph">Best laps</div><ol id="lbList"></ol><div id="lbNote"></div></div>
       <canvas id="mini" width="150" height="150" aria-label="Minimap"></canvas>
       <div id="plist" hidden><div class="ph">Players online <b id="pcount">1</b></div><ul id="pl"></ul><input id="pname" type="text" maxlength="16" autocomplete="off" spellcheck="false" aria-label="Your name"><button id="pinv" type="button" title="Copy a link that brings a friend into this room">Copy invite link</button><div class="proom">Room <b id="proom"></b></div></div>
     </div>
     <div class="tools" id="tools">
+      <button id="bFull" type="button" aria-pressed="false">Fullscreen</button>
       <button id="bMenu" type="button" class="touch-only" aria-expanded="false" aria-controls="tMenu">Menu</button>
       <div class="tmenu" id="tMenu">   <!-- display:contents on desktop, a drop-down panel in touch mode -->
       <button id="bMap" type="button">Map</button>
@@ -261,6 +279,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <button id="bCam" type="button">Camera</button>
       <button id="bTime" type="button">Skip time</button>
       <button id="bSound" type="button" aria-pressed="true">Sound</button>
+      <button id="bExit" type="button">Get out / in</button>
       <button id="bReset" type="button" class="touch-only">Back to road</button>
       </div>
     </div>
@@ -275,6 +294,10 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <b>R</b><span>Back to the road</span>
       <b>M</b><span>Map</span>
       <b>G</b><span>Fast travel (debug)</span>
+      <b>Z</b><span>Get out / get in (or ride with a player)</span>
+      <b class="foot-only" hidden>On foot</b><span class="foot-only" hidden>W S walk, A D turn, Q E strafe, Shift run, Space jump</span>
+      <b class="foot-only" hidden>X</b><span class="foot-only" hidden>Shoot (or hold the mouse button)</span>
+      <b class="foot-only" hidden>1 &ndash; 4</b><span class="foot-only" hidden>Pistol, SMG, Shotgun, Rifle</span>
       <b class="jet-only" hidden>Shift</b><span class="jet-only" hidden>Rear jet boost</span>
       <b class="jet-only" hidden>Space</b><span class="jet-only" hidden>Jump, hold in the air to hover</span>
       <b class="jet-only" hidden>In air</b><span class="jet-only" hidden>W S pitch, A D yaw, Q E roll</span>
@@ -294,7 +317,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <b class="blick-only" hidden>W + S</b><span class="blick-only" hidden>Hold both when stopped for a burnout</span>
     </div>
     <div class="touch" id="stick" role="group" aria-label="Steering stick"><div id="knob"></div></div>
-    <div class="speed"><span id="spd">0</span><small>km/h</small><div id="boost" class="jet-only" hidden><i id="boostFill"></i></div><div id="ammo" hidden></div></div>
+    <div class="speed"><span id="spd">0</span><small>km/h</small><div id="boost" class="jet-only" hidden><i id="boostFill"></i></div><div id="hp"><i id="hpFill"></i></div><div id="ammo" hidden></div></div>
     <div id="thr" class="plane-only" hidden><b id="thrPct">Neutral</b><div class="trk"><div class="zf"><em>F</em></div><div class="zn"><em>N</em></div><div class="zr"><em>R</em></div><i id="thrLine"></i></div><span>Throttle</span><span id="gearTxt">Gear down</span></div>
     <div class="touch" id="pad">
       <!-- data-v: vehicles the button belongs to. --c/--r landscape cell, --pc/--pr portrait cell (see the touch CSS) -->
@@ -315,6 +338,10 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <button id="tUC" type="button" class="go" data-v="ufo heli" style="--c:3;--r:2;--pc:2;--pr:2">Climb</button>
       <button id="tUD" type="button" data-v="ufo heli" aria-label="Descend" style="--c:3;--r:3;--pc:2;--pr:3">Down</button>
       <button id="tUB" type="button" data-v="ufo" aria-pressed="false" aria-label="Stasis beam" style="--c:2;--r:2;--pc:1;--pr:3">Beam</button>
+      <button id="tFF" type="button" class="go" data-v="foot" style="--c:3;--r:3;--pc:2;--pr:4">Fire</button>
+      <button id="tFJ" type="button" data-v="foot" style="--c:2;--r:3;--pc:1;--pr:4">Jump</button>
+      <button id="tFS" type="button" data-v="foot" style="--c:3;--r:2;--pc:2;--pr:3">Run</button>
+      <button id="tFW" type="button" data-v="foot" aria-label="Next gun" style="--c:2;--r:2;--pc:1;--pr:3">Gun</button>
       <button id="tHF" type="button" data-v="heli" aria-label="Fire freeze missile" style="--c:2;--r:2;--pc:1;--pr:3">Fire</button>
       <button id="tUL" type="button" data-v="ufo heli" aria-label="Slide left" style="--c:1;--r:3;--pc:1;--pr:4">Slide L</button>
       <button id="tUR" type="button" data-v="ufo heli" aria-label="Slide right" style="--c:2;--r:3;--pc:2;--pr:4">Slide R</button>
@@ -332,6 +359,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 </div>
 <div id="travel" hidden><div class="tvin"><button id="tvClose" type="button" class="touch-only">Close</button><h2>Fast travel</h2><div id="tvList"></div><p>Debug menu. G or Esc closes it.</p></div></div>
 <div id="map" hidden><div class="mapin"><canvas id="mapCanvas"></canvas><p id="mapNote"></p></div></div>
+<div id="wreck" hidden><b>Wrecked</b><span id="wreckT"></span></div>
 <div id="lock" hidden><span id="lockTxt"></span></div>
 <div id="flash"></div>
 <div id="toast"></div>
@@ -747,7 +775,7 @@ function groundAt(x, z, y) {
     const rh = rampAt(z); if (rh > 0 && lat < 1.3 && y > ry - 1) g = Math.max(g, ry + rh * sstep(1.3, 1.1, lat));
   }
   if (inCity(x, z, 8)) {                             // city ground: street level, or the raised pavement of a block
-    const mx = ((x + CITY.E) % CITY.P + CITY.P) % CITY.P, mz = ((z + CITY.E) % CITY.P + CITY.P) % CITY.P, cg = mx > 8 && mx < 112 && mz > 8 && mz < 112 ? CITY.y + 0.18 : CITY.y;
+    const mx = ((x + CITY.E) % CITY.P + CITY.P) % CITY.P, mz = ((z + CITY.E) % CITY.P + CITY.P) % CITY.P, kd = Math.min(mx - 8, 112 - mx, mz - 8, 112 - mz), cg = CITY.y + 0.18 * sstep(-0.4, 3.0, kd);   // the kerb is a short ramp for the physics, so crossing it never launches the car
     if (cg > g) g = cg;
     const bi = Math.floor((x + CITY.E) / CITY.P), bj = Math.floor((z + CITY.E) / CITY.P), arr = bi >= 0 && bj >= 0 && bi < 20 && bj < 20 ? CITY.boxes[bi * 20 + bj] : null;
     if (arr) for (let i = 0; i < arr.length; i++) { const q = arr[i]; if (x > q[0] && x < q[1] && z > q[2] && z < q[3] && y > q[4] - 1.2) { if (q[4] + 0.5 > g) g = q[4] + 0.5; break; } }   // rooftops are solid ground: anything coming down onto a building lands on it
@@ -1141,7 +1169,14 @@ function wheel(b, x, y, z, r, hw) { b.cylX(x, y, z, r, hw, 14, cTyre); b.cylX(x 
 function carParts(type, col, noW) {
   const b = new GB(), hd = new GB(), tl = new GB(), W = [], wh = (x, y, z, r, hw) => { W.push([x, y, z, r, hw]); if (!noW) wheel(b, x, y, z, r, hw); };
   let halfLen = 2.2;
-  if (type === 'muscle') {                           // original widebody muscle coupe: long bonnet, open greenhouse so the red cabin shows
+  if (type === 'walker') {                           // the player on foot: white tee, jeans, shades, gold chain; `col` is the cap, in the player's own colour
+    halfLen = 0.4; const tee = C('#f4f4f0'), skin = C('#7a5238'), gold = C('#e2b33c'), dk = C('#0c0c0e');
+    b.box(-0.24, 0.24, 0.9, 1.5, -0.13, 0.13, tee); b.box(-0.22, 0.22, 0.8, 0.92, -0.125, 0.125, C('#3f5673')); b.box(-0.07, 0.07, 1.5, 1.57, -0.07, 0.07, skin); b.box(-0.115, 0.115, 1.56, 1.8, -0.12, 0.12, skin);
+    b.box(-0.127, 0.127, 1.74, 1.87, -0.132, 0.132, col); b.box(-0.12, 0.12, 1.74, 1.77, -0.3, -0.13, col);                       // cap and brim
+    b.box(-0.125, 0.125, 1.64, 1.72, -0.14, -0.12, C('#f6f6f6')); b.box(-0.105, -0.015, 1.65, 1.71, -0.148, -0.138, dk); b.box(0.015, 0.105, 1.65, 1.71, -0.148, -0.138, dk);   // white-framed shades
+    b.box(-0.11, 0.11, 1.24, 1.47, -0.145, -0.13, gold); b.box(-0.065, 0.065, 1.1, 1.24, -0.165, -0.13, gold);                     // chain and pendant
+    hd.box(0, 0.01, 1, 1.01, 0, 0.01, tee); tl.box(0, 0.01, 1, 1.01, 0, 0.01, tee);
+  } else if (type === 'muscle') {                    // original widebody muscle coupe: long bonnet, open greenhouse so the red cabin shows
     halfLen = 2.5; const red = C('#c1121f'), trim = C('#08090b'), W = 1.02;
     b.hex([[-W, 0.3, -2.5], [W, 0.3, -2.5], [W, 0.3, 2.5], [-W, 0.3, 2.5], [-W * 0.95, 0.84, -2.5], [W * 0.95, 0.84, -2.5], [W, 0.98, 2.45], [-W, 0.98, 2.45]], col);
     b.hex([[-0.56, 0.84, -2.3], [0.56, 0.84, -2.3], [0.6, 0.93, -0.55], [-0.6, 0.93, -0.55], [-0.5, 0.95, -2.2], [0.5, 0.95, -2.2], [0.54, 1.02, -0.6], [-0.54, 1.02, -0.6]], col);   // power bulge
@@ -1246,12 +1281,18 @@ function makeCar(type, colHex, player) {
   const body = new T.Mesh(parts.body.geo(), carMat); body.castShadow = true; ch.add(body);
   ch.add(new T.Mesh(parts.head.geo(), headMat)); ch.add(new T.Mesh(parts.tail.geo(), player ? brakeMat : tailMat));
   g.add(ch); g.userData.chassis = ch; g.userData.wheels = [];
+  if (type === 'walker') {                           // separate limbs so the figure can walk and raise a gun
+    const limb = (px, py, build) => { const gb = new GB(); build(gb); const m = new T.Mesh(gb.geo(), carMat); m.castShadow = true; m.position.set(px, py, 0); ch.add(m); return m; };
+    const jeans = C('#3f5673'), tee = C('#f4f4f0'), skin = C('#7a5238'), leg = gb => { gb.box(-0.1, 0.1, -0.8, 0, -0.11, 0.11, jeans); gb.box(-0.1, 0.1, -0.9, -0.8, -0.22, 0.11, C('#f6f6f6')); }, arm = gb => { gb.box(-0.075, 0.075, -0.22, 0, -0.085, 0.085, tee); gb.box(-0.06, 0.06, -0.6, -0.22, -0.07, 0.07, skin); };
+    g.userData.limbs = [limb(-0.12, 0.9, leg), limb(0.12, 0.9, leg), limb(-0.315, 1.47, arm), limb(0.315, 1.47, arm)];
+    const gg = new GB(); gg.box(-0.03, 0.03, -0.72, -0.6, -0.04, 0.28, C('#16171a')); const gm = new T.Mesh(gg.geo(), carMat); g.userData.limbs[3].add(gm); g.userData.gun = gm;
+  }
   if (player) for (const w of parts.wheels) {       // the player's wheels are separate so they can steer, spin and ride the suspension
     const wb = new GB(); wheel(wb, Math.sign(w[0]) * 1e-6, 0, 0, w[3], w[4]);
     const m = new T.Mesh(wb.geo(), carMat), wg = new T.Group(); m.castShadow = true; wg.position.set(w[0], w[1], w[2]); wg.add(m); g.add(wg);
     g.userData.wheels.push({ g: wg, m, x: w[0], y: w[1], z: w[2], r: w[3], off: 0 });
   }
-  const pool = new T.Mesh(new T.PlaneGeometry(8, 17).rotateX(-Math.PI / 2), beamPoolMat); pool.position.set(0, 0.09, -parts.halfLen - 8); pool.renderOrder = 2; g.add(pool);
+  const pool = new T.Mesh(new T.PlaneGeometry(8, 17).rotateX(-Math.PI / 2), beamPoolMat); pool.position.set(0, 0.09, -parts.halfLen - 8); pool.renderOrder = 2; if (type !== 'walker') g.add(pool);
   g.rotation.order = 'YXZ'; g.userData.halfLen = parts.halfLen; scene.add(g); return g;
 }
 
@@ -1382,11 +1423,19 @@ function bObservatory(p, b, ln, gl) {
   prism(b, x - 14, z + 8, y, y + 6, 0.2, 0.2, 5, cSteel); cone(b, x - 14, y + 5.2, z + 8, 2.4, 1.2, cHull, 0);
 }
 /* a seated figure built from boxes; (ux, uz) is the way they face. Generic characters, not anyone real */
-function sitMan(b, x, y, z, ux, uz, shirt, pants, skin, top, cap) {
+function sitMan(b, x, y, z, ux, uz, shirt, pants, skin, top, cap, ex) {
   const lx = -uz, lz = ux, at = (f, l) => [x + ux * f + lx * l, z + uz * f + lz * l], bx = (f, l, y0, y1, hf, hl, c) => { const q = at(f, l); b.obox(q[0], y + y0, y + y1, q[1], ux, uz, hf, hl, c); }, shoe = C('#e8e6df');
   for (const g of [-1, 1]) { bx(0.3, g * 0.15, 0, 0.2, 0.3, 0.1, pants); bx(0.56, g * 0.15, -0.5, 0.04, 0.1, 0.1, pants); bx(0.64, g * 0.15, -0.52, -0.4, 0.18, 0.11, shoe); bx(-0.02, g * 0.36, 0.34, 0.76, 0.1, 0.09, shirt); bx(0.2, g * 0.33, 0.22, 0.36, 0.22, 0.075, skin); }
   bx(-0.04, 0, 0.1, 0.8, 0.17, 0.28, shirt); bx(-0.02, 0, 0.8, 0.88, 0.07, 0.08, skin); bx(0, 0, 0.88, 1.16, 0.13, 0.125, skin); bx(-0.01, 0, 1.1, 1.22, 0.145, 0.14, top);
   if (cap) bx(0.17, 0, 1.1, 1.14, 0.1, 0.12, top);
+  if (ex) { const gold = C('#e2b33c'), ink = C('#1c2a33'), dark = C('#0a0a0c');
+    bx(0.135, 0, 0.99, 1.05, 0.015, 0.128, dark);                                                                  // dark shades
+    bx(0.135, 0, 0.9, 0.93, 0.012, 0.07, dark);                                                                    // goatee
+    bx(0.175, 0, 0.56, 0.78, 0.012, 0.11, gold); bx(0.19, 0, 0.44, 0.56, 0.02, 0.07, gold);                        // heavy chain and pendant
+    for (const g of [-1, 1]) { bx(0.2, g * 0.33, 0.36, 0.375, 0.16, 0.06, ink); bx(0.38, g * 0.33, 0.21, 0.37, 0.03, 0.08, gold); bx(-0.02, g * 0.4, 0.42, 0.8, 0.12, 0.06, shirt); }   // forearm tattoos, gold watch and bracelet, broader shoulders
+    if (ex.bandana) { bx(0, 0, 1.04, 1.1, 0.15, 0.145, ex.bandana); bx(-0.17, 0.05, 0.98, 1.08, 0.03, 0.04, ex.bandana); }
+    if (ex.hood) { bx(-0.13, 0, 0.78, 1.2, 0.05, 0.16, shirt); for (const g of [-1, 1]) bx(-0.02, g * 0.15, 0.86, 1.2, 0.13, 0.02, shirt); }   // hood up
+    if (ex.grill) bx(0.135, 0, 0.935, 0.955, 0.012, 0.05, gold); }
 }
 function bTrap(p, b, ln, gl) {                      // a run-down house with a sagging porch
   const x = p.x, z = p.z, y = p.h, wall = C('#7b8072'), wall2 = C('#6a6f63'), board = C('#9a8a68'), roofC = C('#3d3833'), patch = C('#6e5a48'), rust = C('#7a4a32');
@@ -1406,13 +1455,20 @@ function bTrap(p, b, ln, gl) {                      // a run-down house with a s
   gl.box(x - 0.6, x - 0.3, y + 2.9, y + 3.1, z + 3.2, z + 3.5, cWhite);                                                                                                                    // one bare porch bulb
   b.box(x - 5.6, x - 2.6, y + 0.5, y + 0.95, z + 3.5, z + 4.5, patch); b.box(x - 5.6, x - 2.6, y + 0.95, y + 1.55, z + 3.5, z + 3.8, patch); for (const g of [-5.75, -2.6]) b.box(x + g, x + g + 0.15, y + 0.5, y + 1.25, z + 3.5, z + 4.5, C('#5d4a3c'));   // old sofa
   b.box(x + 3.2, x + 4.0, y + 0.5, y + 0.95, z + 4.2, z + 5.0, C('#5b5f66')); b.box(x + 4.6, x + 5.2, y + 0.5, y + 1.0, z + 3.5, z + 4.1, rust);                                             // milk crate seat, barrel
-  sitMan(b, x - 4.1, y + 0.97, z + 4.2, 0, 1, C('#27324a'), C('#1b1d22'), C('#6b4630'), C('#15161a'), false);                                                                              // on the sofa: dark hoodie, beanie
-  sitMan(b, x + 3.6, y + 0.97, z + 4.7, -0.26, 0.966, C('#e7e4da'), C('#3f5673'), C('#7a5238'), C('#a8382f'), true);                                                                       // on the crate: white tee, red cap
+  sitMan(b, x - 4.1, y + 0.97, z + 4.2, 0, 1, C('#16181d'), C('#1b1d22'), C('#6b4630'), C('#15161a'), false, { hood: true, grill: true });                                                                              // on the sofa: dark hoodie, beanie
+  sitMan(b, x + 3.6, y + 0.97, z + 4.7, -0.26, 0.966, C('#e7e4da'), C('#2b2e35'), C('#7a5238'), C('#101114'), false, { bandana: C('#b01f24') });                                                                       // on the crate: white tee, red cap
   SOLIDS.push([x - 4.1, z + 4.4, 0.7, y + 2.3], [x + 3.6, z + 4.9, 0.7, y + 2.3]);
+  for (const [nm, nx, nz] of [['King Rello', x - 4.1, z + 4.2], ['Lil Marz', x + 3.6, z + 4.7]]) {                  // name tags over the two regulars
+    const cv = document.createElement('canvas'); cv.width = 256; cv.height = 64; const g = cv.getContext('2d'); g.font = '600 30px "Barlow Condensed","Arial Narrow",Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const w = Math.min(248, g.measureText(nm).width + 28); g.fillStyle = 'rgba(14,22,30,.72)'; g.fillRect(128 - w / 2, 12, w, 40); g.fillStyle = '#c1121f'; g.fillRect(128 - w / 2, 48, w, 4); g.fillStyle = '#f6f2e4'; g.fillText(nm, 128, 31, 240);
+    const sp = new T.Sprite(new T.SpriteMaterial({ map: new T.CanvasTexture(cv), depthWrite: false })); sp.scale.set(2.4, 0.6, 1); sp.position.set(nx, y + 2.75, nz); p.grp.add(sp);
+  }
   BOXES.push([x - 7, x + 7, z - 9, z + 3, y + 5.6], [x - 7, x + 7, z + 3, z + 6.6, y + 0.5]);
   for (let k = 0; k < 9; k++) { const fx = x - 20 + k * 5; if (k === 4) continue; b.box(fx - 0.06, fx + 0.06, y, y + 1.5 - (k % 3 === 1 ? 0.5 : 0), z + 13.94, z + 14.06, cSteelL); if (k < 8 && k !== 3 && k !== 6) b.box(fx, fx + 5, y + 1.3, y + 1.36, z + 13.97, z + 14.03, cSteelL); }   // broken chain-link fence line
   for (const [tx, tz, r] of [[9.5, 4.5, 0.6], [10.4, 5.2, 0.55], [9.8, 5.9, 0.5]]) prism(b, x + tx, z + tz, y, y + r * 1.3, r, r * 0.6, 7, cDark);                                         // bin bags
   for (let k = 0; k < 3; k++) { b.o = [x - 10.5, y + 0.2 + k * 0.4, z + 5]; for (let a = 0; a < 10; a++) { const a0 = a / 10 * TAU, a1 = (a + 1) / 10 * TAU; b.quad([x - 10.5 + Math.cos(a0) * 0.7, y + k * 0.4, z + 5 + Math.sin(a0) * 0.7], [x - 10.5 + Math.cos(a1) * 0.7, y + k * 0.4, z + 5 + Math.sin(a1) * 0.7], [x - 10.5 + Math.cos(a1) * 0.7, y + k * 0.4 + 0.38, z + 5 + Math.sin(a1) * 0.7], [x - 10.5 + Math.cos(a0) * 0.7, y + k * 0.4 + 0.38, z + 5 + Math.sin(a0) * 0.7], cTyre); } } b.o = null; SOLIDS.push([x - 10.5, z + 5, 0.8, y + 1.3], [x + 9.9, z + 5.2, 1, y + 0.9]);   // tyre stack
+  { const hc = makeCar('muscle', '#101114', false); scene.remove(hc); hc.children.filter(c => c.material === beamPoolMat).forEach(c => hc.remove(c)); hc.position.set(x + 7.5, y + 0.02, z + 19.5); hc.rotation.set(0, Math.PI / 2, 0); p.grp.add(hc);
+    TRAPSPOT = { x: x + 7.5, y, z: z + 19.5 }; SOLIDS.push([x + 6, z + 19.5, 1.15, y + 1.6], [x + 9, z + 19.5, 1.15, y + 1.6]); flatQ(b, x + 3.5, x + 11.5, z + 17.6, z + 21.4, y + 0.06, cDirt); }   // the Hellhound, parked out front: bump it to unlock
   const junk = makeCar('sedan', '#6f4a36', false); scene.remove(junk); junk.children.filter(c => c.material === beamPoolMat).forEach(c => junk.remove(c)); junk.position.set(x + 15, y - 0.12, z - 2); junk.rotation.set(0.03, 0.5, -0.07); p.grp.add(junk); SOLIDS.push([x + 14.4, z - 3, 1.2, y + 1.6], [x + 15.6, z - 1, 1.2, y + 1.6]);   // rusted car in the yard
   for (const g of [-1, 1]) b.box(x + 15 + g * 0.9 - 0.25, x + 15 + g * 0.9 + 0.25, y, y + 0.3, z - 2.4, z - 1.6, cConcD);
 }
@@ -1620,7 +1676,7 @@ function bCity(p, b, ln, gl) {
 }
 /* traffic signals: one shared 16 s cycle. 2 = green, 1 = amber, 0 = red */
 const SIGMAT = [0, 1, 2, 3, 4, 5].map(() => new T.MeshBasicMaterial({ color: 0x222222 })), SIGON = [0xff3b2e, 0xffc83a, 0x3fe06a], SIGOFF = [0x3a1512, 0x3a3014, 0x123a1c];
-let sigT = 0, AIRPLANE = null, UFOSPOT = null, DEALSPOT = null;
+let sigT = 0, AIRPLANE = null, UFOSPOT = null, DEALSPOT = null, TRAPSPOT = null;
 /* freeze missiles: point the helicopter at a car to lock on, X fires. A hit ices the car, which crawls for a few seconds */
 const MSL = { list: [], cand: null, lockT: 0, ammo: 4, reload: 0, fired: 0, hits: 0, v: new T.Vector3() };
 const mslGeo = new T.ConeGeometry(0.2, 1.7, 8).rotateX(Math.PI / 2), mslMat = new T.MeshBasicMaterial({ color: 0x9fe9ff }), mslTrailMat = new T.MeshBasicMaterial({ color: 0xcff6ff, transparent: true, opacity: 0.55, blending: T.AdditiveBlending, depthWrite: false });
@@ -1698,7 +1754,7 @@ function updateHeld(n, dt) {                        // mode 4 held in the beam, 
   } else if (n.mode === 5) {
     n.vyF -= 22 * dt; n.y += n.vyF * dt; const g = Math.max(groundAt(n.x, n.wz, n.y), -1);
     if (n.y <= g) { n.y = g; if (n.city || g < -0.4 || Math.abs(n.wz) > REND - 30) { n.mode = 6; n.t = 1.6; } else { n.mode = 2; n.speed = 0; n.stun = 0.9; n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = 0; } }
-  } else { n.t -= dt; if (n.t <= 0) { n.live = false; n.mode = 0; n.mesh.visible = false; return; } }
+  } else { n.t -= dt; if (n.wreck && Math.random() < dt * 9) puffAt(n.x, n.y + 1.1, n.wz); if (n.t <= 0) { n.live = false; n.mode = 0; n.wreck = false; n.mesh.visible = false; return; } }
   n.z = n.wz; n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(n.mode === 4 ? Math.sin(sigT * 1.7) * 0.08 : 0, n.yaw, n.mode === 4 ? Math.cos(sigT * 1.3) * 0.08 : 0);
 }
 function updateBeam() {
@@ -1752,19 +1808,51 @@ function paved(x, z) {
 /* lap timing: three sectors by angle around the circuit; a lap counts once all three were crossed in order, either way round */
 const lap = { on: false, t: 0, sec: -1, prog: 0, best: 0, near: false };
 try { lap.best = +localStorage.getItem('dd-lap') || 0; } catch (e) { /* storage unavailable */ }
+/* best laps: your own laps are kept in this browser (localStorage), and other players in the room share their best lap
+   through presence (the `bl` field), so the board shows everyone you are playing with. Nothing leaves this page otherwise. */
+const LB = { mine: [], rows: [], drawT: 0 };
+const lapOk = t => typeof t === 'number' && isFinite(t) && t > 8 && t < 3600;
+try {
+  const v = JSON.parse(localStorage.getItem('dd-laps') || '[]');
+  if (Array.isArray(v)) LB.mine = v.filter(q => q && lapOk(q.t)).map(q => ({ t: q.t, c: (typeof q.c === 'string' ? q.c : '').replace(/[^\w .\-]/g, '').slice(0, 16), at: +q.at || 0 })).sort((a, b) => a.t - b.t).slice(0, 10);
+} catch (e) { /* storage unavailable or unreadable: start empty */ }
+if (!LB.mine.length && lapOk(lap.best)) LB.mine = [{ t: lap.best, c: '', at: 0 }];            // a best lap saved by an older version
+if (LB.mine.length && (!lap.best || LB.mine[0].t < lap.best)) lap.best = LB.mine[0].t;
+function lbDraw() {
+  const ol = $('lbList'); if (!ol) return; ol.textContent = '';
+  const others = [...NET.rem.values()].filter(r => r.init && r.pres && lapOk(r.pres.bl)).map(r => ({ n: r.name, t: r.pres.bl, me: false }));
+  let rows, note;
+  if (others.length) {                               // in a room with other lap times: one row per player, their best
+    rows = others.concat(LB.mine.length ? [{ n: NET.name || 'You', t: LB.mine[0].t, me: true }] : []).sort((a, b) => a.t - b.t);
+    note = 'Best lap of each player in this room';
+  } else {                                           // otherwise: your own best laps, with the car you drove
+    rows = LB.mine.map(q => ({ n: q.c || 'You', t: q.t, me: true }));
+    note = rows.length ? 'Your laps, saved in this browser' : 'No laps yet. Set the first one';
+  }
+  LB.rows = rows;
+  rows.slice(0, 5).forEach((q, i) => { const li = document.createElement('li'); if (q.me) li.className = 'me'; const a = document.createElement('i'), n = document.createElement('b'), t = document.createElement('span'); a.textContent = String(i + 1); n.textContent = q.n; t.textContent = fmtLap(q.t); li.append(a, n, t); ol.appendChild(li); });
+  $('lbNote').textContent = note;
+}
+function lbTick() { const t = Date.now(); if (t - LB.drawT > 1000) { LB.drawT = t; lbDraw(); } }   // keeps other players' times fresh while the board is shown
+function lbSubmit(t) {
+  if (!lapOk(t)) return;
+  LB.mine.push({ t: Math.round(t * 1000) / 1000, c: CAR.name, at: Date.now() }); LB.mine.sort((a, b) => a.t - b.t); LB.mine = LB.mine.slice(0, 10);
+  try { localStorage.setItem('dd-laps', JSON.stringify(LB.mine)); } catch (e) { /* storage unavailable: the lap still shows until the page is closed */ }
+  LB.drawT = 0; lbDraw();
+}
 const fmtLap = t => t ? Math.floor(t / 60) + ':' + (t % 60).toFixed(2).padStart(5, '0') : '–:––';
 function updateLap(dt) {
   const dx = P.x - RW.x, dz = P.z - RW.z, d = Math.hypot(dx, dz);
   lap.near = d < 400;
   if (d > 360) { lap.on = false; lap.sec = -1; return; }
   const th = Math.atan2(dz, dx);
-  if (Math.abs(ovalOff(dx, dz)) < 8.6) {
+  if (Math.abs(ovalOff(dx, dz)) < 8.6 && P.y < RW.h + 2.5 && !CAR.plane && !CAR.heli && !CAR.ufo) {   // laps only count on the tarmac, on wheels
     const sec = Math.floor(((((th - TH0) % TAU) + TAU) % TAU) / (TAU / 3));
     if (lap.sec >= 0 && sec !== lap.sec) {
       lap.prog += (sec - lap.sec + 3) % 3 === 1 ? 1 : -1;
       if ((lap.sec === 2 && sec === 0) || (lap.sec === 0 && sec === 2)) {
         if (lap.on && Math.abs(lap.prog) >= 3) {
-          const best = !lap.best || lap.t < lap.best; if (best) { lap.best = lap.t; try { localStorage.setItem('dd-lap', lap.t.toFixed(3)); } catch (e) { /* storage unavailable */ } }
+          lbSubmit(lap.t); const best = !lap.best || lap.t < lap.best; if (best) { lap.best = lap.t; try { localStorage.setItem('dd-lap', lap.t.toFixed(3)); } catch (e) { /* storage unavailable */ } }
           toast((best ? 'New best lap ' : 'Lap ') + fmtLap(lap.t));
         } else if (!lap.on) toast('Lap started');
         lap.on = true; lap.t = 0; lap.prog = 0;
@@ -1826,9 +1914,9 @@ function drawMap(g, k, labels) {                       // g is already scaled so
     if (labels) { const up = i & 1, tx = p.name.toUpperCase(), w = g.measureText(tx).width, lx = clamp(X - w / 2, 2 / k, MW - w - 2 / k), ly = Y + (up ? -15 : 16) / k;
       g.fillStyle = 'rgba(14,22,30,.72)'; g.fillRect(lx - 4 / k, ly - 8 / k, w + 8 / k, 16 / k); g.fillStyle = p.found ? '#ffc44d' : '#f6f2e4'; g.fillText(tx, lx, ly); }
   });
-  for (const r of NET.rem.values()) { if (!r.init) continue; g.beginPath(); g.arc(mpx(r.pos.x), mpy(r.pos.z), 4 / k, 0, TAU); g.fillStyle = '#6fd3ff'; g.fill(); g.lineWidth = 1.3 / k; g.strokeStyle = '#0e161e'; g.stroke(); if (labels) { g.fillStyle = '#6fd3ff'; g.fillText(r.name, mpx(r.pos.x) + 7 / k, mpy(r.pos.z)); } }
+  for (const r of NET.rem.values()) { if (!r.init) continue; g.beginPath(); g.arc(mpx(r.pos.x), mpy(r.pos.z), 4.5 / k, 0, TAU); g.fillStyle = r.color; g.fill(); g.lineWidth = 1.3 / k; g.strokeStyle = '#0e161e'; g.stroke(); if (labels) { g.fillStyle = r.color; g.fillText(r.name, mpx(r.pos.x) + 7 / k, mpy(r.pos.z)); } }
   g.save(); g.translate(mpx(P.x), mpy(P.z)); g.rotate(-P.heading); g.beginPath(); g.moveTo(0, -8 / k); g.lineTo(5 / k, 5 / k); g.lineTo(0, 2.5 / k); g.lineTo(-5 / k, 5 / k); g.closePath();
-  g.fillStyle = '#e2483a'; g.fill(); g.lineWidth = 1.5 / k; g.strokeStyle = '#fff'; g.stroke(); g.restore();
+  g.fillStyle = NET.room ? NET.color : '#e2483a'; g.fill(); g.lineWidth = 1.5 / k; g.strokeStyle = '#fff'; g.stroke(); g.restore();
 }
 const mini = $('mini'), miniG = mini.getContext('2d'), bigCv = $('mapCanvas'), bigG = bigCv.getContext('2d');
 const BK = 900 / MW; bigCv.width = 900; bigCv.height = Math.round(MH * BK);
@@ -1868,6 +1956,7 @@ function updatePlaces(dt) {
   if (playerModel.userData.prop) playerModel.userData.prop.rotation.z += dt * (8 + Math.abs(P.vf));
   if (started && !UNL.plane && AIRPLANE && Math.hypot(P.x - AIRPLANE.x, P.z - AIRPLANE.z) < 3.75) unlock('plane');
   if (started && !UNL.ufo && UFOSPOT && Math.hypot(P.x - UFOSPOT.x, P.z - UFOSPOT.z) < 4.9) unlock('ufo');
+  if (started && !UNL.hound && TRAPSPOT && Math.hypot(P.x - TRAPSPOT.x, P.z - TRAPSPOT.z) < 4.4 && P.y < TRAPSPOT.y + 4) unlock('hound');
   if (started && !UNL.jet && DEALSPOT && Math.hypot(P.x - DEALSPOT.x, P.z - DEALSPOT.z) < 6.2 && P.y < DEALSPOT.y + 4) unlock('jet');
   fireMat.color.setHSL(0.07 + Math.random() * 0.02, 1, 0.5 + Math.random() * 0.12);
   placeT -= dt; if (placeT > 0) return; placeT = 0.15;
@@ -1881,21 +1970,21 @@ function updatePlaces(dt) {
   miniG.save(); miniG.beginPath(); miniG.arc(c, c, c - 1, 0, TAU); miniG.clip(); miniG.fillStyle = '#2f6f92'; miniG.fillRect(0, 0, mini.width, mini.height);
   miniG.translate(c, c); miniG.rotate(P.heading); miniG.scale(k, k); miniG.translate(-mpx(P.x), -mpy(P.z)); drawMap(miniG, k, false); miniG.restore();
   miniG.beginPath(); miniG.arc(c, c, c - 1, 0, TAU); miniG.lineWidth = 2; miniG.strokeStyle = 'rgba(246,242,228,.5)'; miniG.stroke();
-  const lp = $('lap'); lp.hidden = !lap.near; if (lap.near) $('lapT').textContent = (lap.on ? fmtLap(lap.t) : 'Cross the line') + ' · Best ' + fmtLap(lap.best);
+  $('lb').hidden = !lap.near; if (lap.near) lbTick(); const lp = $('lap'); lp.hidden = !lap.near; if (lap.near) $('lapT').textContent = (lap.on ? fmtLap(lap.t) : 'Cross the line') + ' · Best ' + fmtLap(lap.best);
   if (mapOpen) drawBig();
 }
 
 /* player */
 const START_Z = -500;
 const P = { x: 0, y: 0, z: START_Z, vx: 0, vy: 0, vz: 0, heading: 0, steer: 0, pitch: 0, roll: 0, grounded: true, waterT: 0, vf: 0, gPitch: 0, odo: 0, drift: 0, slip: 0, gy: 0,
-  oilT: 0, oilDir: 1, burn: false, frozenT: 0, throttle: 0, fwd: 0, rev: 0, gear: 1, fuel: 100, air: false, q: new T.Quaternion(), wx: 0, wy: 0, wz: 0, boosting: false, hover: false, jumpHeld: false };
+  yawR: 0, oilT: 0, oilDir: 1, burn: false, frozenT: 0, throttle: 0, fwd: 0, rev: 0, gear: 1, fuel: 100, air: false, q: new T.Quaternion(), wx: 0, wy: 0, wz: 0, boosting: false, hover: false, jumpHeld: false };
 const playerMesh = new T.Group(); playerMesh.rotation.order = 'YXZ'; scene.add(playerMesh);
 const CARS = [
   { id: 'hatch', name: 'Hatchback', type: 'sedan', color: '#3d8fb8', accel: 10, vmax: 44, grip: 9, driftGrip: 1.7, offDrag: 0.5, mass: 1, blurb: 'Easy and predictable.' },
   { id: 'coupe', name: 'Coupe', type: 'sport', color: '#e2483a', accel: 13, vmax: 58, grip: 9.5, driftGrip: 1.1, offDrag: 0.5, mass: 1, blurb: 'Quick all-rounder.' },
   { id: 'pickup', name: 'Pickup 4x4', type: 'pickup', color: '#5d7a3a', accel: 11, vmax: 46, grip: 8, driftGrip: 1.5, offDrag: 0.1, mass: 1.7, blurb: 'Barely slows off road. Shoves traffic aside.' },
   { id: 'drift', name: 'Drift Special', type: 'sport', color: '#f2c230', accel: 15, vmax: 54, grip: 6.5, driftGrip: 0.7, offDrag: 0.55, mass: 0.9, blurb: 'Loose rear end. Slides on demand.' },
-  { id: 'hound', name: 'Hellhound', type: 'muscle', color: '#101114', accel: 19, vmax: 78, grip: 8.6, driftGrip: 0.9, offDrag: 0.6, mass: 1.25, blick: true, burn: true, blurb: 'Black widebody, red inside. Fires El Blick. Hold gas and brake to light the tyres.' },
+  { id: 'hound', name: 'Hellhound', type: 'muscle', color: '#101114', accel: 19, vmax: 78, grip: 8.6, driftGrip: 0.9, offDrag: 0.6, mass: 1.25, blick: true, burn: true, secret: true, blurb: 'Black widebody, red inside. Fires El Blick. Hold gas and brake to light the tyres.' },
   { id: 'plane', name: 'Light Aircraft', type: 'plane', color: '#f1f1ec', accel: 6, vmax: 50, grip: 8, driftGrip: 2.2, offDrag: 0.25, mass: 0.8, plane: true, secret: true, blurb: 'Push the throttle up with the arrow keys. It flies itself off the runway at 95 km/h.' },
   { id: 'heli', name: 'Helicopter', type: 'heli', color: '#2f5f8f', accel: 13, vmax: 60, grip: 9, driftGrip: 2, offDrag: 0, mass: 1.2, heli: true, blurb: 'Hovers and lands anywhere. Carries lock-on freeze missiles.' },
   { id: 'ufo', name: 'Saucer', type: 'ufo', color: '#aeb6bd', accel: 15, vmax: 72, grip: 10.5, driftGrip: 2, offDrag: 0, mass: 0.6, ufo: true, secret: true, blurb: 'Hovers over everything. Not from round here.' },
@@ -1903,6 +1992,8 @@ const CARS = [
 ];
 const gearMat = new T.MeshPhongMaterial({ color: 0x9aa3ab, specular: 0x333333, shininess: 30 });
 const GEAR = { ny: 1.15, nz: -2.3, nl: 0.85, hx: 0.55, hy: 0.9, mz: 0.2, ml: Math.hypot(0.75, 0.56), a0: Math.atan2(-0.56, 0.75) };
+let PARK = null, RIDE = null, walker = null; const HP = { v: 100, max: 100, dead: 0 }, GUN = { i: 0, cool: 0, shots: 0, hits: 0 };
+const FOOTCAR = { id: 'foot', name: 'On foot', type: 'walker', color: '#f2f2f2', accel: 0, vmax: 8, grip: 9, driftGrip: 9, offDrag: 0, mass: 0.08, foot: true, hidden: true };
 let fillCards = () => {};
 let CAR = CARS[1], playerModel = null, booted = false; const flames = [], UNL = {};
 try { Object.assign(UNL, JSON.parse(localStorage.getItem('dd-unlock') || '{}')); } catch (e) { /* storage unavailable */ }
@@ -1913,7 +2004,8 @@ function unlock(id) {
 const flameGeo = new T.ConeGeometry(0.2, 1, 6).rotateX(Math.PI).translate(0, -0.5, 0);   // base at origin, tip pointing down
 const flameMat = new T.MeshBasicMaterial({ color: 0x7fd8ff, transparent: true, opacity: 0.85, blending: T.AdditiveBlending, depthWrite: false });
 function setCar(i) {
-  CAR = CARS[i];
+  if (PARK) { scene.remove(PARK.model); dropPark(); playerMesh.remove(playerModel); playerModel = PARK.model; PARK = null; } RIDE = null;   // switching car while on foot: the parked one goes away
+  CAR = CARS[i]; HP.max = Math.round(100 * clamp(CAR.mass, 0.7, 1.7)); HP.v = HP.max; HP.dead = 0;
   if (playerModel) { playerMesh.remove(playerModel); playerModel.traverse(o => { if (o.geometry && o.geometry !== flameGeo) o.geometry.dispose(); }); }
   playerModel = makeCar(CAR.type, CAR.color, true); scene.remove(playerModel); playerModel.rotation.set(0, 0, 0); playerMesh.add(playerModel);
   flames.length = 0;
@@ -1936,6 +2028,10 @@ function setCar(i) {
   for (const el of document.querySelectorAll('.jet-only')) el.hidden = !CAR.jet;
   for (const el of document.querySelectorAll('.plane-only')) el.hidden = !CAR.plane;
   for (const el of document.querySelectorAll('.ufo-only')) el.hidden = !CAR.ufo;
+  if (CAR.id === 'hound') {                          // King Rello drives
+    const dg = new GB(); sitMan(dg, 0, 0, 0, 0, -1, C('#16181d'), C('#1b1d22'), C('#6b4630'), C('#15161a'), false, { hood: true, grill: true });
+    const geo = dg.geo(); geo.scale(0.36, 0.36, 0.36); const dm = new T.Mesh(geo, carMat); dm.position.set(-0.42, 1.0, 0.32); playerModel.userData.chassis.add(dm); playerModel.userData.driver = dm;
+  }
   for (const el of document.querySelectorAll('.heli-only')) el.hidden = !CAR.heli;
   for (const el of document.querySelectorAll('.blick-only')) el.hidden = !CAR.blick;
   $('ammo').hidden = !(CAR.heli || CAR.blick); MSL.ammo = CAR.blick ? 6 : 4; MSL.reload = 0;
@@ -1947,7 +2043,7 @@ function setCar(i) {
     if (booted) { P.air = false; P.vy = 0; }
   }
   MSL.cand = null; MSL.lockT = 0;
-  root.dataset.veh = CAR.plane ? 'plane' : CAR.ufo ? 'ufo' : CAR.heli ? 'heli' : CAR.jet ? 'jet' : 'car';   // the touch pad shows this vehicle's buttons (CSS)
+  vehUI();   // the touch pad shows this vehicle's buttons (CSS)
   setBeam(false);
   if (CAR.ufo && booted) { P.y += 3; P.air = false; P.vy = 0; }
   for (const el of document.querySelectorAll('.car')) el.setAttribute('aria-checked', el.dataset.i == i);
@@ -1955,11 +2051,14 @@ function setCar(i) {
 }
 (() => {
   const box = $('cars'), bar = (label, v) => '<span class="stat">' + label + '<u><s style="width:' + (v === 0 ? 0 : Math.round(clamp(v, 0.08, 1) * 100)) + '%"></s></u></span>';
+  CARS.push(FOOTCAR);
   CARS.forEach((c, i) => {
+    if (c.hidden) return;
     const el = document.createElement('button'); el.type = 'button'; el.className = 'car'; el.id = 'car-' + c.id; el.dataset.i = i; el.setAttribute('role', 'radio');
     el.addEventListener('click', () => { if (c.secret && !UNL[c.id]) toast('Locked. It is out there somewhere'); else setCar(i); }); box.appendChild(el);
   });
   fillCards = () => CARS.forEach(c => {              // secret vehicles show as ??? until they are found
+    if (c.hidden) return;
     const el = $('car-' + c.id), locked = c.secret && !UNL[c.id]; el.classList.toggle('locked', !!locked); el.setAttribute('aria-disabled', !!locked);
     el.innerHTML = locked
       ? '<b><i style="background:#2a3038"></i>???</b><small>Secret vehicle. Find it on the island to unlock it.</small>' + bar('Speed', 0) + bar('Accel', 0) + bar('Grip', 0) + bar('Weight', 0)
@@ -1972,7 +2071,7 @@ playerMesh.add(headSpot, headSpot.target);
 function placeOnRoad(z, dir) {
   z = clamp(z, -REND + 25, REND - 25);
   const hw = hwAt(z), d1 = roadDX(z), len = Math.sqrt(1 + d1 * d1), off = laneOff(1, hw) * dir;
-  P.x = roadX(z) + off / len; P.z = z - off * d1 / len; P.y = roadY(z) + 0.05; P.vx = P.vy = P.vz = 0; P.steer = 0; P.waterT = 0; P.air = false; P.wx = P.wy = P.wz = 0; P.onHC = false;
+  P.x = roadX(z) + off / len; P.z = z - off * d1 / len; P.y = roadY(z) + 0.05; P.vx = P.vy = P.vz = 0; P.steer = 0; P.yawR = 0; P.waterT = 0; P.air = false; P.wx = P.wy = P.wz = 0; P.onHC = false;
   P.heading = Math.atan2(d1, 1) + (dir < 0 ? Math.PI : 0);
 }
 placeOnRoad(START_Z, 1);
@@ -2141,7 +2240,7 @@ function updateNpcs(dt) {
 /* ───────────── input (actions, not keys) ───────────── */
 /* touch: sx/sy = analog stick (-1..1, sy positive = pushed up), g gas, b brake, e e-brake, j jump/climb/plane brake,
    s boost/descend/full throttle, ql/qr = roll, rudder or slide left/right (same as Q/E) */
-const keys = {}, touch = { sx: 0, sy: 0, g: 0, b: 0, e: 0, j: 0, s: 0, ql: 0, qr: 0 };
+const keys = {}, touch = { f: 0, sx: 0, sy: 0, g: 0, b: 0, e: 0, j: 0, s: 0, ql: 0, qr: 0 };
 let started = false, auto = true, camMode = 0, soundOn = true, todSkip = 0;
 const DRIVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'KeyE', 'KeyQ', 'ShiftLeft', 'ShiftRight'];
 addEventListener('keydown', e => {
@@ -2159,6 +2258,8 @@ addEventListener('keydown', e => {
   if (e.code === 'Escape') { toggleMap(false); toggleTravel(false); }
   if (e.code === 'KeyG') toggleTravel();
   if (e.code === 'KeyX' && (CAR.heli || CAR.blick)) fireMissile();
+  if (e.code === 'KeyZ') toggleFoot();
+  if (CAR.foot && /^Digit[1-4]$/.test(e.code)) setGun(+e.code.slice(5) - 1);
   if (e.code === 'KeyB' && CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); }
 });
 addEventListener('keyup', e => { if (e.target && e.target.tagName === 'INPUT') return; keys[e.code] = false; });
@@ -2189,6 +2290,9 @@ for (const [id, k] of [['tG', 'g'], ['tB', 'b'], ['tE', 'e'], ['tJ', 'j'], ['tS'
   ['tPU', 'g'], ['tPD', 'b'], ['tPF', 's'], ['tPB', 'j'], ['tRL', 'ql'], ['tRR', 'qr'],                                          // aircraft
   ['tUC', 'j'], ['tUD', 's'], ['tUL', 'ql'], ['tUR', 'qr']]) bindTouch(id, k);                                                   // saucer
 $('tHF').addEventListener('pointerdown', e => { e.preventDefault(); fireMissile(); });
+bindTouch('tFF', 'f'); bindTouch('tFJ', 'j'); bindTouch('tFS', 's'); $('tFW').addEventListener('pointerdown', e => { e.preventDefault(); setGun(GUN.i + 1); });
+$('bExit').addEventListener('click', e => { toggleFoot(); e.currentTarget.blur(); });
+$('c').addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && e.button === 0) mfire = true; }); addEventListener('pointerup', () => { mfire = false; });
 $('tBK').addEventListener('pointerdown', e => { e.preventDefault(); fireMissile(); });
 $('tUB').addEventListener('pointerdown', e => { e.preventDefault(); if (CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); } });
 (() => {                                            // analog stick: offset of the finger from the centre of the base, with a small dead zone
@@ -2241,7 +2345,7 @@ const PL = { vfly: 95 / 3.6, vstall: 82 / 3.6, vmax: 145 / 3.6, vne: 160 / 3.6, 
 PL.cd = PL.thrust / (PL.vmax * PL.vmax);
 function readInput(dt) {
   let steer = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + touch.sx;
-  let thr = keys.KeyW || keys.ArrowUp || touch.g ? 1 : 0, brk = keys.KeyS || keys.ArrowDown || touch.b ? 1 : 0, hb = (keys.KeyE || touch.e || (keys.Space && !CAR.jet && !CAR.plane)) && !CAR.ufo && !CAR.heli ? 1 : 0;
+  let thr = keys.KeyW || keys.ArrowUp || touch.g ? 1 : 0, brk = keys.KeyS || keys.ArrowDown || touch.b ? 1 : 0, hb = (keys.KeyE || touch.e || (keys.Space && !CAR.jet && !CAR.plane)) && !CAR.ufo && !CAR.heli && !CAR.foot ? 1 : 0;
   try {
     const gp = navigator.getGamepads && navigator.getGamepads()[0];
     if (gp) {
@@ -2251,9 +2355,9 @@ function readInput(dt) {
     }
   } catch (e) { /* gamepads unavailable in this frame */ }
   /* touch stick, vertical axis: the saucer flies forward/back on it; the jet pitches on it in the air (up = nose down, like W) */
-  if (touch.sy && (CAR.ufo || CAR.heli || (CAR.jet && P.air))) { thr = Math.max(thr, touch.sy); brk = Math.max(brk, -touch.sy); }
+  if (touch.sy && (CAR.ufo || CAR.heli || CAR.foot || (CAR.jet && P.air))) { thr = Math.max(thr, touch.sy); brk = Math.max(brk, -touch.sy); }
   inp.steer = clamp(steer, -1, 1); inp.thr = thr; inp.brk = brk; inp.hb = hb;
-  const fly = CAR.jet || CAR.plane || CAR.ufo || CAR.heli; inp.boost = fly && (keys.ShiftLeft || keys.ShiftRight || touch.s) ? 1 : 0; inp.jump = fly && (keys.Space || touch.j) ? 1 : 0;
+  const fly = CAR.jet || CAR.plane || CAR.ufo || CAR.heli || CAR.foot; inp.boost = fly && (keys.ShiftLeft || keys.ShiftRight || touch.s) ? 1 : 0; inp.jump = fly && (keys.Space || touch.j) ? 1 : 0;
   inp.roll = (keys.KeyQ || touch.ql ? 1 : 0) - (keys.KeyE || touch.qr ? 1 : 0);
   if (CAR.plane) {                                   // aircraft: W pulls the nose up, S pushes it down; the arrow keys set the throttle lever
     P.throttle = clamp(P.throttle + ((keys.ArrowUp || touch.g ? 1 : 0) - (keys.ArrowDown || touch.b ? 1 : 0)) * 0.8 * dt, -1, 1);   // lever: -1 full reverse, 0 neutral, +1 full forward
@@ -2283,6 +2387,7 @@ function cityAuto() {
   inp.thr = clamp((target - vf) * 0.5, 0, 1); inp.brk = clamp((vf - target) * 0.3 - 0.15, 0, 1); inp.hb = 0; inp.boost = inp.jump = inp.roll = 0;
 }
 function autoInput() {
+  if (CAR.plane || CAR.heli || CAR.ufo) { inp.steer = inp.thr = inp.brk = inp.hb = inp.boost = inp.jump = inp.roll = inp.pitch = 0; if (CAR.plane && !started) P.throttle = 0; return; }   // aircraft never auto-drive: they sit still until you fly them
   if (inCity(P.x, P.z, 6) && Math.abs(P.x) > 9 && !CAR.ufo && !P.air) return cityAuto();
   autoSt = null;
   const dir = Math.cos(P.heading) >= 0 ? 1 : -1, vf = P.vf, look = 10 + Math.abs(vf) * 0.7, tz = P.z - dir * look;
@@ -2393,6 +2498,7 @@ function stepHeli(dt) {
 }
 function stepPlayer(dt) {
   hcStep(dt);
+  if (CAR.foot) return stepFoot(dt);
   if (CAR.heli) { netBeamPull(dt); return stepHeli(dt); }
   if (CAR.ufo) { P.onHC = false; return stepUfo(dt); }
   netBeamPull(dt);
@@ -2416,14 +2522,17 @@ function stepPlayer(dt) {
   if (P.grounded) {
     if (P.oilT > 0) { P.oilT -= dt; P.drift = 1; P.heading += P.oilDir * 4.2 * Math.min(1, P.oilT) * dt; }   // on oil: no grip, spinning
     const spd = Math.hypot(P.vx, P.vz), D = P.drift;
-    P.steer += (inp.steer * maxSteer(vf) * (1 + 1.7 * D) - P.steer) * (1 - Math.exp(-16 * dt));
-    let yaw = (vf >= 0 ? 1 : -1) * Math.max(Math.abs(vf), spd * D) * Math.tan(P.steer) / 2.6;
-    const lim = mix((onRoad ? 1.95 : 1.2) * CAR.grip, 34, D) / Math.max(spd, 3);
-    yaw = clamp(yaw, -lim, lim); P.heading -= yaw * dt;
-    if (D > 0.05 && spd > 4) {                       // sliding car self-aligns with its travel direction, so a drift can be caught
-      const sa = Math.atan2(P.vx * Math.cos(P.heading) - P.vz * Math.sin(P.heading), Math.abs(vf) + 0.5);
-      P.heading -= sa * 0.9 * D * (1 - 0.6 * Math.abs(inp.steer)) * dt;
+    P.steer += (inp.steer * maxSteer(vf) * (1 + 1.0 * D) - P.steer) * (1 - Math.exp(-mix(16, 9, D) * dt));
+    const dirS = clamp(vf / 2, -1, 1);                                                                // eases through zero, so a big slide never flips the steering
+    let yaw = dirS * Math.max(Math.abs(vf), spd * D) * Math.tan(P.steer) / 2.6;
+    const lim = mix((onRoad ? 1.95 : 1.2) * CAR.grip, 27, D) / Math.max(spd, 3);
+    yaw = clamp(yaw, -lim, lim);
+    if (D > 0.05 && spd > 4) {                       // a sliding car wants to point where it is going: this is what lets you hold and catch a drift
+      const sa = Math.atan2(P.vx * Math.cos(P.heading) - P.vz * Math.sin(P.heading), Math.abs(vf) + 2);
+      yaw += clamp(sa, -0.9, 0.9) * 1.25 * D * (1 - 0.8 * Math.abs(inp.steer));
     }
+    P.yawR += (yaw - P.yawR) * (1 - Math.exp(-mix(22, 5.5, D) * dt));                                 // the car has rotational weight; more of it while sliding
+    P.heading -= P.yawR * dt;
     fx = -Math.sin(P.heading); fz = -Math.cos(P.heading);
     const rx = Math.cos(P.heading), rz = -Math.sin(P.heading);
     vf = P.vx * fx + P.vz * fz; let vl = P.vx * rx + P.vz * rz;
@@ -2443,10 +2552,10 @@ function stepPlayer(dt) {
     vf -= Math.sign(vf) * Math.min(Math.abs(vf), 0.5 * dt);
     vf -= 9.8 * Math.sin(P.gPitch) * 0.7 * dt;
     const slip = Math.abs(vl) / (spd + 2); P.slip = slip;
-    const dT = inp.hb && spd > 5 ? 1 : (slip > 0.2 && spd > 7 ? Math.min(1, slip * 2.4) * (inp.thr > 0 ? 1 : 0.55) : 0);
-    P.drift += (dT - P.drift) * (1 - Math.exp(-(dT > P.drift ? 10 : 2.2) * dt));
-    vl *= Math.exp(-mix(CAR.grip * 1.4 * (surf === 0 ? 1 : surf < 1 ? 0.68 : 0.5), CAR.driftGrip, P.drift) * dt);
-    vf -= vf * 0.35 * slip * P.drift * dt;
+    const dT = inp.hb && spd > 5 ? 1 : spd > 7 ? sstep(0.04, 0.24, slip) * (inp.thr > 0 ? 1 : 0.45) : 0;   // grip lets go and comes back progressively, never as a switch
+    P.drift += (dT - P.drift) * (1 - Math.exp(-(dT > P.drift ? 5 : 1.5) * dt));
+    vl *= Math.exp(-mix(CAR.grip * 1.4 * (surf === 0 ? 1 : surf < 1 ? 0.68 : 0.5), CAR.driftGrip * (inp.thr > 0 ? 1.0 : 2.0), P.drift) * dt);
+    vf -= vf * 0.2 * slip * P.drift * dt;
     P.vx = fx * vf + rx * vl; P.vz = fz * vf + rz * vl;
   } else if (P.air && CAR.plane) {
     /* aircraft: W/S pitch, A/D bank, Q/E rudder. Wings lift in proportion to airspeed, and a banked wing pulls the nose round */
@@ -2634,7 +2743,7 @@ function crashSound(s) {
 let toastT = 0;
 function toast(msg) { const el = $('toast'); el.textContent = msg; el.style.opacity = 1; clearTimeout(toastT); toastT = setTimeout(() => { el.style.opacity = 0; }, 1500); }
 function setAuto(v) { auto = v; autoSt = null; $('bAuto').setAttribute('aria-pressed', v); if (started) toast(v ? 'Auto-drive on' : 'You have the wheel'); }
-function nextCam() { camMode = (camMode + 1) % 3; toast(['Chase camera', 'High camera', 'Hood camera'][camMode]); }
+function nextCam() { camMode = (camMode + 1) % 3; toast(['Chase camera', 'High camera', 'First person'][camMode]); }
 function skipTime() { todSkip += 1 / 8; toast('Three hours later'); }
 function setSound(v) { soundOn = v; $('bSound').setAttribute('aria-pressed', v); if (master) master.gain.value = v ? 0.5 : 0; toast(v ? 'Sound on' : 'Sound off'); }
 function begin() {
@@ -2647,6 +2756,19 @@ $('bAuto').addEventListener('click', e => { setAuto(!auto); e.currentTarget.blur
 $('bCam').addEventListener('click', e => { nextCam(); e.currentTarget.blur(); });
 $('bTime').addEventListener('click', e => { skipTime(); e.currentTarget.blur(); });
 $('bSound').addEventListener('click', e => { setSound(!soundOn); e.currentTarget.blur(); });
+/* fullscreen: must be asked for straight from the tap. Phones and some app views refuse it, so say so instead of failing silently */
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+function toggleFull() {
+  const el = document.documentElement;
+  try {
+    if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    const req = el.requestFullscreen || el.webkitRequestFullscreen; if (!req) { toast('Fullscreen is not available in this browser'); return; }
+    const pr = req.call(el, { navigationUI: 'hide' });
+    if (pr && pr.then) pr.then(() => { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) { /* optional */ } }).catch(() => toast('Fullscreen was blocked here. Try the browser, or add the page to your home screen'));
+  } catch (e) { toast('Fullscreen is not available here'); }
+}
+$('bFull').addEventListener('click', e => { toggleFull(); e.currentTarget.blur(); });
+for (const ev of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(ev, () => { const on = !!fsEl(); $('bFull').setAttribute('aria-pressed', on); $('bFull').textContent = on ? 'Exit full' : 'Fullscreen'; resize(); });
 
 /* ───────────── camera ───────────── */
 let camSnap = true, camYaw = 0; const camPos = new T.Vector3(), look = new T.Vector3(), want = new T.Vector3();
@@ -2657,7 +2779,10 @@ function updateCamera(dt, time) {
   if (!started) {                                   // attract mode: slow orbit
     const a = P.heading + 2.5 + Math.sin(time * 0.07) * 0.7;
     want.set(P.x + Math.sin(a) * 15, P.y + 5.2, P.z + Math.cos(a) * 15); look.set(P.x, P.y + 1.4, P.z);
-  } else if (camMode === 2) { want.set(P.x + fx * 0.2, P.y + 1.32, P.z + fz * 0.2); look.set(P.x + fx * 30, P.y + 1.0 + Math.sin(P.pitch) * 30, P.z + fz * 30); }
+  } else if (camMode === 2) {                       // first person: the camera sits where the driver's (or walker's) eyes are
+    const e = eyeOf(), hx = -Math.sin(P.heading), hz = -Math.cos(P.heading), rx = Math.cos(P.heading), rz = -Math.sin(P.heading);
+    want.set(P.x + rx * e[0] - hx * e[2], P.y + e[1], P.z + rz * e[0] - hz * e[2]); look.set(want.x + hx * 30, want.y + Math.sin(P.pitch) * 30 - (CAR.foot ? 0.6 : 0.9), want.z + hz * 30);
+  }
   else { const d = camMode ? 17 : 8.6, h = camMode ? 7.5 : 3.3; want.set(P.x - fx * d, P.y + h, P.z - fz * d); look.set(P.x + fx * 7, P.y + 1.3, P.z + fz * 7); }
   if (camSnap || (started && camMode === 2)) { camPos.copy(want); camSnap = false; }
   else { const k = 1 - Math.exp(-dt * 5.5); camPos.x += (want.x - camPos.x) * k; camPos.z += (want.z - camPos.z) * k; camPos.y += (want.y - camPos.y) * (1 - Math.exp(-dt * 3.5)); }
@@ -2665,7 +2790,7 @@ function updateCamera(dt, time) {
   camera.position.copy(camPos);
   if (shake > 0.001) { camera.position.x += (Math.random() - 0.5) * shake * 0.7; camera.position.y += (Math.random() - 0.5) * shake * 0.5; shake *= Math.exp(-dt * 6); }
   camera.lookAt(look);
-  const fov = 62 + Math.min(sp, 55) * 0.26; if (Math.abs(fov - camera.fov) > 0.05) { camera.fov = fov; camera.updateProjectionMatrix(); }
+  const fov = 62 + Math.min(sp, 55) * 0.26, nr = camMode === 2 && started ? 0.12 : 0.5; if (Math.abs(fov - camera.fov) > 0.05 || camera.near !== nr) { camera.fov = fov; camera.near = nr; camera.updateProjectionMatrix(); }
   sky.position.copy(camera.position); water.position.set(camera.position.x, 0, camera.position.z);
 }
 
@@ -2677,15 +2802,15 @@ function updateSmoke(dt) {
   if (P.burn && P.grounded) {                        // burnout: a thick cloud pours off both rear tyres
     for (let k = 0; k < 2 && puffT <= 0; k++) { const m = puffs[puffI = (puffI + 1) % puffs.length], side = (puffI & 1 ? 1 : -1) * (0.75 + Math.random() * 0.4), back = 1.5 + Math.random() * 1.2;
       m.position.set(P.x + Math.sin(P.heading) * back + Math.cos(P.heading) * side, P.y + 0.25 + Math.random() * 0.3, P.z + Math.cos(P.heading) * back - Math.sin(P.heading) * side);
-      m.userData.life = 1.9; m.userData.big = 1; m.visible = true; m.rotation.set(Math.random() * 3, Math.random() * 3, 0); }
+      m.userData.life = 1.9; m.userData.big = 1; m.material.color.setHex(0xd8d8d2); m.visible = true; m.rotation.set(Math.random() * 3, Math.random() * 3, 0); }
     if (puffT <= 0) puffT = 0.022;
     const W = playerModel.userData.wheels; if (W.length > 3) { W[2].m.rotation.x -= dt * 55; W[3].m.rotation.x -= dt * 55; }
   } else if (P.drift > 0.35 && P.slip > 0.12 && P.grounded && puffT <= 0) {
     puffT = 0.035; const m = puffs[puffI = (puffI + 1) % puffs.length], side = puffI & 1 ? 0.85 : -0.85;
     m.position.set(P.x + Math.sin(P.heading) * 1.4 + Math.cos(P.heading) * side, P.y + 0.3, P.z + Math.cos(P.heading) * 1.4 - Math.sin(P.heading) * side);
-    m.userData.life = 0.8; m.userData.big = 0; m.visible = true; m.rotation.set(Math.random() * 3, Math.random() * 3, 0);
+    m.userData.life = 0.8; m.userData.big = 0; m.material.color.setHex(0xd8d8d2); m.visible = true; m.rotation.set(Math.random() * 3, Math.random() * 3, 0);
   }
-  for (const m of puffs) { if (!m.visible) continue; const l = m.userData.life -= dt; if (l <= 0) { m.visible = false; continue; } if (m.userData.big) { m.position.y += dt * 1.1; m.position.x += Math.sin(P.heading) * dt * 1.6; m.position.z += Math.cos(P.heading) * dt * 1.6; m.scale.setScalar(1.1 + (1.9 - l) * 2.6); m.material.opacity = Math.min(0.62, l * 0.5); continue; }
+  for (const m of puffs) { if (!m.visible) continue; const l = m.userData.life -= dt; if (l <= 0) { m.visible = false; continue; } if (m.userData.big === 2) { m.position.y += dt * 2.2; m.scale.setScalar(0.7 + (1.5 - l) * 1.6); m.material.opacity = Math.min(0.6, l * 0.5); continue; } if (m.userData.big) { m.position.y += dt * 1.1; m.position.x += Math.sin(P.heading) * dt * 1.6; m.position.z += Math.cos(P.heading) * dt * 1.6; m.scale.setScalar(1.1 + (1.9 - l) * 2.6); m.material.opacity = Math.min(0.62, l * 0.5); continue; }
     m.position.y += dt * 1.3; m.scale.setScalar(0.6 + (0.8 - l) * 1.9); m.material.opacity = l * 0.38; }
 }
 
@@ -2694,7 +2819,8 @@ function updateSmoke(dt) {
    Each client simulates its own vehicle and publishes its state about 18 times a second. Remote vehicles are
    drawn by easing toward "last state + velocity x age" (age capped at 0.3 s). Nothing a peer sends is trusted:
    every field is validated and clamped, names are only ever drawn as text. Without a room the game is single-player. */
-const NET = { now: () => Date.now(), pre: null, preSeq: 0, frz: null, frzSeen: new Map(), room: null, me: null, name: '', rem: new Map(), seq: 0, sendT: 0, cool: new Map(), beam: null, pulledBy: null, lastHit: null, hits: 0, listT: 0 };
+const PCOLS = ['#ff5a5f', '#ffb020', '#ffe14d', '#7ee04b', '#2fd6a3', '#35c9ff', '#5b8cff', '#a77bff', '#ff6fd0', '#ff8a3d', '#c8f03c', '#f2f2f2'];
+const NET = { dm: new Map(), color: PCOLS[Math.floor(Math.random() * PCOLS.length)], now: () => Date.now(), pre: null, preSeq: 0, frz: null, frzSeen: new Map(), room: null, me: null, name: '', rem: new Map(), seq: 0, sendT: 0, cool: new Map(), beam: null, pulledBy: null, lastHit: null, hits: 0, listT: 0 };
 try { NET.name = (localStorage.getItem('dd-name') || '').slice(0, 16); } catch (e) { /* storage unavailable */ }
 if (!NET.name) NET.name = 'Driver ' + (100 + Math.floor(Math.random() * 900));
 const num = v => typeof v === 'number' && isFinite(v), vec = (a, n) => Array.isArray(a) && a.length === n && a.every(num);
@@ -2703,19 +2829,19 @@ const netVel = () => P.onHC ? [P.vx + HC.vx, P.vy, P.vz + HC.vz] : [P.vx, P.vy, 
 function netSend() {
   const now = NET.now(); if (!NET.room || now - NET.sendT < 55) return; NET.sendT = now;
   const q = playerMesh.quaternion, v = netVel();
-  NET.room.presence({ v: 1, n: NET.name, c: CAR.id, m: CAR.mass, p: [r2(P.x), r2(P.y), r2(P.z)], q: [r4(q.x), r4(q.y), r4(q.z), r4(q.w)], vel: [r2(v[0]), r2(v[1]), r2(v[2])],
+  NET.room.presence({ v: 1, n: NET.name, col: NET.color, rd: RIDE ? 1 : 0, w: HP.dead > 0 ? 1 : 0, hp: Math.round(HP.v / HP.max * 100), dm: [...NET.dm].slice(-6), bl: LB.mine.length ? LB.mine[0].t : 0, c: CAR.id, m: CAR.mass, p: [r2(P.x), r2(P.y), r2(P.z)], q: [r4(q.x), r4(q.y), r4(q.z), r4(q.w)], vel: [r2(v[0]), r2(v[1]), r2(v[2])],
     bo: beamOn && CAR.ufo ? 1 : 0, beam: NET.beam, frz: NET.frz, oil: NET.oil || null, pre: NET.pre, ice: P.frozenT > 0 ? 1 : 0 }).catch(() => {});
 }
 function netTag(r) {                                // name tag: text drawn to a canvas, never markup
   const cv = r.tagCv, g = cv.getContext('2d'); g.clearRect(0, 0, 256, 64);
   g.font = '600 30px "Barlow Condensed","Arial Narrow",Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
   const w = Math.min(248, g.measureText(r.name).width + 28); g.fillStyle = 'rgba(14,22,30,.72)'; g.fillRect(128 - w / 2, 12, w, 40);
-  g.fillStyle = '#6fd3ff'; g.fillRect(128 - w / 2, 48, w, 4); g.fillStyle = '#f6f2e4'; g.fillText(r.name, 128, 31, 240); r.tag.material.map.needsUpdate = true;
+  g.fillStyle = r.color; g.fillRect(128 - w / 2, 48, w, 4); g.fillText(r.name, 128, 31, 240); r.tag.material.map.needsUpdate = true;   // each player's own colour
 }
 function netBuild(r, carId) {                       // (re)build the remote vehicle model when its owner changes car
   if (r.mesh) { scene.remove(r.mesh); r.mesh.traverse(o => { if (o.geometry && o.geometry !== flameGeo) o.geometry.dispose(); }); }
   const c = CARS.find(q => q.id === carId) || CARS[1]; r.carId = carId; r.car = c;
-  r.mesh = makeCar(c.type, c.color, false); r.mesh.children.filter(m => m.material === beamPoolMat).forEach(m => r.mesh.remove(m));
+  r.mesh = makeCar(c.type, c.foot ? r.color : c.color, false); r.hat = r.color; r.mesh.children.filter(m => m.material === beamPoolMat).forEach(m => r.mesh.remove(m));
   r.halfLen = r.mesh.userData.halfLen; r.mesh.rotation.order = 'XYZ'; r.ice = null;
   r.tgt = { player: true, r, live: true, mode: 0, type: c.type, halfLen: r.halfLen, get x() { return r.pred.x; }, get y() { return r.pred.y; }, get wz() { return r.pred.z; } };   // lets freeze missiles lock on to this player
 }
@@ -2723,10 +2849,10 @@ function netRemote(id) {
   const cv = document.createElement('canvas'); cv.width = 256; cv.height = 64;
   const tag = new T.Sprite(new T.SpriteMaterial({ map: new T.CanvasTexture(cv), depthWrite: false, fog: false })); tag.scale.set(3.6, 0.9, 1); tag.renderOrder = 5; scene.add(tag);
   const bm = new T.Mesh(beamMesh.geometry, beamMesh.material); bm.visible = false; bm.renderOrder = 3; scene.add(bm);
-  const r = { id, mesh: null, tag, tagCv: cv, bm, pres: null, t: 0, sp: new T.Vector3(), sv: new T.Vector3(), sq: new T.Quaternion(), pos: new T.Vector3(), pred: new T.Vector3(), quat: new T.Quaternion(), init: false, name: '', mass: 1, fx: 0, fz: -1 };
+  const r = { id, mesh: null, tag, tagCv: cv, bm, pres: null, t: 0, sp: new T.Vector3(), sv: new T.Vector3(), sq: new T.Quaternion(), pos: new T.Vector3(), pred: new T.Vector3(), quat: new T.Quaternion(), init: false, name: '', color: '#6fd3ff', mass: 1, fx: 0, fz: -1 };
   NET.rem.set(id, r); return r;
 }
-function netDrop(r) { scene.remove(r.mesh, r.tag, r.bm); r.mesh.traverse(o => { if (o.geometry && o.geometry !== flameGeo) o.geometry.dispose(); }); r.tag.material.map.dispose(); r.tag.material.dispose(); NET.rem.delete(r.id); NET.cool.delete(r.id); }
+function netDrop(r) { NET.dm.delete(r.id); scene.remove(r.mesh, r.tag, r.bm); r.mesh.traverse(o => { if (o.geometry && o.geometry !== flameGeo) o.geometry.dispose(); }); r.tag.material.map.dispose(); r.tag.material.dispose(); NET.rem.delete(r.id); NET.cool.delete(r.id); }
 function netUpdate(dt) {
   if (!NET.room) return;
   const list = NET.room.peers(), seen = new Set(), now = NET.now();
@@ -2737,8 +2863,9 @@ function netUpdate(dt) {
     if (r.pres !== s) {                             // a fresh state from that player
       r.pres = s; r.t = pr.updatedAt; r.sp.set(s.p[0], s.p[1], s.p[2]); r.sv.set(clamp(s.vel[0], -90, 90), clamp(s.vel[1], -90, 90), clamp(s.vel[2], -90, 90)); r.sq.set(s.q[0], s.q[1], s.q[2], s.q[3]).normalize();
       r.mass = clamp(num(s.m) ? s.m : 1, 0.3, 3);
+      if (Array.isArray(s.dm)) for (const q of s.dm) if (Array.isArray(q) && q[0] === NET.me && num(q[1])) { if (r.dmSeen !== undefined && q[1] > r.dmSeen) damage(Math.min(250, q[1] - r.dmSeen)); r.dmSeen = q[1]; } if (r.dmSeen === undefined) r.dmSeen = 0;   // gunfire from that player: apply only the new damage (a total already there when we first see them is not ours to take)
       const pq = s.pre; if (pq && pq.w === NET.me && vec(pq.v, 2) && num(pq.seq) && pq.seq !== r.preSeq) { r.preSeq = pq.seq; r.preV = [clamp(pq.v[0], -90, 90), clamp(pq.v[1], -90, 90)]; r.preT = now; r.preNew = true; } const cid = typeof s.c === 'string' ? s.c : 'coupe'; if (cid !== r.carId || !r.mesh) netBuild(r, cid);
-      const nm = (typeof s.n === 'string' ? s.n : '').replace(/[^\w .\-]/g, '').slice(0, 16) || 'Driver'; if (nm !== r.name) { r.name = nm; netTag(r); }
+      const nm = (typeof s.n === 'string' ? s.n : '').replace(/[^\w .\-]/g, '').slice(0, 16) || 'Driver'; const cl = typeof s.col === 'string' && /^#[0-9a-fA-F]{6}$/.test(s.col) ? s.col : '#6fd3ff'; if (nm !== r.name || cl !== r.color) { r.name = nm; r.color = cl; netTag(r); } if (r.car && r.car.foot && r.hat !== r.color) netBuild(r, 'foot');
     }
     const age = clamp((now - r.t) / 1000 + 0.07, 0, 0.35);                                       // time since their last update, plus a typical network delay                                              // short velocity prediction
     r.pred.copy(r.sp).addScaledVector(r.sv, age);
@@ -2746,11 +2873,13 @@ function netUpdate(dt) {
     else { r.pos.lerp(r.pred, 1 - Math.exp(-18 * dt)); r.quat.slerp(r.sq, 1 - Math.exp(-12 * dt)); }
     tmpV.set(0, 0, -1).applyQuaternion(r.sq); const fl = Math.hypot(tmpV.x, tmpV.z) || 1; r.fx = tmpV.x / fl; r.fz = tmpV.z / fl;
     r.mesh.position.copy(r.pos); r.mesh.quaternion.copy(r.quat); if (r.car.ufo) r.mesh.userData.chassis.rotation.y += dt * 1.6;
-    r.tag.position.set(r.pos.x, r.pos.y + (r.car.ufo ? 4.2 : r.car.plane ? 4.6 : r.car.heli ? 5 : 3.1), r.pos.z);
+    if (r.car.foot) { const sp2 = Math.hypot(r.sv.x, r.sv.z); r.walkT = (r.walkT || 0) + sp2 * dt * 2.4; walkPose(r.mesh, r.walkT, Math.min(1, sp2 / 3), true); }
+    if (s.w === 1 && Math.random() < dt * 9) puffAt(r.pos.x, r.pos.y + 1.2, r.pos.z);
+    r.tag.position.set(r.pos.x, r.pos.y + (r.car.foot ? 2.45 : r.car.ufo ? 4.2 : r.car.plane ? 4.6 : r.car.heli ? 5 : 3.1), r.pos.z);
     if (s.ice === 1 && !r.ice) { r.ice = new T.Mesh(new T.BoxGeometry(2.6, 2, r.halfLen * 2 + 0.7), iceMat); r.ice.position.y = 1; r.mesh.add(r.ice); } if (r.ice) r.ice.visible = s.ice === 1;
     const ol = s.oil; if (ol && ol.targetId === NET.me && num(ol.seq) && NET.oilSeen !== pr.peer + ':' + ol.seq) { NET.oilSeen = pr.peer + ':' + ol.seq; if (num(ol.at) && now - ol.at < 4000) { P.oilT = 2.6; P.oilDir = Math.random() < 0.5 ? 1 : -1; toast('Oiled by ' + r.name); oilPuddle(P.x, P.gy, P.z); } }   // their oil gun hit us
     const fz = s.frz; if (fz && fz.targetId === NET.me && num(fz.seq) && NET.frzSeen.get(pr.peer) !== fz.seq) { NET.frzSeen.set(pr.peer, fz.seq); if (num(fz.at) && now - fz.at < 4000) { P.frozenT = FREEZE_T; toast('Frozen by ' + r.name); crashSound(0.5); } }   // a freeze missile from that player hit us
-    const far = r.pos.distanceToSquared(playerMesh.position) > 1400 * 1400; r.mesh.visible = r.tag.visible = !far;
+    const far = r.pos.distanceToSquared(playerMesh.position) > 1400 * 1400; r.mesh.visible = r.tag.visible = !far; if (s.rd === 1) r.mesh.visible = r.tag.visible = false; if (RIDE === r && camMode === 2) r.mesh.visible = false;
     r.bm.visible = !far && r.car.ufo && s.bo === 1; if (r.bm.visible) { r.bm.position.set(r.pos.x, r.pos.y + 0.1, r.pos.z); r.bm.scale.y = clamp(r.pos.y - Math.max(groundAt(r.pos.x, r.pos.z, r.pos.y), 0) + 0.4, 2, 70); }
   }
   for (const r of [...NET.rem.values()]) if (!seen.has(r.id)) netDrop(r);
@@ -2763,15 +2892,15 @@ function netUpdate(dt) {
 }
 function netList() {                                // player list: you first, then everyone else by distance
   const box = $('plist'); if (!box) return; box.hidden = !NET.room || !started; if (box.hidden) return;
-  const rows = [...NET.rem.values()].filter(r => r.init).map(r => ({ n: r.name, c: r.car.name, d: Math.hypot(r.pos.x - P.x, r.pos.z - P.z) })).sort((a, b) => a.d - b.d);
+  const rows = [...NET.rem.values()].filter(r => r.init).map(r => ({ n: r.name, col: r.color, c: r.car.name, d: Math.hypot(r.pos.x - P.x, r.pos.z - P.z) })).sort((a, b) => a.d - b.d);
   $('pcount').textContent = String(rows.length + 1); if (NET.stat === 'Online') { const el = $('netStat'); el.textContent = 'Online ' + (rows.length + 1); } const ul = $('pl'); ul.textContent = '';
-  const add = (n, sub, me) => { const li = document.createElement('li'); if (me) li.className = 'me'; const a = document.createElement('b'); a.textContent = n; const c = document.createElement('span'); c.textContent = sub; li.append(a, c); ul.appendChild(li); };
-  add(NET.name + ' (you)', CAR.name, true); for (const q of rows.slice(0, 7)) add(q.n, q.c + ' · ' + (q.d < 1000 ? Math.round(q.d) + ' m' : (q.d / 1000).toFixed(1) + ' km'), false);
+  const add = (n, sub, me, col) => { const li = document.createElement('li'); if (me) li.className = 'me'; const a = document.createElement('b'); a.textContent = n; a.style.color = col; const c = document.createElement('span'); c.textContent = sub; li.append(a, c); ul.appendChild(li); };
+  add(NET.name + ' (you)', CAR.name, true, NET.color); for (const q of rows.slice(0, 7)) add(q.n, q.c + ' · ' + (q.d < 1000 ? Math.round(q.d) + ' m' : (q.d / 1000).toFixed(1) + ' km'), false, q.col);
 }
 /* collisions with other players: this client moves ONLY its own vehicle, using the other one's predicted position, velocity and mass.
    The other client runs the same test from its side, so between them both cars respond. One impulse per pair per 350 ms. */
 function netCollide() {
-  if (!NET.rem.size) return; const now = NET.now();
+  if (!NET.rem.size || CAR.foot) return; const now = NET.now();
   const fx = -Math.sin(P.heading), fz = -Math.cos(P.heading), big = CAR.ufo || CAR.heli, own = big ? [0] : [-1.15, 1.15], ro = big ? 2.7 : 1.0;
   const hv = P.onHC ? HC : null, m1 = clamp(CAR.mass, 0.3, 3);
   const bump = (r, ux, uz) => {                     // one impulse along the contact normal (restitution 0.3), applied to our own vehicle only
@@ -2783,7 +2912,7 @@ function netCollide() {
     P.vx += ux * dv; P.vz += uz * dv; P.drift = Math.max(P.drift, clamp(dv / 7, 0, 1)); NET.cool.set(r.id, now + 350); NET.hits++;   // a hard hit breaks the tyres loose, so a side-on shove really moves the car NET.lastHit = { with: r.name, closing: -vr, dv, at: now }; hit(dv);
   };
   for (const r of NET.rem.values()) {
-    if (!r.init) continue; const ex = P.x - r.pred.x, ez = P.z - r.pred.z, e2 = ex * ex + ez * ez; if (e2 > 400 || Math.abs(P.y - r.pred.y) > 2.4) { r.preNew = false; continue; }
+    if (!r.init || r.car.foot) continue; const ex = P.x - r.pred.x, ez = P.z - r.pred.z, e2 = ex * ex + ez * ez; if (e2 > 400 || Math.abs(P.y - r.pred.y) > 2.4) { r.preNew = false; continue; }
     const o = Math.max(0, r.halfLen - 0.95), rb = r.car.ufo || r.car.heli, offs = rb ? [0] : r.halfLen > 3 ? [-o, 0, o] : [-o, o], rr = rb ? 2.7 : 1.0, sum = ro + rr; let touched = false;
     for (const po of own) for (const qo of offs) {
       const dx = P.x + fx * po - (r.pred.x + r.fx * qo), dz = P.z + fz * po - (r.pred.z + r.fz * qo), d2 = dx * dx + dz * dz; if (d2 >= sum * sum || d2 < 1e-5) continue;
@@ -2830,6 +2959,127 @@ function netBeamPull(dt) {
   addEventListener('hashchange', () => { const m = /(?:^#|&)room=([^&]*)/.exec(location.hash || ''), c = m ? m[1].toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 24) : ''; if (c && c !== room.code) location.reload(); });   // pasted a different invite: join that room
 })();
 
+/* ───────────── on foot, guns, vehicle health, first person ───────────── */
+const GUNS = [{ name: 'Pistol', dmg: 12, rate: 0.32, spread: 0.02, range: 130, n: 1 }, { name: 'SMG', dmg: 6, rate: 0.085, spread: 0.06, range: 95, n: 1 },
+  { name: 'Shotgun', dmg: 13, rate: 0.95, spread: 0.12, range: 48, n: 8 }, { name: 'Rifle', dmg: 36, rate: 1.15, spread: 0.004, range: 330, n: 1 }];
+const cockpitFor = c => !c.heli && !c.plane && !c.ufo && !c.foot && c.id !== 'hound';
+const eyeOf = () => RIDE ? [0.42, 1.22, 0.28] : CAR.foot ? [0, 1.68, -0.16] : CAR.heli ? [0, 1.5, -2.8] : CAR.plane ? [0, 2.12, -2.6] : CAR.ufo ? [0, 2.05, 0] : CAR.type === 'suv' || CAR.type === 'pickup' ? [-0.42, 1.44, 0.2] : [-0.42, 1.27, 0.3];
+function vehUI() {
+  for (const k of ['jet', 'plane', 'ufo', 'heli', 'blick', 'foot']) for (const el of document.querySelectorAll('.' + k + '-only')) el.hidden = !CAR[k];
+  root.dataset.veh = CAR.foot ? 'foot' : CAR.plane ? 'plane' : CAR.ufo ? 'ufo' : CAR.heli ? 'heli' : CAR.jet ? 'jet' : 'car';
+  $('ammo').hidden = !(CAR.heli || CAR.blick || CAR.foot); $('hp').hidden = !!CAR.foot;
+}
+function walkPose(model, ph, amt, armed) {
+  const L = model.userData.limbs; if (!L) return; const s = Math.sin(ph) * amt;
+  L[0].rotation.x = s * 0.75; L[1].rotation.x = -s * 0.75; L[2].rotation.x = -s * 0.5; L[3].rotation.x = armed ? 1.45 : s * 0.5; model.userData.gun.visible = !!armed;
+}
+function dropPark() { if (PARK) for (const q of PARK.sol) { const i = SOLIDS.indexOf(q); if (i >= 0) SOLIDS.splice(i, 1); } }
+function parkSol(m, x, y, z, h, car) {
+  if (car.ufo || car.heli) return [[x, z, 2.8, y + 2.5]]; const hl = Math.max(0.2, m.userData.halfLen - 0.95), sx = Math.sin(h), cz = Math.cos(h);
+  return [[x - sx * hl, z - cz * hl, 1.1, y + 1.8], [x + sx * hl, z + cz * hl, 1.1, y + 1.8]];
+}
+function getOut() {
+  if (CAR.foot || HP.dead > 0 || !started) return;
+  if (Math.hypot(P.vx, P.vz) > 4 || (P.y - P.gy > 2.6 && !P.onHC)) { toast('Stop and land first'); return; }
+  if (!walker) { walker = makeCar('walker', NET.color, false); scene.remove(walker); walker.rotation.set(0, 0, 0); }
+  if (auto) setAuto(false); setBeam(false);
+  const m = playerModel; playerMesh.remove(m); scene.add(m); m.position.set(P.x, P.y, P.z); m.rotation.order = 'YXZ'; m.rotation.set(P.pitch, P.heading, P.roll); m.visible = true;
+  if (m.userData.driver) m.userData.driver.visible = false; for (const f of flames) f.visible = false;
+  const sol = parkSol(m, P.x, P.y, P.z, P.heading, CAR); SOLIDS.push(...sol);
+  PARK = { car: CAR, model: m, x: P.x, y: P.y, z: P.z, heading: P.heading, pitch: P.pitch, roll: P.roll, sol, onHC: P.onHC, lx: hcLX(P.x, P.z), lz: hcLZ(P.x, P.z), dyaw: P.heading - HC.yaw };
+  const side = CAR.ufo || CAR.heli || CAR.plane ? 4.2 : 2.0; CAR = FOOTCAR; playerModel = walker; playerMesh.add(walker);
+  P.x -= Math.cos(P.heading) * side; P.z += Math.sin(P.heading) * side; P.vx = P.vy = P.vz = 0; P.air = false; P.drift = 0; P.hover = P.boosting = P.burn = false; P.pitch = P.roll = 0;
+  vehUI(); toast('On foot. Z gets you back in');
+}
+function getIn() {
+  if (RIDE) { const r = RIDE; RIDE = null; P.x += r.fz * -2.2; P.z += r.fx * 2.2; P.vx = P.vz = 0; vehUI(); toast('On foot'); return; }
+  if (PARK && Math.hypot(P.x - PARK.model.position.x, P.z - PARK.model.position.z) < 4.5 + PARK.model.userData.halfLen) {
+    const m = PARK.model; dropPark(); scene.remove(m); playerMesh.remove(walker); P.x = m.position.x; P.y = m.position.y; P.z = m.position.z; P.heading = m.rotation.y; P.pitch = PARK.pitch; P.roll = PARK.roll;
+    m.position.set(0, 0, 0); m.rotation.set(0, 0, 0); playerMesh.add(m); playerModel = m; if (m.userData.driver) m.userData.driver.visible = true;
+    CAR = PARK.car; P.vx = P.vy = P.vz = 0; P.onHC = false; P.grounded = true; PARK = null; vehUI(); toast(CAR.name); return;
+  }
+  let best = null, bd = 5.5; for (const r of NET.rem.values()) { if (!r.init || r.car.foot || r.pres.rd === 1) continue; const d = Math.hypot(r.pos.x - P.x, r.pos.z - P.z); if (d < bd && Math.abs(r.pos.y - P.y) < 3) { bd = d; best = r; } }
+  if (best) { RIDE = best; vehUI(); toast('Riding with ' + best.name + '. Z hops out'); return; }
+  toast(PARK ? 'Too far from your ' + PARK.car.name : 'Nothing to get into');
+}
+function toggleFoot() { if (!started) return; if (CAR.foot) getIn(); else getOut(); }
+function stepFoot(dt) {
+  if (RIDE) {                                        // passenger: carried by the other player's vehicle
+    const r = RIDE; if (!NET.rem.has(r.id) || r.car.foot) { getIn(); return; }
+    P.x = r.pos.x; P.y = r.pos.y; P.z = r.pos.z; P.heading = Math.atan2(-r.fx, -r.fz); P.vx = r.sv.x; P.vy = 0; P.vz = r.sv.z; P.vf = Math.hypot(r.sv.x, r.sv.z); P.gy = P.y; P.grounded = true; P.onHC = false; P.surf = 0; return;
+  }
+  P.heading -= inp.steer * 2.7 * dt;
+  const fx = -Math.sin(P.heading), fz = -Math.cos(P.heading), rx = Math.cos(P.heading), rz = -Math.sin(P.heading), sp = inp.boost ? 7.6 : 3.7, mv = inp.thr - inp.brk * 0.7, st = -inp.roll * 0.8, k = 1 - Math.exp(-12 * dt);
+  P.vx += ((fx * mv + rx * st) * sp - P.vx) * k; P.vz += ((fz * mv + rz * st) * sp - P.vz) * k;
+  P.x += P.vx * dt; P.z += P.vz * dt; P.vf = P.vx * fx + P.vz * fz; P.odo += Math.hypot(P.vx, P.vz) * dt;
+  staticHits();
+  for (let q = 0; q < SOLIDS.length; q++) { const o = SOLIDS[q], dx = P.x - o[0], dz = P.z - o[1], rr = o[2] + 0.4, d2 = dx * dx + dz * dz; if (d2 < rr * rr && d2 > 1e-4 && P.y < o[3]) { const d = Math.sqrt(d2); P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } }
+  for (const n of npcs) { if (!n.live) continue; const dx = P.x - n.x, dz = P.z - n.wz, rr = n.halfLen * 0.7 + 0.6, d2 = dx * dx + dz * dz; if (d2 < rr * rr && d2 > 1e-4 && Math.abs(P.y - n.y) < 2) { const d = Math.sqrt(d2); P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } }
+  let g = groundAt(P.x, P.z, P.y + 0.5); if (g < -1.0) g = -1.0;                                  // wades and swims, never drowns
+  P.vy -= 22 * dt; let ny = P.y + P.vy * dt;
+  if (ny <= g) { ny = g; P.vy = 0; P.grounded = true; if (inp.jump) { P.vy = 6.6; P.grounded = false; } } else P.grounded = ny - g < 0.1;
+  P.y = ny; P.gy = g; P.air = false; P.drift = P.slip = 0; P.surf = 1; P.waterT = 0;
+  { const now = P.grounded && Math.abs(P.y - HC.y) < 0.35 && onDeck(P.x, P.z); if (now && !P.onHC) { P.vx -= HC.vx; P.vz -= HC.vz; } else if (!now && P.onHC) { P.vx += HC.vx; P.vz += HC.vz; } P.onHC = now; }
+}
+/* vehicle health */
+function damage(d) {
+  if (CAR.foot || HP.dead > 0 || !started || !(d > 0)) return; HP.v -= d;
+  if (HP.v <= 0) { HP.v = 0; HP.dead = 10; setBeam(false); if (auto) setAuto(false); crashSound(1); toast('Wrecked'); }
+}
+function puffAt(x, y, z) { const m = puffs[puffI = (puffI + 1) % puffs.length]; m.position.set(x + (Math.random() - 0.5), y, z + (Math.random() - 0.5)); m.userData.life = 1.5; m.userData.big = 2; m.material.color.setHex(0x2b2b2b); m.visible = true; m.rotation.set(Math.random() * 3, Math.random() * 3, 0); }
+function wreckNpc(n) { n.hp = null; n.mode = 6; n.t = 8; n.speed = 0; n.wreck = true; n.spinOut = 0; n.marker.visible = false; if (held === n) held = null; crashSound(0.8); toast('Wrecked'); }
+function dmgNpc(n, d) {
+  if (n.mode === 6) return; if (n.hp == null) n.hp = n.type === 'truck' ? 180 : 100; n.hp -= d;
+  if (n.hp <= 0) wreckNpc(n); else if (n.mode === 0 || n.mode === 2 || n.mode === 3) aggro(n);
+}
+/* guns: hitscan with a little aim help, usable on foot or riding as a passenger */
+const tracers = []; for (let i = 0; i < 12; i++) { const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(new Float32Array(6), 3)); const l = new T.Line(g, new T.LineBasicMaterial({ color: 0xffe9a0, transparent: true, opacity: 0 })); l.frustumCulled = false; l.visible = false; l.userData.life = 0; scene.add(l); tracers.push(l); }
+let tracerI = 0, mfire = false;
+function setGun(i) { if (!CAR.foot) return; GUN.i = (i + GUNS.length) % GUNS.length; GUN.cool = Math.max(GUN.cool, 0.25); toast(GUNS[GUN.i].name); }
+function fireGun() {
+  if (!CAR.foot || GUN.cool > 0 || !started) return; const gn = GUNS[GUN.i]; GUN.cool = gn.rate; GUN.shots++;
+  const fx = -Math.sin(P.heading), fz = -Math.cos(P.heading), ox = P.x + fx * 0.5 + Math.cos(P.heading) * 0.3, oy = P.y + (RIDE ? 1.3 : 1.42), oz = P.z + fz * 0.5 - Math.sin(P.heading) * 0.3;
+  const tg = []; for (const n of npcs) if (n.live && n.mode !== 6) tg.push({ n, x: n.x, y: n.y + 0.85, z: n.wz, R: n.type === 'truck' ? 2.3 : 1.55 });
+  for (const r of NET.rem.values()) if (r.init && r !== RIDE && !r.car.foot && r.pres.rd !== 1) tg.push({ r, x: r.pred.x, y: r.pred.y + 0.85, z: r.pred.z, R: r.car.ufo || r.car.heli ? 2.6 : 1.6 });
+  let ax = fx, ay = 0, az = fz, bestA = 0.985;       // aim help: snap to a target within about 10 degrees of where you face
+  for (const t of tg) { const dx = t.x - ox, dy = t.y - oy, dz = t.z - oz, dh = Math.hypot(dx, dz), d = Math.hypot(dh, dy); if (d > gn.range || dh < 0.5) continue; const dot = (dx * fx + dz * fz) / dh; if (dot > bestA) { bestA = dot; ax = dx / d; ay = dy / d; az = dz / d; } }
+  for (let k = 0; k < gn.n; k++) {
+    const ya = (Math.random() - 0.5) * 2 * gn.spread, c = Math.cos(ya), sn = Math.sin(ya); let dx = ax * c - az * sn, dz = ax * sn + az * c, dy = ay + (Math.random() - 0.5) * 2 * gn.spread; const l = Math.hypot(dx, dy, dz); dx /= l; dy /= l; dz /= l;
+    let ht = gn.range, hit = null; for (const t of tg) { const cx = t.x - ox, cy = t.y - oy, cz = t.z - oz, tt = cx * dx + cy * dy + cz * dz; if (tt <= 0 || tt > ht) continue; if (cx * cx + cy * cy + cz * cz - tt * tt < t.R * t.R) { ht = tt; hit = t; } }
+    if (hit) { GUN.hits++; if (hit.n) dmgNpc(hit.n, gn.dmg); else { const was = NET.dm.get(hit.r.id) || 0; NET.dm.delete(hit.r.id); NET.dm.set(hit.r.id, was + gn.dmg); } puffAt(ox + dx * ht, oy + dy * ht, oz + dz * ht); }
+    const tr = tracers[tracerI = (tracerI + 1) % tracers.length], a = tr.geometry.attributes.position.array; a[0] = ox; a[1] = oy; a[2] = oz; a[3] = ox + dx * ht; a[4] = oy + dy * ht; a[5] = oz + dz * ht; tr.geometry.attributes.position.needsUpdate = true; tr.userData.life = 0.07; tr.visible = true;
+  }
+  shake = Math.min(1, shake + 0.04 + gn.dmg * 0.002);
+  if (AC && soundOn) { const t = AC.currentTime, src = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain(); src.buffer = noiseBuf; f.type = 'bandpass'; f.frequency.value = GUN.i === 2 ? 500 : GUN.i === 3 ? 900 : 1500; f.Q.value = 0.7; g.gain.setValueAtTime(GUN.i === 1 ? 0.22 : 0.4, t); g.gain.exponentialRampToValueAtTime(0.001, t + (GUN.i === 2 ? 0.3 : 0.14)); src.connect(f); f.connect(g); g.connect(master); src.start(t, Math.random()); src.stop(t + 0.32); }
+}
+/* first-person cockpit shown in place of the closed car body, and the gun in view on foot */
+const hoodMat = new T.MeshPhongMaterial({ color: 0xe2483a, specular: 0x555555, shininess: 40, side: T.DoubleSide });
+const cockpit = new T.Group(); cockpit.visible = false; scene.add(cockpit);
+{ const cb = new GB(), dk = C('#15171b'), dk2 = C('#24272c');
+  cb.box(-0.88, 0.88, 0.78, 1.0, -0.64, -0.3, dk); cb.box(-0.9, -0.86, 0.5, 1.0, -0.64, 0.9, dk2); cb.box(0.86, 0.9, 0.5, 1.0, -0.64, 0.9, dk2); cb.box(-0.76, 0.76, 1.43, 1.47, -0.1, 0.6, dk2);
+  for (const g of [-1, 1]) cb.hex([[g * 0.9, 1.0, -0.66], [g * 0.86, 1.0, -0.66], [g * 0.86, 1.0, -0.61], [g * 0.9, 1.0, -0.61], [g * 0.8, 1.45, -0.12], [g * 0.76, 1.45, -0.12], [g * 0.76, 1.45, -0.07], [g * 0.8, 1.45, -0.07]], dk2);
+  cb.box(-0.54, -0.3, 1.075, 1.095, -0.4, -0.38, dk2); cb.box(-0.54, -0.3, 0.9, 0.92, -0.4, -0.38, dk2); cb.box(-0.54, -0.52, 0.9, 1.095, -0.4, -0.38, dk2); cb.box(-0.32, -0.3, 0.9, 1.095, -0.4, -0.38, dk2); cb.box(-0.435, -0.405, 0.9, 1.0, -0.55, -0.38, dk);   // steering wheel, low in the view
+  cb.box(-0.56, -0.28, 1.0, 1.03, -0.62, -0.5, C('#3a4a5a')); cockpit.add(new T.Mesh(cb.geo(), carMat));
+  const hb = new T.Mesh(new T.BoxGeometry(1.8, 0.06, 1.6), hoodMat); hb.position.set(0, 0.86, -1.42); cockpit.add(hb); }
+scene.add(camera);
+const gunView = new T.Group(); gunView.visible = false; gunView.scale.setScalar(0.5); gunView.position.set(0.02, -0.02, -0.12); camera.add(gunView);
+{ const gb = new GB(); gb.box(0.17, 0.22, -0.2, -0.13, -0.62, -0.3, C('#16171a')); gb.box(0.175, 0.215, -0.3, -0.19, -0.38, -0.31, C('#16171a')); gb.box(0.15, 0.26, -0.36, -0.24, -0.4, -0.22, C('#7a5238')); gunView.add(new T.Mesh(gb.geo(), carMat)); }
+function footFrame(dt) {
+  if (GUN.cool > 0) GUN.cool -= dt;
+  if (CAR.foot && started && (keys.KeyX || touch.f || mfire)) fireGun();
+  for (const t of tracers) { if (!t.visible) continue; t.userData.life -= dt; if (t.userData.life <= 0) t.visible = false; else t.material.opacity = t.userData.life / 0.07; }
+  const fp = camMode === 2 && started, ck = fp && ((!CAR.foot && cockpitFor(CAR)) || (!!RIDE && cockpitFor(RIDE.car)));
+  playerModel.visible = CAR.foot ? !(fp || RIDE) : !(fp && cockpitFor(CAR));
+  if (playerModel.userData.driver) playerModel.userData.driver.visible = !fp;
+  cockpit.visible = !!ck; if (ck) { cockpit.position.copy(playerMesh.position); cockpit.quaternion.copy(playerMesh.quaternion); hoodMat.color.set((RIDE ? RIDE.car : CAR).color); }
+  gunView.visible = fp && !!CAR.foot;
+  if (PARK && PARK.onHC) { const m = PARK.model; m.position.set(hcWX(PARK.lx, PARK.lz), HC.y, hcWZ(PARK.lx, PARK.lz)); m.rotation.y = HC.yaw + PARK.dyaw; const s2 = parkSol(m, m.position.x, HC.y, m.position.z, m.rotation.y, PARK.car); PARK.sol.forEach((q, i) => { q[0] = s2[i][0]; q[1] = s2[i][1]; }); }
+  const w = $('wreck');
+  if (HP.dead > 0) { HP.dead -= dt; if (Math.random() < dt * 10) puffAt(P.x, P.y + 1.2, P.z); w.hidden = false; $('wreckT').textContent = 'Respawn in ' + Math.max(1, Math.ceil(HP.dead)); if (HP.dead <= 0) { HP.dead = 0; HP.v = HP.max; w.hidden = true; respawn(); } }
+  else if (!w.hidden) w.hidden = true;
+  if (CAR.foot) $('ammo').textContent = GUNS[GUN.i].name + ' ' + (GUN.i + 1) + '/4';
+  const hf = $('hpFill'), pc = HP.v / HP.max; hf.style.width = Math.round(pc * 100) + '%'; hf.style.background = pc < 0.3 ? '#e2483a' : pc < 0.6 ? '#ffc44d' : '#7ee04b';
+}
 const DTMAX = { v: 0.05 };
 /* ───────────── boot + main loop ───────────── */
 planChunks(P.x, P.z, true); updateRoads(P.z, true); booted = true;
@@ -2845,7 +3095,8 @@ function frame(now) {
 }
 function runFrame(now, dt, last0, draw) {
   time += dt;
-  readInput(dt); if (auto) autoInput();
+  readInput(dt); if (auto && !CAR.foot) autoInput();
+  if (HP.dead > 0) { inp.steer = inp.thr = inp.jump = inp.roll = inp.pitch = 0; inp.brk = 0; inp.hb = 1; inp.boost = CAR.heli || CAR.ufo ? 1 : 0; if (CAR.plane) P.throttle = 0; }   // wrecked: no control until the respawn
   if (coarse && started && prCap > 1 && !document.hidden) {   // phones: under about 25 fps for 3 s in a row, render at a lower resolution
     slowT = now - last0 > 40 && now - last0 < 500 ? slowT + (now - last0) : 0;
     if (slowT > 3000) { slowT = 0; prCap = Math.max(1, prCap - 0.25); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, prCap)); resize(); }
@@ -2853,7 +3104,10 @@ function runFrame(now, dt, last0, draw) {
   acc += dt; while (acc >= H_STEP) { stepPlayer(H_STEP); acc -= H_STEP; }
   updateNpcs(dt);
 
-  if (CAR.heli) {
+  if (CAR.foot) {
+    playerMesh.position.set(P.x, P.y, P.z); playerMesh.rotation.set(0, P.heading, 0);
+    const sp = RIDE ? 0 : Math.hypot(P.vx, P.vz); P.walkT = (P.walkT || 0) + sp * dt * 2.4; walkPose(playerModel, P.walkT, Math.min(1, sp / 3), true);
+  } else if (CAR.heli) {
     const kk = 1 - Math.exp(-dt * 4), fl = P.grounded ? 0 : 1, sl = P.vx * Math.cos(P.heading) - P.vz * Math.sin(P.heading);
     P.pitch += (clamp(-P.vf * 0.008, -0.34, 0.34) * fl - P.pitch) * kk; P.roll += (clamp(-sl * 0.012 - inp.steer * 0.2, -0.4, 0.4) * fl - P.roll) * kk;
     playerMesh.position.set(P.x, P.y, P.z); playerMesh.rotation.set(P.pitch, P.heading, P.roll);
@@ -2908,7 +3162,7 @@ function runFrame(now, dt, last0, draw) {
   }
 
   planChunks(P.x, P.z, false); pumpChunks(5); updateRoads(P.z, false);
-  updateSmoke(dt); updatePlaces(dt); updateBeam(); updateMissiles(dt); netUpdate(dt); netSend();
+  footFrame(dt); updateSmoke(dt); updatePlaces(dt); updateBeam(); updateMissiles(dt); netUpdate(dt); netSend();
   if (playerModel.userData.ice) playerModel.userData.ice.visible = P.frozenT > 0; else if (P.frozenT > 0) { const im = new T.Mesh(new T.BoxGeometry(2.6, 2, 5.2), iceMat); im.position.y = 1; playerModel.add(im); playerModel.userData.ice = im; }
   if (!respawning) {
     if (auto && Math.abs(P.z) > REND - 45) respawn(true);                                   // auto-drive turns round at the harbours
@@ -2925,14 +3179,14 @@ function runFrame(now, dt, last0, draw) {
     $('spd').textContent = Math.round(Math.abs(P.vf) * 3.6);
     const hw = hwAt(P.z), d1 = roadDX(P.z), lat = Math.abs(P.x - roadX(P.z)) / Math.sqrt(1 + d1 * d1);
     $('boostFill').style.width = P.fuel + '%';
-    if (touchMode) { $('tUB').setAttribute('aria-pressed', beamOn); $('stick').classList.toggle('x-only', !(CAR.plane || CAR.ufo || CAR.heli || (CAR.jet && P.air))); }
+    if (touchMode) { $('tUB').setAttribute('aria-pressed', beamOn); $('stick').classList.toggle('x-only', !(CAR.plane || CAR.ufo || CAR.heli || CAR.foot || (CAR.jet && P.air))); }
     if (CAR.plane) { $('thrLine').style.top = ((1 - P.throttle) * 50).toFixed(1) + '%'; $('thrPct').textContent = P.fwd > 0 ? 'Fwd ' + Math.round(P.fwd * 100) + '%' : P.rev > 0 ? 'Rev ' + Math.round(P.rev * 100) + '%' : 'Neutral'; $('gearTxt').textContent = P.gear > 0.95 ? 'Gear down' : P.gear < 0.05 ? 'Gear up' : 'Gear moving'; }
-    $('roadLabel').textContent = P.onHC ? 'Flight deck' : CAR.heli ? (P.grounded ? 'Landed' : 'Flying') : CAR.ufo ? 'Hovering' : CAR.plane && !P.air && P.gy <= FLOAT_Y + 0.01 ? 'On the water' : P.air && P.y > P.gy + 1.5 ? 'Airborne' : lat > halfOf(hw) + 1.5 ? (P.surf === 0 ? (inCity(P.x, P.z, 8) ? 'City street' : lap.near ? 'Speedway' : 'Paved') : P.surf < 1 ? 'Dirt trail' : 'Off road') : bridgeAt(P.z) > 0.5 ? 'Bridge' : hw > 0.5 ? 'Highway' : inCity(P.x, P.z, 8) ? 'Central Avenue' : 'Country road';
+    $('roadLabel').textContent = CAR.foot ? (RIDE ? 'Riding' : 'On foot') : P.onHC ? 'Flight deck' : CAR.heli ? (P.grounded ? 'Landed' : 'Flying') : CAR.ufo ? 'Hovering' : CAR.plane && !P.air && P.gy <= FLOAT_Y + 0.01 ? 'On the water' : P.air && P.y > P.gy + 1.5 ? 'Airborne' : lat > halfOf(hw) + 1.5 ? (P.surf === 0 ? (inCity(P.x, P.z, 8) ? 'City street' : lap.near ? 'Speedway' : 'Paved') : P.surf < 1 ? 'Dirt trail' : 'Off road') : bridgeAt(P.z) > 0.5 ? 'Bridge' : hw > 0.5 ? 'Highway' : inCity(P.x, P.z, 8) ? 'Central Avenue' : 'Country road';
     const m = Math.floor(tod * 1440); $('clock').textContent = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
     $('odo').textContent = (P.odo / 1000).toFixed(1) + ' km';
   }
 }
-window.__drive = { NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { tod = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
+window.__drive = { HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { tod = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
 requestAnimationFrame(frame);
 })();
 </script>

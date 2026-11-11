@@ -25,6 +25,13 @@ Opening the file directly with `file://` also works.
 - If PeerJS or its server can't be reached, the game still runs as a single-player game and shows `Offline`. Hover over
   the word to see the reason.
 
+## On foot and best laps
+
+- Press **Z** to get out of your vehicle and **Z** again near it to get back in (or near another player's vehicle to ride with them).
+  On foot: W S walk, A D turn, Q E strafe, Shift run, Space jump, **X** shoot, **1-4** pick a gun. There is a **Fullscreen** button on the top bar.
+- Your best laps on the speedway are saved in this browser (localStorage). In a room, each player's best lap is shared with the others
+  and shown on the Best laps board.
+
 ## Good to know
 
 - The connection uses public STUN servers from Google and Cloudflare, plus PeerJS's free public TURN relay. These are
