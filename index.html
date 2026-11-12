@@ -167,6 +167,25 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 @media (orientation:landscape) and (max-height:340px){
   .is-touch .lcol{max-height:calc(100vh - 160px);max-height:calc(100dvh - 160px)}
 }
+#servers{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,16,24,.72);cursor:pointer;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;z-index:30}
+#servers[hidden]{display:none}
+#svList{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+#svList button{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.07em;text-transform:uppercase;text-align:left;min-height:48px;
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;transition:border-color .15s,color .15s}
+#svList button:hover:not(:disabled){border-color:var(--amber);color:var(--amber)}
+#svList button span{font-size:14px;letter-spacing:.06em;color:var(--ink-dim)}
+#svList button.here{border-color:var(--amber)}
+#svList button.here span{color:var(--amber)}
+#svList button:disabled{opacity:.5;cursor:not-allowed}
+#svRef{margin-top:12px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 14px}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#srvBtn{font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:.1em;text-transform:uppercase;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:12px 22px;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .12s,border-color .15s}
+#srvBtn:hover{transform:translateY(-2px);border-color:var(--amber)}
+#roomNow{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim)}
+#roomNow b{color:var(--amber)}
+.is-touch #srvBtn{font-size:19px;padding:9px 18px}
 #start{position:fixed;inset:0;display:flex;align-items:flex-end;
   background:linear-gradient(to top,rgba(10,16,24,.9) 0%,rgba(10,16,24,.55) 45%,rgba(10,16,24,0) 78%);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
@@ -426,10 +445,12 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
     <h1>Driftless <em>Drive</em></h1>
     <p>One square island to explore: a harbour-to-harbour road, dirt trails, one big city of 400 blocks with every landmark inside it or on its edge, a harbour at each end of the avenue, and mountains beyond the city limits. Pick a car.</p>
     <div class="cars" id="cars" role="radiogroup" aria-label="Choose a car"></div>
-    <button id="go" type="button">Start driving</button>
+    <div class="srow"><button id="go" type="button">Start driving</button><button id="srvBtn" type="button">Servers</button></div>
+    <div id="roomNow"></div>
   </div>
 </div>
 <div id="travel" hidden><div class="tvin"><button id="tvClose" type="button" class="touch-only">Close</button><h2>Fast travel</h2><div id="tvList"></div><p>Debug menu. G or Esc closes it.</p></div></div>
+<div id="servers" hidden><div class="tvin"><button id="svClose" type="button" class="touch-only">Close</button><h2>Servers</h2><div id="svList"></div><p id="svNote">Public rooms that are always the same. Pick one and anyone else who picks it plays with you. Up to 8 players each.</p><button id="svRef" type="button">Refresh counts</button></div></div>
 <div id="map" hidden><div class="mapin"><canvas id="mapCanvas"></canvas><p id="mapNote"></p></div></div>
 <div id="xhair" hidden><i></i></div>
 <button id="shopP" type="button" hidden>Talk</button>
@@ -733,7 +754,36 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
     addEventListener('pagehide', () => r.shut());
     return { room: r.api };
   }
-  window.DDNet = Object.freeze({ join, roomFromHash, inviteLink, PEERJS_URL, MAX });
+  /* the six public servers: fixed room codes, so everyone who picks one lands in the same room without needing an invite link */
+  const SERVERS = Object.freeze([1, 2, 3, 4, 5, 6].map(n => Object.freeze({ code: 'srv' + n, name: 'Server ' + n })));
+  /* how many players are in each room right now: ask each room's introducer for its member list (it only hands the list out, nothing else changes).
+     Resolves { code: count } with 0 for an empty room and null when unknown. */
+  async function probe(codes, opts) {
+    opts = opts || {}; const out = {}; for (const c of codes) { const k = cleanCode(c); if (k) out[k] = null; }
+    const keys = Object.keys(out); if (!keys.length) return out;
+    if (!(await loadPeerJS(opts.libTimeout || 10000))) return out;
+    const Peer = window.Peer, peerOpts = Object.assign({ debug: 0, config: { iceServers: ICE } }, window.DD_PEER_OPTIONS || {});
+    const sf = f => { try { f(); } catch (e) { /* already closed */ } };
+    return new Promise(res => {
+      let p; try { p = new Peer(PREFIX + 'probe-' + rand(10), peerOpts); } catch (e) { res(out); return; }
+      let fin = false, left = keys.length; const settled = new Set();
+      const done = () => { if (fin) return; fin = true; clearTimeout(tm); sf(() => p.destroy()); res(out); };
+      const tm = setTimeout(done, opts.timeout || 15000);
+      const set = (code, n) => { if (settled.has(code)) return; settled.add(code); out[code] = n; if (opts.onResult) sf(() => opts.onResult(code, n)); if (--left <= 0) done(); };
+      p.on('error', e => {
+        if (e && e.type === 'peer-unavailable') { const m = /peer\s+(\S+)\s*$/.exec(String(e.message || '')), id = m && m[1]; for (const k of keys) if (id === PREFIX + k + '-host') set(k, 0); }   // nobody is hosting that room: empty
+        else done();
+      });
+      p.on('open', () => {
+        for (const k of keys) {
+          let c; try { c = p.connect(PREFIX + k + '-host', { label: 'i', reliable: true, serialization: 'json' }); } catch (e) { set(k, null); continue; }
+          c.on('data', d => { if (d && d.t === 'list' && Array.isArray(d.ids)) { set(k, Math.min(d.ids.length, 99)); sf(() => c.close()); } });
+          c.on('error', () => {});
+        }
+      });
+    });
+  }
+  window.DDNet = Object.freeze({ join, probe, SERVERS, roomFromHash, inviteLink, PEERJS_URL, MAX });
 })();
 </script>
 <script>
@@ -3869,11 +3919,40 @@ function netBeamPull(dt) {
   try { room.onConnection(up => { if (NET.room) stat(up ? 'Online' : 'Reconnecting', up ? 'on' : 'wait'); }, dead); } catch (e) { /* optional */ }
   const inpName = $('pname'); if (inpName) { inpName.value = NET.name; inpName.addEventListener('change', () => { NET.name = inpName.value.replace(/[^\w .\-]/g, '').slice(0, 16) || NET.name; inpName.value = NET.name; try { localStorage.setItem('dd-name', NET.name); } catch (e) { /* storage unavailable */ } inpName.blur(); }); }
   /* invite: the room code lives in the address (#room=code); this copies that link */
-  const rc = $('proom'); if (rc) rc.textContent = room.code;
+  const rc = $('proom'); if (rc) { const sv = window.DDNet.SERVERS.find(q => q.code === room.code); rc.textContent = sv ? sv.name : room.code; }
   const copy = txt => { try { if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt).then(() => true, () => copyOld(txt)); } catch (e) { /* fall through */ } return Promise.resolve(copyOld(txt)); };
   const copyOld = txt => { try { const ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;left:-9999px;top:0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok; } catch (e) { return false; } };
   const inv = $('pinv'); if (inv) inv.addEventListener('click', e => { const link = room.invite(); e.currentTarget.blur(); copy(link).then(ok => { if (ok) { toast('Invite link copied'); inv.textContent = 'Link copied'; setTimeout(() => { inv.textContent = 'Copy invite link'; }, 1600); } else { try { prompt('Copy this invite link', link); } catch (err) { toast('Room ' + room.code); } } }); });
   addEventListener('hashchange', () => { const m = /(?:^#|&)room=([^&]*)/.exec(location.hash || ''), c = m ? m[1].toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 24) : ''; if (c && c !== room.code) location.reload(); });   // pasted a different invite: join that room
+})();
+
+/* ───────────── servers: six public rooms with fixed codes ───────────── */
+(() => {
+  const D = window.DDNet, box = $('servers'), list = $('svList'), now = $('roomNow'); if (!D || !box || !list) return;
+  const cur = D.roomFromHash(), curSv = D.SERVERS.find(q => q.code === cur);
+  if (now) { now.textContent = ''; const t = document.createTextNode(curSv ? 'Playing on ' : 'Private room '); const b = document.createElement('b'); b.textContent = curSv ? curSv.name : cur; now.append(t, b); }
+  const rows = new Map();
+  for (const sv of D.SERVERS) {
+    const b = document.createElement('button'); b.type = 'button'; const n = document.createElement('i'); n.style.fontStyle = 'normal'; n.textContent = sv.name; const c = document.createElement('span'); c.textContent = '...';
+    b.append(n, c); if (sv.code === cur) { b.classList.add('here'); c.textContent = 'You are here'; }
+    b.addEventListener('click', e => { e.stopPropagation(); if (sv.code === cur) { open(false); return; } location.hash = 'room=' + sv.code; location.reload(); });   // switching rooms is a fresh join, so reload into the new one
+    list.appendChild(b); rows.set(sv.code, { b, c });
+  }
+  let busy = false, last = 0;
+  async function refresh() {
+    if (busy || Date.now() - last < 3000) return; busy = true; last = Date.now(); $('svRef').disabled = true;
+    for (const [code, r] of rows) if (code !== cur) r.c.textContent = '...';
+    const show = (code, n) => { const r = rows.get(code); if (!r || code === cur) return; r.b.disabled = typeof n === 'number' && n >= D.MAX; r.c.textContent = typeof n !== 'number' ? 'Unknown' : n >= D.MAX ? 'Full' : n === 0 ? 'Empty' : n + ' / ' + D.MAX; };
+    let res = {}; try { res = await D.probe(D.SERVERS.map(q => q.code), { onResult: show }); } catch (e) { res = {}; }
+    for (const q of D.SERVERS) show(q.code, res[q.code]);        // anything that never answered reads Unknown
+    busy = false; $('svRef').disabled = false;
+  }
+  function open(v) { box.hidden = !v; if (v) refresh(); }
+  $('srvBtn').addEventListener('click', e => { e.stopPropagation(); open(true); });
+  $('svRef').addEventListener('click', e => { e.stopPropagation(); refresh(); });
+  $('svClose').addEventListener('click', e => { e.stopPropagation(); open(false); });
+  box.addEventListener('click', e => { if (e.target === box) open(false); });
+  addEventListener('keydown', e => { if (e.code === 'Escape' && !box.hidden) { open(false); e.stopPropagation(); } }, true);
 })();
 
 /* ───────────── on foot, guns, vehicle health, first person ───────────── */
