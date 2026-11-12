@@ -651,8 +651,26 @@ const C = hex => { const c = new T.Color(hex); return [c.r, c.g, c.b]; };
 const wrapPi = a => { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; };
 
 /* ───────────── world definition (pure functions of x,z) ───────────── */
-const SX = (Math.random() * 6000) | 0, SZ = (Math.random() * 6000) | 0;   // terrain seed
+const SX = 1500, SZ = 3000;                                                // terrain seed: one island, the same for every player
 const HWL = 1400, RW0 = 1250, RW1 = 2150;
+/* The Moon is a second region in the same coordinate space, far off to the east, so positions (and multiplayer) need nothing special:
+   which world you are in is just a question of where you are. Vehicles with `space: true` cross over by climbing past MOON.ALT. */
+const MOON = { x: 24000, z: 0, R: 1700, base: 40, ALT: 520, EXIT: 620 }, GRAV = 22;
+const onMoon = x => x > 12000, gravAt = x => x > 12000 ? GRAV / 6 : GRAV, moonGrip = () => P.x > 12000 ? 0.55 : 1;
+function moonCrater(gx, gz, o) {                    // one crater per 240 m cell (three in four cells): [x, z, radius], relative to the Moon's centre
+  if (rnd2(gx * 7 + 3, gz * 13 + 5) > 0.75) return false; const q = rnd2(gx * 5 + 1, gz * 3 + 9);
+  o[0] = (gx + 0.25 + 0.5 * rnd2(gx * 3 + 1, gz * 5 + 2)) * 240; o[1] = (gz + 0.25 + 0.5 * rnd2(gx * 11 + 4, gz * 7 + 6)) * 240; o[2] = 20 + 72 * q * q; return true;
+}
+const _mc = [0, 0, 0];
+function moonH(x, z) {
+  const X = x - MOON.x, Z = z - MOON.z;
+  let h = MOON.base + perlin(X / 520 + 3.1, Z / 520 - 7.7) * 26 + perlin(X / 130 + 9, Z / 130 + 4) * 5 + perlin(X / 31, Z / 31 + 2) * 0.8;
+  const gx = Math.floor(X / 240), gz = Math.floor(Z / 240);
+  for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { if (!moonCrater(gx + i, gz + j, _mc)) continue; const r = _mc[2], d = Math.hypot(X - _mc[0], Z - _mc[1]) / r; if (d >= 1.6) continue;
+    h += d < 1 ? r * 0.06 * d * d - r * 0.2 * (1 - d * d) : r * 0.06 * (1 - (d - 1) / 0.6) * (1 - (d - 1) / 0.6); }                // bowl with a raised rim
+  { const sx = Math.floor(X / 48), sz = Math.floor(Z / 48), r = 3 + 7 * rnd2(sx * 3 + 8, sz * 7 + 1), cx = (sx + 0.3 + 0.4 * rnd2(sx, sz * 3 + 5)) * 48, cz = (sz + 0.3 + 0.4 * rnd2(sx * 5 + 2, sz)) * 48, d = Math.hypot(X - cx, Z - cz) / r; if (d < 1 && rnd2(sx + 77, sz + 31) < 0.5) h -= r * 0.16 * (1 - d * d) * (1 - d * d); }   // pockmarks
+  return mix(MOON.base + 1.5, h, sstep(70, 210, Math.hypot(X, Z)));                                  // a level landing site in the middle
+}
 const REND = 3200, ZLIM = 3260, XLIM = 3260;                             // the road runs harbour to harbour; the island ends just beyond
 const HXN = roadX(-REND), HXS = roadX(REND);
 const PADS = [], DECKS = [], PAVED = [], SOLIDS = [], BOXES = [];
@@ -758,11 +776,23 @@ const brI = i => 1 - sstep(yAt(i) - 8, yAt(i) - 5, gAt(i));
 function bridgeAt(z) { const f = z / RS, i = Math.floor(f); return mix(brI(i), brI(i + 1), f - i); }
 
 function terrainH(x, z, cell) {
+  if (x > 12000) return moonH(x, z);
   const d1 = roadDX(z), len2 = 1 + d1 * d1, lt = (x - roadX(z)) / Math.sqrt(len2), a = Math.abs(lt);
   let h = hNoRoad(x, z, a);
   for (let i = 0; i < PADS.length; i++) {
     const p = PADS[i], dz = z - p.z; if (dz > p.R || dz < -p.R) continue;
     const dx = x - p.x, d = Math.sqrt(dx * dx + dz * dz); if (d < p.R) h += (p.h - h) * (1 - sstep(p.r, p.R, d));
+  }
+  // Speedway earthworks: grade the oval and broad shoulders smoothly into the existing hills.
+  // The infield remains natural; both the inner and outer shoulders ease into the banked track plane.
+  if (RW) {
+    const dx = x - RW.x, dz = z - RW.z, off = ovalOff(dx, dz);
+    if (off > -155 && off < 175 && Math.abs(dx) < OV_R + 180 && Math.abs(dz) < OV_S + OV_R + 180) {
+      const slope = ovalBankSlope(dx, dz);
+      const trackY = RW.h + (off + 12) * slope;
+      const grade = off < -22 ? sstep(-155, -22, off) : off > 22 ? 1 - sstep(22, 175, off) : 1;
+      h += (trackY - h) * grade;
+    }
   }
   const flat = halfOf(hwAt(z)) + 1.5 + 0.6 * cell;
   if (a < flat + 30 && Math.abs(z) < REND + 12) {
@@ -792,6 +822,16 @@ function groundAt(x, z, y) {
   for (let i = 0; i < DECKS.length; i++) {
     const d = DECKS[i]; if (d.y <= g || y < d.y - 1.6) continue;
     if (d.r ? (x - d.cx) * (x - d.cx) + (z - d.cz) * (z - d.cz) < d.r * d.r : x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) g = d.y;
+  }
+  if (RW) {
+    const dx = x - RW.x, dz = z - RW.z;
+    if (Math.abs(dx) < OV_R + 24 && Math.abs(dz) < OV_S + OV_R + 24) {
+      const off = ovalOff(dx, dz);
+      if (Math.abs(off) < 12.5 && y > RW.h - 3) {
+        const bankY = RW.h + (off + 12) * ovalBankSlope(dx, dz);
+        if (bankY > g) g = bankY;
+      }
+    }
   }
   return g;
 }
@@ -944,6 +984,7 @@ const cSand = C('#d8c78c'), cBed = C('#6c7256'), cG1 = C('#8abb53'), cG2 = C('#5
 let _r = 0, _g = 0, _b = 0;
 const bl = (c, k) => { _r += (c[0] - _r) * k; _g += (c[1] - _g) * k; _b += (c[2] - _b) * k; };
 function tColor(x, z, h, sl, cell) {
+  if (x > 12000) { const X = x - MOON.x, Z = z - MOON.z, v = clamp(0.66 + perlin(X / 90, Z / 90) * 0.08 + perlin(X / 17, Z / 17) * 0.035 - sl * 0.24 - 0.13 * sstep(0.05, 0.45, perlin(X / 700 + 20, Z / 700)), 0.16, 0.8); _r = v * 0.98; _g = v * 0.98; _b = v * 1.01; return; }   // regolith: grey, darker on slopes and in the maria
   const X = x + SX, Z = z + SZ, v = perlin(X / 70 + 11, Z / 70) * 0.5 + 0.5;
   _r = mix(cG1[0], cG2[0], v); _g = mix(cG1[1], cG2[1], v); _b = mix(cG1[2], cG2[2], v);
   bl(cDry, 0.8 * sstep(0.05, 0.45, perlin(X / 1300 + 40, Z / 1300 + 8)));
@@ -1012,6 +1053,7 @@ function addRock(b, x, y, z, s, seed) {
   b.o = null;
 }
 function buildProps(cx, cz) {
+  if (cx * CH > 12000) return { mesh: null, trees: [] };       // nothing grows on the Moon
   const b = new GB(), trees = [], G = 16, sp = CH / G, x0 = cx * CH, z0 = cz * CH;
   for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) {
     const gx = cx * G + i, gz = cz * G + j, r1 = rnd2(gx, gz);
@@ -1020,7 +1062,10 @@ function buildProps(cx, cz) {
     const d1 = roadDX(z), a = Math.abs(x - roadX(z)) / Math.sqrt(1 + d1 * d1);
     if (a < halfOf(hwAt(z)) + 7 || trailDist(x, z) < 7.5) continue;
     let onPad = false; for (const q of PADS) if ((x - q.x) * (x - q.x) + (z - q.z) * (z - q.z) < (q.r + 4) * (q.r + 4)) { onPad = true; break; }
-    if (onPad || inCity(x, z, 14) || (Math.abs(x - RW.x) < 175 && Math.abs(z - RW.z) < 305) || (Math.abs(x - 1300) < 70 && Math.abs(z - 240) < 140)) continue;
+    // Keep all vegetation and rocks clear of the full oval, graded shoulders, and its access road.
+    const raceClear = RW && ovalOff(x - RW.x, z - RW.z) < 178;
+    const raceAccess = RW && Math.abs(z - RW.cz) < 18 && x > RW.x0 - 22 && x < RW.x1 + 18;
+    if (onPad || inCity(x, z, 14) || raceClear || raceAccess || (Math.abs(x - 1300) < 70 && Math.abs(z - 240) < 140)) continue;
     const h = terrainH(x, z, 5); if (h < 1.8 || h > 70) continue;
     if (Math.abs(terrainH(x + 3, z + 2, 5) - h) > 3.2) continue;
     const r4 = rnd2(gx + 37, gz + 59), s = 0.8 + r4 * 0.9, pick = (r4 * 97 | 0) % 3;
@@ -1317,8 +1362,9 @@ function gable(b, x0, x1, z0, z1, y, rise, col, wall) {       // ridge runs alon
 const flatQ = (B, x0, x1, z0, z1, y, col) => B.quad([x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1], col);
 
 /* speedway: a classic oval, two straights joined by two half-circle turns */
-const OV_S = 170, OV_R = 105, TH0 = 0; let RW = null;
+const OV_S = 340, OV_R = 230, TH0 = 0; let RW = null;
 const ovalOff = (dx, dz) => { const q = Math.abs(dz) - OV_S; return (q <= 0 ? Math.abs(dx) : Math.hypot(dx, q)) - OV_R; };   // signed distance from the racing line
+const ovalBankSlope = (dx, dz) => { const turnDepth = Math.abs(dz) - OV_S; return mix(Math.tan(5 * Math.PI / 180), Math.tan(17 * Math.PI / 180), sstep(-60, 110, turnDepth)); };   // banked like a superspeedway: 5° on the straights, easing up to 17° through the turns
 
 function bHarbour(p, b, ln, gl) {
   const s = Math.sign(p.z), y = p.h + 0.3, x = p.x, z = p.z;
@@ -1345,42 +1391,44 @@ function bHarbour(p, b, ln, gl) {
   b.box(x - 34, x - 22, ly, ly + 3.6, z - 5, z + 5, cCream); gable(b, x - 34, x - 22, z - 5, z + 5, ly + 3.6, 2.2, cBlue, cCream);
 }
 function bRaceway(p, b, ln, gl) {
-  const y = p.h + 0.07, pts = [], S = OV_S, R = OV_R, HW = 8, x = p.x, z = p.z;
-  const add = (lx, lz, nx, nz) => pts.push({ x: x + lx, z: z + lz, nx, nz });
-  for (let i = 0; i < 20; i++) add(R, -S + i / 20 * 2 * S, 1, 0);
-  for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI; add(R * Math.cos(a), S + R * Math.sin(a), Math.cos(a), Math.sin(a)); }
-  for (let i = 0; i < 20; i++) add(-R, S - i / 20 * 2 * S, -1, 0);
-  for (let i = 0; i <= 28; i++) { const a = Math.PI + i / 28 * Math.PI; add(R * Math.cos(a), -S + R * Math.sin(a), Math.cos(a), Math.sin(a)); }
+  const y = p.h + 0.07, pts = [], S = OV_S, R = OV_R, HW = 12, x = p.x, z = p.z;
+  const add = (lx, lz, nx, nz, banked) => pts.push({ x: x + lx, z: z + lz, nx, nz, banked: !!banked });
+  for (let i = 0; i < 40; i++) add(R, -S + i / 40 * 2 * S, 1, 0, false);
+  for (let i = 0; i < 64; i++) { const a = i / 64 * Math.PI; add(R * Math.cos(a), S + R * Math.sin(a), Math.cos(a), Math.sin(a), true); }
+  for (let i = 0; i < 40; i++) add(-R, S - i / 40 * 2 * S, -1, 0, false);
+  for (let i = 0; i <= 64; i++) { const a = Math.PI + i / 64 * Math.PI; add(R * Math.cos(a), -S + R * Math.sin(a), Math.cos(a), Math.sin(a), true); }
   RW = { x, z, h: p.h, cz: z, x0: 0, x1: 0, pts };
-  const at = (q, o, dy) => [q.x + q.nx * o, y + dy, q.z + q.nz * o];
+  const at = (q, o, dy) => [q.x + q.nx * o, y + dy + (o + HW) * ovalBankSlope(q.x - x, q.z - z), q.z + q.nz * o]; // continuous inward banking across the full lap
   for (let i = 0; i < pts.length - 1; i++) {
     const a = pts[i], c = pts[i + 1];
     b.quad(at(a, -HW, 0), at(a, HW, 0), at(c, HW, 0), at(c, -HW, 0), cAsphH, 1 + 0.04 * (i & 1));
     b.quad(at(a, -HW - 5, -0.02), at(a, -HW, -0.02), at(c, -HW, -0.02), at(c, -HW - 5, -0.02), cAsph, 1.25);              // inner apron
     ln.quad(at(a, -HW - 0.15, 0.02), at(a, -HW + 0.15, 0.02), at(c, -HW + 0.15, 0.02), at(c, -HW - 0.15, 0.02), cWhite);
     ln.quad(at(a, HW - 0.5, 0.02), at(a, HW - 0.2, 0.02), at(c, HW - 0.2, 0.02), at(c, HW - 0.5, 0.02), cYellow);
-    if (i < 20 && Math.abs((a.z + c.z) / 2 - z) < 9) continue;                                                          // gateway where the link road comes in
+    if (i < 40 && Math.abs((a.z + c.z) / 2 - z) < 9) continue;                                                          // gateway where the link road comes in
     b.quad(at(a, HW + 0.3, -0.5), at(a, HW + 0.3, 1.0), at(c, HW + 0.3, 1.0), at(c, HW + 0.3, -0.5), cHull);               // outer wall
     b.quad(at(a, HW + 0.3, 1.0), at(a, HW + 0.7, 1.0), at(c, HW + 0.7, 1.0), at(c, HW + 0.3, 1.0), cConc);
     b.quad(at(a, HW + 0.7, -0.5), at(a, HW + 0.7, 1.0), at(c, HW + 0.7, 1.0), at(c, HW + 0.7, -0.5), cConcD);
   }
-  for (let k = 0; k < 16; k++) flatQ(ln, x + R - HW + k, x + R - HW + k + 1, z - 0.9, z + 0.9, y + 0.03, (k & 1) ? cRed : cWhite);   // start/finish, a yard of bricks
-  for (const g of [-1, 1]) b.box(x + R + g * (HW + 1.2) - 0.3, x + R + g * (HW + 1.2) + 0.3, p.h - 0.5, p.h + 7, z - 0.3, z + 0.3, cDark);
-  b.box(x + R - HW - 1.5, x + R + HW + 1.5, p.h + 6, p.h + 7.1, z - 0.4, z + 0.4, cRed); b.box(x + R - HW + 1, x + R + HW - 1, p.h + 6.25, p.h + 6.85, z - 0.45, z + 0.45, cWhite);
-  for (const zc of [-95, 95]) {                                                                                         // grandstands outside the far straight
-    for (let k = 0; k < 5; k++) b.box(x - R - 14 - (k + 1) * 2.6, x - R - 14 - k * 2.6, p.h - 0.5, p.h + 1.5 + k * 1.5, z + zc - 70, z + zc + 70, k & 1 ? cConc : cSteelL);
-    b.box(x - R - 30, x - R - 15, p.h + 11, p.h + 11.4, z + zc - 72, z + zc + 72, cRed);
-    for (let e = -70; e <= 70; e += 35) b.box(x - R - 28.2, x - R - 27.6, p.h, p.h + 11, z + zc + e - 0.3, z + zc + e + 0.3, cDark);
+  { const sl = ovalBankSlope(R, 0), yb = o => y + 0.04 + (o + HW) * sl;                              // start/finish: a chequered band laid on the banking
+    for (let k = 0; k < 24; k++) for (let r2 = 0; r2 < 2; r2++) { const o = -HW + k, z0 = z - 1 + r2; ln.quad([x + R + o, yb(o), z0], [x + R + o, yb(o), z0 + 1], [x + R + o + 1, yb(o + 1), z0 + 1], [x + R + o + 1, yb(o + 1), z0], (k + r2) & 1 ? cDark : cWhite); }
+    for (let g2 = 0; g2 < 4; g2++) for (let c2 = 0; c2 < 2; c2++) { const o = -HW + 3 + g2 * 5.6 + (c2 ? 0 : 0), zz = z + 8 + g2 * 0 + c2 * 9 + (g2 & 1 ? 4.5 : 0); ln.quad([x + R + o, yb(o), zz], [x + R + o, yb(o), zz + 0.25], [x + R + o + 2.2, yb(o + 2.2), zz + 0.25], [x + R + o + 2.2, yb(o + 2.2), zz], cWhite); } }   // eight grid slots behind the line
+  for (const g of [-1, 1]) b.box(x + R + g * (HW + 1.2) - 0.3, x + R + g * (HW + 1.2) + 0.3, p.h - 0.5, p.h + 10.5, z - 0.3, z + 0.3, cDark);
+  b.box(x + R - HW - 1.5, x + R + HW + 1.5, p.h + 9.4, p.h + 10.6, z - 0.4, z + 0.4, cRed); b.box(x + R - HW + 1, x + R + HW - 1, p.h + 9.65, p.h + 10.35, z - 0.45, z + 0.45, cWhite);
+  for (const zc of [-S * 0.58, S * 0.58]) {                                                                                         // grandstands outside the far straight
+    for (let k = 0; k < 5; k++) b.box(x - R - 14 - (k + 1) * 2.6, x - R - 14 - k * 2.6, p.h - 0.5, p.h + 1.5 + k * 1.5, z + zc - S * 0.38, z + zc + S * 0.38, k & 1 ? cConc : cSteelL);
+    b.box(x - R - 30, x - R - 15, p.h + 11, p.h + 11.4, z + zc - S * 0.39, z + zc + S * 0.39, cRed);
+    for (let e = -70; e <= 70; e += 35) b.box(x - R - 28.2, x - R - 27.6, p.h, p.h + 11, z + zc + e * (S * 0.38 / 70) - 0.3, z + zc + e * (S * 0.38 / 70) + 0.3, cDark);
   }
-  flatQ(b, x + R - 26, x + R - 15, z - 130, z + 130, y - 0.01, cAsph); PAVED.push({ x0: x + R - 26, x1: x + R - 13, z0: z - 130, z1: z + 130 });   // pit lane
+  flatQ(b, x + R - 26, x + R - 15, z - S * 0.8, z + S * 0.8, y - 0.01, cAsph); PAVED.push({ x0: x + R - 26, x1: x + R - 13, z0: z - S * 0.8, z1: z + S * 0.8 });   // pit lane
   b.box(x + R - 40, x + R - 30, p.h - 0.5, p.h + 3.6, z - 70, z + 70, cCream); b.box(x + R - 41, x + R - 29, p.h + 3.6, p.h + 4, z - 71, z + 71, cDark); b.box(x + R - 30.05, x + R - 29.95, p.h + 0.4, p.h + 2.8, z - 66, z + 66, cGlass);
   b.box(x - 1.2, x + 1.2, p.h - 0.5, p.h + 26, z - 1.2, z + 1.2, cDark); for (let k = 0; k < 8; k++) gl.box(x - 1.3, x + 1.3, p.h + 4 + k * 2.6, p.h + 5.6 + k * 2.6, z - 0.9, z + 0.9, cWhite);     // scoring pylon
-  SOLIDS.push([x, z, 1.8, p.h + 26], [x + R + HW + 1.2, z, 0.45, p.h + 7], [x + R - HW - 1.2, z, 0.45, p.h + 7]);
+  SOLIDS.push([x, z, 1.8, p.h + 26], [x + R + HW + 1.2, z, 0.45, p.h + 10.5], [x + R - HW - 1.2, z, 0.45, p.h + 10.5]);
   for (const gx of [-1, 1]) for (const gz of [-1, 1]) { const tx = x + gx * (R + 24), tz = z + gz * (S + 70); b.box(tx - 0.35, tx + 0.35, p.h - 0.5, p.h + 30, tz - 0.35, tz + 0.35, cSteel); b.box(tx - 3, tx + 3, p.h + 28, p.h + 31, tz - 0.5, tz + 0.5, cDark); gl.box(tx - 2.7, tx + 2.7, p.h + 28.3, p.h + 30.7, tz - gz * 0.56 - 0.05, tz - gz * 0.56 + 0.05, cWhite); SOLIDS.push([tx, tz, 0.6, p.h + 30]); }   // floodlights
   for (let k = 0; k < 6; k++) { const fz2 = z - 60 + k * 24, fx2 = x + R - 43; b.box(fx2 - 0.08, fx2 + 0.08, p.h + 4, p.h + 9, fz2 - 0.08, fz2 + 0.08, cDark); b.box(fx2 - 0.03, fx2 + 0.03, p.h + 7.8, p.h + 8.9, fz2, fz2 + 1.7, [cRed, cHull, cYellow][k % 3]); }   // pit-lane flags
-  BOXES.push([x + R - 40, x + R - 30, z - 70, z + 70, p.h + 4], [x - R - 30, x - R - 14, z - 167, z - 23, p.h + 11.4], [x - R - 30, x - R - 14, z + 23, z + 167, p.h + 11.4]);
+  BOXES.push([x + R - 40, x + R - 30, z - 70, z + 70, p.h + 4], [x - R - 30, x - R - 14, z - S * 0.97, z - S * 0.19, p.h + 11.4], [x - R - 30, x - R - 14, z + S * 0.19, z + S * 0.97, p.h + 11.4]);
   /* link road */
-  const xa = x + R + HW, xb = -CITY.E - 7; RW.x0 = xa; RW.x1 = xb;       // short link to the city's west edge street
+  const xa = x + R + HW, xb = -CITY.E - 7; RW.x0 = xa; RW.x1 = xb;       // short access link to the city's west edge
   let pv = null;
   for (let xx0 = xa; xx0 <= xb + 3; xx0 += 3) { const xx = Math.min(xx0, xb), yy = Math.max(terrainH(xx, z, 5), terrainH(xx, z - 4, 5), terrainH(xx, z + 4, 5)) + 0.16; if (pv) b.quad([pv[0], pv[1], z - 4], [pv[0], pv[1], z + 4], [xx, yy, z + 4], [xx, yy, z - 4], cAsph); pv = [xx, yy]; }
 }
@@ -1753,8 +1801,8 @@ function updateHeld(n, dt) {                        // mode 4 held in the beam, 
     if (!beamOn || !CAR.ufo || held !== n) { n.mode = 5; n.vyF = 0; if (held === n) held = null; }
     else { const k = 1 - Math.exp(-4 * dt); n.x += (P.x - n.x) * k; n.wz += (P.z - n.wz) * k; n.y += (P.y - 4.6 - n.halfLen * 0.2 - n.y) * k; n.yaw += dt * 0.7; n.speed = 0; }
   } else if (n.mode === 5) {
-    n.vyF -= 22 * dt; n.y += n.vyF * dt; const g = Math.max(groundAt(n.x, n.wz, n.y), -1);
-    if (n.y <= g) { n.y = g; if (n.city || g < -0.4 || Math.abs(n.wz) > REND - 30) { n.mode = 6; n.t = 1.6; } else { n.mode = 2; n.speed = 0; n.stun = 0.9; n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = 0; } }
+    n.vyF -= gravAt(n.x) * dt; n.y += n.vyF * dt; const g = Math.max(groundAt(n.x, n.wz, n.y), -1);
+    if (n.y <= g) { n.y = g; if (g < -0.4) { n.mode = 6; n.t = 1.6; } else { n.mode = 2; n.speed = 0; n.stun = 0.9; n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = 0; } }
   } else { n.t -= dt; if (n.wreck && Math.random() < dt * 9) puffAt(n.x, n.y + 1.1, n.wz); if (n.t <= 0) { n.live = false; n.mode = 0; n.wreck = false; n.mesh.visible = false; return; } }
   n.z = n.wz; n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(n.mode === 4 ? Math.sin(sigT * 1.7) * 0.08 : 0, n.yaw, n.mode === 4 ? Math.cos(sigT * 1.3) * 0.08 : 0);
 }
@@ -1766,7 +1814,7 @@ function updateBeam() {
 }
 const sigAt = t => { t %= 16; return t < 6 ? 2 : t < 8 ? 1 : 0; }, sigNS = () => sigAt(sigT), sigEW = () => sigAt(sigT + 8);
 function updateSignals(dt) {
-  sigT += dt; const a = sigNS(), b = sigEW();
+  sigT = (NET.now() / 1000) % 1600; const a = sigNS(), b = sigEW();   // the lights run off the shared clock, so every player sees the same phase
   for (let k = 0; k < 3; k++) { SIGMAT[k].color.setHex(2 - k === a ? SIGON[k] : SIGOFF[k]); SIGMAT[3 + k].color.setHex(2 - k === b ? SIGON[k] : SIGOFF[k]); }
 }
 /* how fast a car may go given the light at the junction ahead: d = metres to the stop line */
@@ -1776,7 +1824,7 @@ const POI = [];
   const defs = [                                   // id, name, placement, where, find radius, builder
     ['harbourN', 'North Harbour', 'road', -REND, 46, bHarbour], ['windmills', 'Windmill Hill', 'abs', -2300, 45, bWindmills],
     ['diner', 'Halfway Diner', 'blk', 0, 45, bDiner], ['observatory', 'City Observatory', 'blk', 0, 45, bObservatory],
-    ['raceway', 'Driftless Speedway', 'fix', [-1358, -240], 190, bRaceway], ['city', 'Downtown', 'blk', 0, 55, bCity],
+    ['raceway', 'Driftless Speedway', 'fix', [-1500, -240], 230, bRaceway], ['city', 'Downtown', 'blk', 0, 55, bCity],
     ['dealer', 'XJet Dealership', 'blk', 0, 45, bDealer], ['lookout', 'Fire Lookout', 'blk', 0, 45, bLookout],
     ['airfield', 'City Airfield', 'fix', [1300, 240], 110, bAirfield], ['trap', 'The Trap', 'blk', 0, 45, bTrap],
     ['barn', 'Old Red Barn', 'blk', 0, 45, bBarn], ['carrier', 'Helicarrier', 'air', [0, 0], 230, bCarrier], ['harbourS', 'South Harbour', 'road', REND, 46, bHarbour]
@@ -1785,7 +1833,7 @@ const POI = [];
   for (const [id, name, kind, a, r, build] of defs) {
     let q = kind === 'road' ? [roadX(a), a] : kind === 'blk' ? blkC(CITY_RES[id]) : a;
     if (kind === 'abs') { let bz = 0, bd = 1e9; for (let z = -500; z <= 900; z += 3) { const d = trailDist(a, z); if (d < bd) { bd = d; bz = z; } } q = [a, bz + 66]; }   // just off the trail through the pass
-    POI.push({ id, name, kind, x: q[0], z: q[1], r, build, h: kind === 'road' ? roadY(a) - 0.3 : kind === 'blk' ? CITY.y + 0.18 : kind === 'abs' ? Math.max(terrainH(q[0], q[1], 5), 6) : CITYH, found: found.includes(id), grp: new T.Group(), always: id === 'city' || kind === 'air', minY: kind === 'air' ? HC.y - 40 : -1e9 });
+    POI.push({ id, name, kind, x: q[0], z: q[1], r, build, h: kind === 'road' ? roadY(a) - 0.3 : kind === 'blk' ? CITY.y + 0.18 : kind === 'abs' ? Math.max(terrainH(q[0], q[1], 5), 6) : id === 'raceway' ? terrainH(q[0], q[1], 5) : CITYH, found: found.includes(id), grp: new T.Group(), always: id === 'city' || kind === 'air', minY: kind === 'air' ? HC.y - 40 : -1e9 });
   }
   for (const p of POI) if (p.kind === 'road' || p.kind === 'abs') PADS.push({ x: p.x, z: p.z, r: p.r, R: p.r + 40, h: p.h });      // only the harbours need levelling
   for (const p of POI) {
@@ -1801,7 +1849,7 @@ function paved(x, z) {
   if (P.y > HC.y - 2 && onDeck(x, z)) return true;
   for (const d of DECKS) if (d.r ? (x - d.cx) * (x - d.cx) + (z - d.cz) * (z - d.cz) < d.r * d.r : x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return true;
   for (const d of PAVED) if (x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return true;
-  if (Math.abs(ovalOff(x - RW.x, z - RW.z)) < 8.3) return true;
+  if (Math.abs(ovalOff(x - RW.x, z - RW.z)) < 12.3) return true;
   if (inCity(x, z, 8)) return true;
   return Math.abs(z - RW.cz) < 4.2 && x > RW.x0 - 8 && x < RW.x1 + 1;
 }
@@ -1844,10 +1892,10 @@ function lbSubmit(t) {
 const fmtLap = t => t ? Math.floor(t / 60) + ':' + (t % 60).toFixed(2).padStart(5, '0') : '–:––';
 function updateLap(dt) {
   const dx = P.x - RW.x, dz = P.z - RW.z, d = Math.hypot(dx, dz);
-  lap.near = d < 400;
-  if (d > 360) { lap.on = false; lap.sec = -1; return; }
+  const oo = ovalOff(dx, dz); lap.near = oo < 90;
+  if (oo > 60) { lap.on = false; lap.sec = -1; return; }
   const th = Math.atan2(dz, dx);
-  if (Math.abs(ovalOff(dx, dz)) < 8.6 && P.y < RW.h + 2.5 && !CAR.plane && !CAR.heli && !CAR.ufo) {   // laps only count on the tarmac, on wheels
+  if (Math.abs(oo) < 12.6 && P.y < RW.h + 10 && !CAR.plane && !CAR.heli && !CAR.ufo) {   // laps only count on the tarmac, on wheels
     const sec = Math.floor(((((th - TH0) % TAU) + TAU) % TAU) / (TAU / 3));
     if (lap.sec >= 0 && sec !== lap.sec) {
       lap.prog += (sec - lap.sec + 3) % 3 === 1 ? 1 : -1;
@@ -1889,7 +1937,20 @@ function pumpMap(ms) {
 const mapRoad = [], mapTrails = [];
 for (let z = -REND; z <= REND; z += 40) mapRoad.push([mpx(roadX(z)), mpy(z), hwAt(z) > 0.5]);
 for (let k = -5; k <= 5; k++) { let pts = [], ph = rnd2(k, 211) * 6.283; for (let x = -XLIM; x <= XLIM; x += 40) { const z = k * TRL + TRC + 0.7 * x + 140 * Math.sin(x / 310 + ph) + 50 * Math.sin(x / 113 + ph * 1.7); if (Math.abs(z) < ZLIM - 40 && terrainH(x, z, 5) > 0.5 && !inCity(x, z, 10)) pts.push([mpx(x), mpy(z)]); else { if (pts.length > 1) mapTrails.push(pts); pts = []; } } if (pts.length > 1) mapTrails.push(pts); }
+function drawMoonMap(g, k, labels) {                   // the space map: the Moon's playable square, its craters and the landing site
+  const cx = mpx(MOON.x), cy = mpy(MOON.z), R = MOON.R / MS, o = [0, 0, 0], N = Math.ceil(MOON.R / 240);
+  g.fillStyle = '#04060a'; g.fillRect(cx - 6 * R, cy - 6 * R, 12 * R, 12 * R); g.fillStyle = '#8b8d92'; g.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+  g.save(); g.beginPath(); g.rect(cx - R, cy - R, 2 * R, 2 * R); g.clip();
+  for (let j = -N - 1; j <= N; j++) for (let i = -N - 1; i <= N; i++) { if (!moonCrater(i, j, o)) continue; const X = cx + o[0] / MS, Y = cy + o[1] / MS, r = o[2] / MS; g.beginPath(); g.arc(X, Y, r, 0, TAU); g.fillStyle = '#6f7176'; g.fill(); g.lineWidth = Math.max(0.5 / k, r * 0.16); g.strokeStyle = '#b3b5ba'; g.stroke(); }
+  g.restore(); g.lineWidth = 2 / k; g.strokeStyle = '#f6f2e4'; g.strokeRect(cx - R, cy - R, 2 * R, 2 * R);
+  g.font = '600 ' + 13 / k + 'px ' + getComputedStyle(document.body).getPropertyValue('--display'); g.textBaseline = 'middle';
+  g.beginPath(); g.arc(cx + 26 / MS, cy - 22 / MS, 4.5 / k, 0, TAU); g.fillStyle = '#ffc44d'; g.fill(); g.lineWidth = 1.5 / k; g.strokeStyle = '#1b2a38'; g.stroke(); if (labels) { g.fillStyle = '#ffc44d'; g.fillText('LANDING SITE', cx + 26 / MS + 8 / k, cy - 22 / MS); }
+  for (const r of NET.rem.values()) { if (!r.init || !onMoon(r.pos.x)) continue; g.beginPath(); g.arc(mpx(r.pos.x), mpy(r.pos.z), 4.5 / k, 0, TAU); g.fillStyle = r.color; g.fill(); g.lineWidth = 1.3 / k; g.strokeStyle = '#0e161e'; g.stroke(); if (labels) { g.fillStyle = r.color; g.fillText(r.name, mpx(r.pos.x) + 7 / k, mpy(r.pos.z)); } }
+  g.save(); g.translate(mpx(P.x), mpy(P.z)); g.rotate(-P.heading); g.beginPath(); g.moveTo(0, -8 / k); g.lineTo(5 / k, 5 / k); g.lineTo(0, 2.5 / k); g.lineTo(-5 / k, 5 / k); g.closePath();
+  g.fillStyle = NET.room ? NET.color : '#e2483a'; g.fill(); g.lineWidth = 1.5 / k; g.strokeStyle = '#fff'; g.stroke(); g.restore();
+}
 function drawMap(g, k, labels) {                       // g is already scaled so one unit is one map pixel; k = screen px per map px
+  if (onMoon(P.x)) return drawMoonMap(g, k, labels);
   g.imageSmoothingEnabled = true; g.drawImage(mapCv, 0, 0);
   g.lineJoin = g.lineCap = 'round';
   g.strokeStyle = '#8a5f35'; g.lineWidth = 1.6 / k; g.setLineDash([5 / k, 4 / k]);
@@ -1915,7 +1976,7 @@ function drawMap(g, k, labels) {                       // g is already scaled so
     if (labels) { const up = i & 1, tx = p.name.toUpperCase(), w = g.measureText(tx).width, lx = clamp(X - w / 2, 2 / k, MW - w - 2 / k), ly = Y + (up ? -15 : 16) / k;
       g.fillStyle = 'rgba(14,22,30,.72)'; g.fillRect(lx - 4 / k, ly - 8 / k, w + 8 / k, 16 / k); g.fillStyle = p.found ? '#ffc44d' : '#f6f2e4'; g.fillText(tx, lx, ly); }
   });
-  for (const r of NET.rem.values()) { if (!r.init) continue; g.beginPath(); g.arc(mpx(r.pos.x), mpy(r.pos.z), 4.5 / k, 0, TAU); g.fillStyle = r.color; g.fill(); g.lineWidth = 1.3 / k; g.strokeStyle = '#0e161e'; g.stroke(); if (labels) { g.fillStyle = r.color; g.fillText(r.name, mpx(r.pos.x) + 7 / k, mpy(r.pos.z)); } }
+  for (const r of NET.rem.values()) { if (!r.init || onMoon(r.pos.x)) continue; g.beginPath(); g.arc(mpx(r.pos.x), mpy(r.pos.z), 4.5 / k, 0, TAU); g.fillStyle = r.color; g.fill(); g.lineWidth = 1.3 / k; g.strokeStyle = '#0e161e'; g.stroke(); if (labels) { g.fillStyle = r.color; g.fillText(r.name, mpx(r.pos.x) + 7 / k, mpy(r.pos.z)); } }
   g.save(); g.translate(mpx(P.x), mpy(P.z)); g.rotate(-P.heading); g.beginPath(); g.moveTo(0, -8 / k); g.lineTo(5 / k, 5 / k); g.lineTo(0, 2.5 / k); g.lineTo(-5 / k, 5 / k); g.closePath();
   g.fillStyle = NET.room ? NET.color : '#e2483a'; g.fill(); g.lineWidth = 1.5 / k; g.strokeStyle = '#fff'; g.stroke(); g.restore();
 }
@@ -1924,7 +1985,9 @@ const BK = 900 / MW; bigCv.width = 900; bigCv.height = Math.round(MH * BK);
 let mapOpen = false, placeT = 0;
 function toggleMap(v) { mapOpen = v === undefined ? !mapOpen : v; $('map').hidden = !mapOpen; if (mapOpen) drawBig(); }
 function drawBig() {
-  bigG.setTransform(BK, 0, 0, BK, 0, 0); drawMap(bigG, BK, true);
+  bigG.setTransform(BK, 0, 0, BK, 0, 0);
+  if (onMoon(P.x)) { const sc = MXW / (MOON.R + 160); bigG.translate(MW / 2, MH / 2); bigG.scale(sc, sc); bigG.translate(-mpx(MOON.x), -mpy(MOON.z)); drawMap(bigG, BK * sc, true); $('mapNote').textContent = 'The Moon · Climb past ' + MOON.EXIT + ' m in the saucer to fly home · M or Esc closes the map'; return; }
+  drawMap(bigG, BK, true);
   $('mapNote').textContent = POI.filter(p => p.found).length + ' of ' + POI.length + ' places found · Best lap ' + fmtLap(lap.best) + ' · M or Esc closes the map';
 }
 $('map').addEventListener('click', () => toggleMap(false));
@@ -1947,6 +2010,7 @@ function travelTo(p) {
 let travelOpen = false;
 function toggleTravel(v) { travelOpen = v === undefined ? !travelOpen : v; $('travel').hidden = !travelOpen; }
 for (const p of POI) { const el = document.createElement('button'); el.type = 'button'; el.textContent = p.name; el.addEventListener('click', e => { e.stopPropagation(); travelTo(p); }); $('tvList').appendChild(el); }
+{ const el = document.createElement('button'); el.type = 'button'; el.textContent = 'The Moon'; el.addEventListener('click', e => { e.stopPropagation(); if (auto) setAuto(false); teleport(MOON.x + 40, MOON.z + 40, 0); toggleTravel(false); toast('The Moon. One sixth gravity'); }); $('tvList').appendChild(el); }
 $('travel').addEventListener('click', () => toggleTravel(false));
 $('bTravel').addEventListener('click', e => { toggleTravel(); e.currentTarget.blur(); });
 function updatePlaces(dt) {
@@ -1989,11 +2053,12 @@ const CARS = [
   { id: 'hound', name: 'Hellhound', type: 'muscle', color: '#101114', accel: 19, vmax: 78, grip: 8.6, driftGrip: 0.9, offDrag: 0.6, mass: 1.25, blick: true, burn: true, secret: true, blurb: 'Black widebody, red inside. Fires El Blick. Hold gas and brake to light the tyres.' },
   { id: 'plane', name: 'Light Aircraft', type: 'plane', color: '#f1f1ec', accel: 6, vmax: 50, grip: 8, driftGrip: 2.2, offDrag: 0.25, mass: 0.8, plane: true, secret: true, blurb: 'Push the throttle up with the arrow keys. It flies itself off the runway at 95 km/h.' },
   { id: 'heli', name: 'Helicopter', type: 'heli', color: '#2f5f8f', accel: 13, vmax: 60, grip: 9, driftGrip: 2, offDrag: 0, mass: 1.2, heli: true, secret: true, blurb: 'Hovers and lands anywhere. Carries lock-on freeze missiles.' },
-  { id: 'ufo', name: 'Saucer', type: 'ufo', color: '#aeb6bd', accel: 15, vmax: 72, grip: 10.5, driftGrip: 2, offDrag: 0, mass: 0.6, ufo: true, secret: true, blurb: 'Hovers over everything. Not from round here.' },
+  { id: 'ufo', name: 'Saucer', type: 'ufo', color: '#aeb6bd', accel: 15, vmax: 72, grip: 10.5, driftGrip: 2, offDrag: 0, mass: 0.6, ufo: true, space: true, secret: true, blurb: 'Hovers over everything. Not from round here.' },
   { id: 'jet', name: 'Jet Roadster', type: 'roadster', color: '#eef1f4', accel: 17, vmax: 72, grip: 10.5, driftGrip: 1.1, offDrag: 0.45, mass: 1, jet: true, secret: true, blurb: 'Rear jet, four corner jets, full control in the air.' }
 ];
 const gearMat = new T.MeshPhongMaterial({ color: 0x9aa3ab, specular: 0x333333, shininess: 30 });
 const GEAR = { ny: 1.15, nz: -2.3, nl: 0.85, hx: 0.55, hy: 0.9, mz: 0.2, ml: Math.hypot(0.75, 0.56), a0: Math.atan2(-0.56, 0.75) };
+const HULL = { c: [], own: [0], W: 0.95, L: 2.2, sum: 1.95, k2: 2, rot: false }, _hn = [0, 0, 0]; let _q = null, _c = [0, 0, 0];
 let PARK = null, RIDE = null, walker = null, HITR = 1.1; const AIM = { yaw: 0, pitch: 0 }, PH = { v: 100, max: 100, hurtT: 9 }; const HP = { v: 100, max: 100, dead: 0 }, GUN = { i: 0, cool: 0, shots: 0, hits: 0, ammo: [12, 30, 6, 5], rl: 0, bloom: 0, rec: 0, ads: false, trig: false };
 const FOOTCAR = { id: 'foot', name: 'On foot', type: 'walker', color: '#f2f2f2', accel: 0, vmax: 8, grip: 9, driftGrip: 9, offDrag: 0, mass: 0.08, foot: true, hidden: true };
 let fillCards = () => {};
@@ -2105,16 +2170,10 @@ function updateFree(n, dt) {
     const aim = Math.abs(wrapPi(Math.atan2(-(tx - n.x), -(tz - n.wz)) - n.yaw));
     if (dist < 14 && aim > 0.8) tsp = -15;           // too close to turn in: (negative = no slowdown) swing out wide and come back around
   }
-  if (n.mode === 2) {
-    const dir = Math.cos(n.yaw - Math.atan2(d1, 1)) >= 0 ? 1 : -1, z2 = n.wz - dir * 20, e1 = roadDX(z2), l2 = Math.sqrt(1 + e1 * e1), off = laneOff(1, hwAt(z2)) * dir;
-    tx = roadX(z2) + off / l2; tz = z2 - off * e1 / l2; tsp = 17; n.dir = dir;
-    const wantL = dir * laneOff(1, hw), laneYaw = Math.atan2(d1, 1) + (dir < 0 ? Math.PI : 0);
-    if (Math.abs(lat - wantL) < 0.7 && Math.abs(wrapPi(laneYaw - n.yaw)) < 0.2) {       // back in lane: hand over to normal traffic logic
-      n.mode = 0; n.lane = n.laneT = 1; n.z = n.wz + wantL * d1 / len;
-      const dd = roadDX(n.z), ll = Math.sqrt(1 + dd * dd);
-      n.kx = n.x - (roadX(n.z) + wantL / ll); n.kz = n.wz - (n.z - wantL * dd / ll); n.spin = wrapPi(n.yaw - laneYaw); n.kvx = n.kvz = n.spinV = 0; n.stun = 0;
-      return;
-    }
+  if (n.mode === 2) {                                // drive back to its own slot in the traffic and slip into it
+    const S = trSample(n.rc, n.d), dd = Math.hypot(S.x - n.x, S.z - n.wz); tx = S.x; tz = S.z; tsp = clamp(dd * 0.9, 5, 17);
+    if (dd > 300) { trResync(n); return; }
+    if (dd < 2.2 || (dd < 6 && Math.abs(wrapPi(S.yaw - n.yaw)) < 0.6)) { trRejoin(n); n.stun = 0; return; }
   }
   const diff = wrapPi(Math.atan2(-(tx - n.x), -(tz - n.wz)) - n.yaw), maxYaw = Math.min(1.7, 15 / Math.max(Math.abs(n.speed), 3));
   if (n.speed > 0.5) n.yaw += clamp(diff * 3, -maxYaw, maxYaw) * dt;
@@ -2129,113 +2188,144 @@ function updateFree(n, dt) {
   n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(0, n.yaw, 0);
   n.marker.position.y = (n.type === 'truck' ? 4.3 : 2.6) + Math.sin(performance.now() * 0.012) * 0.2; n.marker.rotation.y += dt * 4;
 }
-function makeNpc(i) {
-  const r = Math.random(), type = r < 0.16 ? 'truck' : r < 0.42 ? 'suv' : 'sedan';
-  const mesh = makeCar(type, NPC_COLS[i % NPC_COLS.length], false);
+function makeNpc(type, ci) {
+  const mesh = makeCar(type, NPC_COLS[ci], false); mesh.visible = false;
   const marker = new T.Mesh(angryGeo, angryMat); marker.position.y = type === 'truck' ? 4.3 : 2.6; marker.visible = false; mesh.add(marker);
-  return { mesh, type, halfLen: mesh.userData.halfLen, z: 0, dir: 1, lane: 1, laneT: 1, speed: 0, cruise: 20, kx: 0, kz: 0, kvx: 0, kvz: 0, spin: 0, spinV: 0, stun: 0, x: 0, y: 0, wz: 0, yaw: 0, live: false, mode: 0, t: 0, marker };
+  return { mesh, type, look: type + ci, halfLen: mesh.userData.halfLen, z: 0, dir: 1, lane: 1, speed: 0, kx: 0, kz: 0, kvx: 0, kvz: 0, spin: 0, spinV: 0, stun: 0, x: 0, y: 0, wz: 0, yaw: 0, live: false, mode: 0, t: 0, marker, rc: null, d: 0, pf: 1, fade: 1, first: true, pup: null, pupT: 0, frozen: 0 };
 }
-function trySpawn(n, initial) {
-  if (n.city) return citySpawn(n);
-  const fwd = P.vz > 1 ? 1 : -1;
-  let z;
-  if (initial) { z = P.z + (Math.random() * 2 - 1) * 620; if (Math.abs(z - P.z) < 70) return; }
-  else z = P.z + (Math.random() < 0.8 ? fwd : -fwd) * (540 + Math.random() * 110);
-  if (Math.abs(z) > REND - 40) return;
-  const dir = Math.random() < 0.5 ? 1 : -1;
-  for (const m of npcs) if (m.live && m !== n && m.dir === dir && Math.abs(m.z - z) < 40) return;
-  n.z = z; n.dir = dir; n.lane = n.laneT = n.type === 'truck' ? 1 : (Math.random() < 0.6 ? 1 : 0);
-  n.cruise = n.type === 'truck' ? 15 + Math.random() * 3 : 17 + Math.random() * 8; n.speed = n.cruise;
-  n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = n.stun = 0; n.live = true; n.mesh.visible = true; n.mode = 0; n.marker.visible = false; n.frozen = 0; if (n.ice) n.ice.visible = false;
-}
-for (let i = 0; i < 18; i++) { const n = makeNpc(i); n.mesh.visible = false; npcs.push(n); }
-for (let i = 0; i < 24; i++) { const n = makeNpc(i + 3); n.mesh.visible = false; n.city = true; n.axis = 0; n.fi = 0; n.s = 0; n.cd = 1; n.lastI = -1; npcs.push(n); }
-/* city cars follow the grid: keep right, and at each junction go straight or turn (mode 3) */
-function cityPose(n) {
+function cityPose(n) {                              // city cars keep right on the grid
   const C = CITY, c = n.fi * C.P - C.E, fx = n.axis === 0 ? n.cd : 0, fz = n.axis === 0 ? 0 : n.cd;
   return [C.x + (n.axis === 0 ? n.s : c) - fz * 3.5, C.z + (n.axis === 0 ? c : n.s) + fx * 3.5, Math.atan2(-fx, -fz)];
 }
-function citySpawn(n) {
-  const C = CITY; if (!inCity(P.x, P.z, 450)) return;
-  const ri = () => Math.floor(Math.random() * 7) - 3, near = v => clamp(Math.round((v + C.E) / C.P) + ri(), 0, C.N - 1), along = v => clamp(v + (Math.random() * 2 - 1) * 400, -C.E + 10, C.E - 10);
-  n.axis = Math.random() < 0.5 ? 0 : 1; n.cd = Math.random() < 0.5 ? 1 : -1;
-  if (n.axis === 0) { n.fi = near(P.z); n.s = along(P.x); } else { n.fi = near(P.x); n.s = along(P.z); if (n.fi === 10) return; }   // the avenue belongs to through traffic
-  const q = cityPose(n); if (Math.hypot(q[0] - P.x, q[1] - P.z) < 80) return;
-  for (const m of npcs) if (m !== n && m.live && m.mode === 3 && Math.hypot(m.x - q[0], m.wz - q[1]) < 22) return;
-  n.x = q[0]; n.wz = n.z = q[1]; n.yaw = q[2]; n.y = C.y; n.lastI = Math.round((n.s + C.E) / C.P); n.dir = 1;
-  n.mode = 3; n.live = true; n.mesh.visible = true; n.marker.visible = false; n.speed = 8; n.cruise = 8 + Math.random() * 4; n.stun = 0; n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = 0;
+/* Shared traffic. Every car in the world is a pure function of the shared clock: the whole island's traffic is simulated in fixed
+   steps from the start of a ten-minute epoch, with no input from any player, so every client computes the same cars in the same
+   places. What you see near you is that simulation played back a moment late; a car that has to wait for a player just plays back
+   later still and then catches up. Cars a player knocks off their line are driven by that player's game and shown to the others. */
+const TR = { cars: [], epoch: -1, n: 0, rel: 0, abs: 0, STEP: 0.2, LEN: 600, H: 128, NA: 88, NC: 132, DMAX: 24, S: { x: 0, z: 0, yaw: 0, sp: 0 } };
+function trInit(e) {
+  const C = CITY, ZR = REND - 60, used = new Set(); TR.epoch = e; TR.n = 0;
+  for (let i = 0; i < TR.NA + TR.NC; i++) {
+    const h = k => rnd2(i * 131 + k, e * 977 + 5), hl = rnd2(i, 9001), type = hl < 0.16 ? 'truck' : hl < 0.42 ? 'suv' : 'sedan';
+    const c = TR.cars[i] || (TR.cars[i] = { id: i, kind: i < TR.NA ? 0 : 1, type, ci: Math.floor(rnd2(i, 9002) * NPC_COLS.length), ring: new Float32Array(TR.H * 4), act: null, hide: 0, px: 1e9, pz: 1e9 });
+    c.jc = 0; c.px = c.pz = 1e9;
+    if (c.kind === 0) {                              // the avenue and the highway beyond it: evenly spread along the whole road, both ways
+      c.dir = i & 1 ? 1 : -1; c.z = -ZR + ((i >> 1) + 0.15 + 0.7 * h(1)) * (2 * ZR / (TR.NA / 2)); c.lane = type === 'truck' || h(2) < 0.6 ? 1 : 0;
+      c.cruise = type === 'truck' ? 15 + h(3) * 3 : 17 + h(3) * 8; c.speed = c.cruise;
+    } else {                                         // the grid
+      c.axis = h(1) < 0.5 ? 0 : 1; c.fi = Math.min(C.N - 1, Math.floor(h(2) * C.N)); if (c.axis === 1 && c.fi === 10) c.fi = 9; c.cd = h(4) < 0.5 ? 1 : -1;
+      let sl = Math.floor(h(3) * 96); while (used.has(c.axis * 1e6 + c.fi * 1e4 + c.cd * 500 + sl)) sl = (sl + 7) % 96; used.add(c.axis * 1e6 + c.fi * 1e4 + c.cd * 500 + sl);
+      c.s = -C.E + 24 + sl * 24.5; c.lastI = Math.round((c.s + C.E) / C.P); c.cruise = 8 + h(5) * 4; c.speed = c.cruise;
+    }
+  }
 }
-function updateCity(n, dt) {
-  const C = CITY;
-  if (Math.hypot(n.x - P.x, n.wz - P.z) > 540) { n.live = false; n.mode = 0; n.mesh.visible = false; return; }
-  if (n.stun > 0) { n.stun -= dt; n.speed *= Math.exp(-4 * dt); }
-  else {
-    let target = n.cruise;
-    { const m = (n.s + C.E) / C.P, nxt = (n.cd > 0 ? Math.ceil(m - 1e-6) : Math.floor(m + 1e-6)) * C.P - C.E; target = sigLimit(target, n.axis === 1 ? sigNS() : sigEW(), (nxt - n.s) * n.cd - 10); }
-    for (const m of npcs) { if (m === n || !m.live || m.mode !== 3 || m.axis !== n.axis || m.fi !== n.fi || m.cd !== n.cd) continue; const d = (m.s - n.s) * n.cd; if (d > 0 && d < 16) target = Math.min(target, Math.max(0, (d - 8) * 1.2)); }
-    const fx = Math.sin(-n.yaw), fz = -Math.cos(n.yaw), ax = (P.x - n.x) * fx + (P.z - n.wz) * fz, lx = Math.abs((P.x - n.x) * fz - (P.z - n.wz) * fx);
-    if (ax > 0 && ax < 15 && lx < 2.4) target = Math.min(target, Math.max(0, (ax - 7) * 1.2));
-    if (n.frozen > 0) target = Math.min(target, 2.5);
-    n.speed += clamp(target - n.speed, -14 * dt, 4 * dt);
+function trStep(pose) {
+  const C = CITY, dt = TR.STEP, ZR = REND - 60, t = TR.epoch * TR.LEN + TR.n * dt, sNS = sigAt(t % 1600), sEW = sigAt(t % 1600 + 8), cars = TR.cars, NA = TR.NA, ri = ((TR.n + 1) % TR.H) * 4;
+  for (let i = 0; i < NA; i++) {
+    const a = cars[i], hw = hwAt(a.z), off = laneOff(a.lane, hw); let gap = 1e9, lead = 0;
+    for (let j = (i & 1); j < NA; j += 2) { if (j === i) continue; const m = cars[j], dz = (a.z - m.z) * a.dir; if (dz < 0 || dz > gap + 12 || (dz === 0 && j > i)) continue; if (Math.abs(laneOff(m.lane, hw) - off) >= 2) continue; const gp = dz - 4.8; if (gp < gap) { gap = gp; lead = m.speed; } }
+    let target = Math.max(0, Math.min(a.cruise * (1 + 0.38 * hw * (a.lane === 0 ? 1.15 : 1)), lead + (gap - 8) * 0.6));
+    if (Math.abs(a.z) < C.E) { const m = (a.z + C.E) / C.P, zc = (a.dir > 0 ? Math.floor(m + 1e-6) : Math.ceil(m - 1e-6)) * C.P - C.E; target = sigLimit(target, sNS, Math.abs(a.z - zc) - 10); }   // stops at reds on the avenue
+    a.speed += clamp(target - a.speed, -10 * dt, 3.2 * dt);
+    const d1 = roadDX(a.z), len = Math.sqrt(1 + d1 * d1); a.z -= a.dir * a.speed * dt / len;
+    if (a.dir > 0 && a.z < -ZR) a.z += 2 * ZR; else if (a.dir < 0 && a.z > ZR) a.z -= 2 * ZR;      // off one end of the island, on at the other
+    if (pose) { const e1 = roadDX(a.z), l2 = Math.sqrt(1 + e1 * e1), L = a.dir * laneOff(a.lane, hwAt(a.z)), r = a.ring; a.px = r[ri] = roadX(a.z) + L / l2; a.pz = r[ri + 1] = a.z - L * e1 / l2; r[ri + 2] = Math.atan2(e1, 1) + (a.dir < 0 ? Math.PI : 0); r[ri + 3] = a.speed; }
   }
-  n.s += n.cd * n.speed * dt;
-  const idx = clamp(Math.round((n.s + C.E) / C.P), 0, C.N - 1), c = idx * C.P - C.E;
-  if (idx !== n.lastI && (n.cd > 0 ? n.s >= c : n.s <= c)) {                                    // at a junction: pick a way on that stays in the grid
-    n.lastI = idx; const opts = [];
-    if (idx + n.cd >= 0 && idx + n.cd <= C.N - 1) opts.push(0, 0);
-    if (!(n.axis === 0 && idx === 10)) { if (n.fi + 1 <= C.N - 1) opts.push(1); if (n.fi - 1 >= 0) opts.push(-1); }   // never turn onto the avenue
-    if (!opts.length) opts.push(n.fi + 1 <= C.N - 1 ? 1 : -1);
-    const pick = opts[Math.floor(Math.random() * opts.length)];
-    if (pick !== 0) { const s2 = n.fi * C.P - C.E; n.lastI = n.fi; n.fi = idx; n.axis = 1 - n.axis; n.cd = pick; n.s = s2; }
+  for (let i = NA; i < cars.length; i++) {
+    const n = cars[i]; let target = n.cruise;
+    { const m = (n.s + C.E) / C.P, nxt = (n.cd > 0 ? Math.ceil(m - 1e-6) : Math.floor(m + 1e-6)) * C.P - C.E; target = sigLimit(target, n.axis === 1 ? sNS : sEW, (nxt - n.s) * n.cd - 10); }
+    for (let j = NA; j < cars.length; j++) { const m = cars[j]; if (m.fi !== n.fi || m.axis !== n.axis || m.cd !== n.cd || j === i) continue; const d = (m.s - n.s) * n.cd; if ((d > 0 || (d === 0 && j < i)) && d < 16) target = Math.min(target, Math.max(0, (d - 8) * 1.2)); }
+    n.speed += clamp(target - n.speed, -14 * dt, 4 * dt); n.s += n.cd * n.speed * dt;
+    const idx = clamp(Math.round((n.s + C.E) / C.P), 0, C.N - 1), c = idx * C.P - C.E;
+    if (idx !== n.lastI && (n.cd > 0 ? n.s >= c : n.s <= c)) {                                    // at a junction: the way on is drawn from the car's own number, so everyone draws the same
+      n.lastI = idx; const opts = [];
+      if (idx + n.cd >= 0 && idx + n.cd <= C.N - 1) opts.push(0, 0);
+      if (!(n.axis === 0 && idx === 10)) { if (n.fi + 1 <= C.N - 1) opts.push(1); if (n.fi - 1 >= 0) opts.push(-1); }   // never turn onto the avenue
+      if (!opts.length) opts.push(n.fi + 1 <= C.N - 1 ? 1 : -1);
+      const pick = opts[Math.floor(rnd2(i * 131 + n.jc++, TR.epoch * 977 + 77) * opts.length)];
+      if (pick !== 0) { const s2 = n.fi * C.P - C.E; n.lastI = n.fi; n.fi = idx; n.axis = 1 - n.axis; n.cd = pick; n.s = s2; }
+    }
+    if (pose) { const q = cityPose(n), r = n.ring; n.px = r[ri] = q[0]; n.pz = r[ri + 1] = q[1]; r[ri + 2] = q[2]; r[ri + 3] = n.speed; }
   }
-  const q = cityPose(n), k = 1 - Math.exp(-5 * dt);
-  n.x += (q[0] - n.x) * k; n.wz += (q[1] - n.wz) * k; n.yaw += wrapPi(q[2] - n.yaw) * (1 - Math.exp(-6 * dt)); n.z = n.wz; n.y = C.y;
-  n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(0, n.yaw, 0);
+  TR.n++;
+}
+function trAdvance() {
+  const now = NET.now() / 1000, e = Math.floor(now / TR.LEN), rel = now - e * TR.LEN, want = Math.floor(rel / TR.STEP);
+  if (e !== TR.epoch || want < TR.n) { for (const n of npcs) if (n.live) trUnbind(n); trInit(e); }   // a new epoch reshuffles the island's traffic for everyone at the same moment
+  while (TR.n < want) { trStep(want - TR.n <= TR.H); if (TR.n === TR.snapAt) TR.snap = TR.cars.map(c => c.kind ? [c.axis, c.fi, c.cd, c.s, c.speed] : [c.z, c.speed]); }
+  TR.rel = rel; TR.abs = now;
+}
+function trSample(c, d) {                            // where rail car c was d seconds ago (plus one step, so there are always two samples to blend)
+  const S = TR.S, f = clamp((TR.rel - d) / TR.STEP - 1, Math.max(1, TR.n - TR.H + 2), TR.n), j0 = Math.min(Math.floor(f), TR.n - 1), r = c.ring, a = (j0 % TR.H) * 4, b = ((j0 + 1) % TR.H) * 4;
+  let u = f - j0; if (TR.n < 2 || j0 < 1) { S.x = r[b]; S.z = r[b + 1]; S.yaw = r[b + 2]; S.sp = r[b + 3]; return S; }
+  if (Math.abs(r[b] - r[a]) + Math.abs(r[b + 1] - r[a + 1]) > 40) u = 1;
+  S.x = r[a] + (r[b] - r[a]) * u; S.z = r[a + 1] + (r[b + 1] - r[a + 1]) * u; S.yaw = r[a + 2] + wrapPi(r[b + 2] - r[a + 2]) * u; S.sp = r[a + 3] + (r[b + 3] - r[a + 3]) * u; return S;
+}
+function trBind(c) {
+  const look = c.type + c.ci; let n = null; for (const m of npcs) if (!m.live && !m.rc && m.look === look) { n = m; break; }
+  if (!n) { n = makeNpc(c.type, c.ci); npcs.push(n); }
+  n.rc = c; c.act = n; n.live = true; n.mode = 0; n.d = 0; n.pf = 1; n.fade = 0; n.first = true; n.pup = null; n.city = c.kind === 1; n.dir = c.kind ? 1 : c.dir; n.lane = c.kind ? 1 : c.lane;
+  n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = n.stun = 0; n.spinOut = 0; n.frozen = 0; n.hp = null; n.wreck = false; n.t = 0; if (n.ice) n.ice.visible = false; n.marker.visible = false; n.mesh.visible = true; n.mesh.scale.setScalar(0.01);
+  return n;
+}
+function trUnbind(n, hideFor) { if (n.rc) { n.rc.act = null; if (hideFor) n.rc.hide = TR.abs + hideFor; } n.rc = null; n.live = false; n.mode = 0; n.pup = null; n.mesh.visible = false; n.marker.visible = false; if (held === n) held = null; }
+function trResync(n) { n.mode = 0; n.d = 0; n.pf = 1; n.fade = 0; n.first = true; n.pup = null; n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = n.stun = 0; n.marker.visible = false; }   // gives up and reappears in its slot
+function trRejoin(n) { const S = trSample(n.rc, n.d); n.mode = 0; n.pup = null; n.marker.visible = false; n.kx = n.x - S.x; n.kz = n.wz - S.z; n.spin = wrapPi(n.yaw - S.yaw); n.kvx = n.kvz = n.spinV = 0; n.pf = 1; n.first = true; if (Math.hypot(n.kx, n.kz) > 30) trResync(n); }
+function netNq() {                                  // the cars this player has knocked off their line: [id, x, y, z, yaw, mode, wrecked]
+  let a = null; for (const n of npcs) { if (!n.live || !n.rc || n.pup || !(n.mode || n.spinOut > 0)) continue; (a || (a = [])).push([n.rc.id, Math.round(n.x * 10) / 10, Math.round(n.y * 10) / 10, Math.round(n.wz * 10) / 10, Math.round(n.yaw * 100) / 100, n.mode || 2, n.wreck ? 1 : 0]); if (a.length >= 6) break; }
+  return a;
 }
 let pLat = 0;
 function updateNpcs(dt) {
-  updateSignals(dt);
+  updateSignals(dt); trAdvance();
   const pd1 = roadDX(P.z); pLat = (P.x - roadX(P.z)) / Math.sqrt(1 + pd1 * pd1);
+  for (const c of TR.cars) { if (c.act || c.hide > TR.abs) continue; const dx = c.px - P.x, dz = c.pz - P.z; if (dx * dx + dz * dz < 270400) trBind(c); }   // only the cars within about four blocks are given bodies
+  for (const r of NET.rem.values()) {               // cars another player is throwing around: follow that player's account of them
+    if (!r.nq || !r.init) continue;
+    for (const q of r.nq) { if (!vec(q, 7)) continue; const c = TR.cars[q[0]]; if (!c) continue; let n = c.act;
+      if (!n) { if (Math.hypot(q[1] - P.x, q[3] - P.z) > 520) continue; c.hide = 0; n = trBind(c); n.x = q[1]; n.y = q[2]; n.wz = q[3]; n.yaw = q[4]; }
+      if (n.mode && n.mode !== 7 && !n.pup && String(NET.me) < String(r.id)) continue;             // both of us hit it: one account wins
+      if (!n.pup && n.mode === 4 && held === n) held = null; n.pup = q; n.pupT = TR.abs; }
+  }
   for (const n of npcs) {
-    if (!n.live) { trySpawn(n, false); continue; }
-    if (Math.abs(n.z - P.z) > 700 || Math.abs(n.z) > REND - 14) { n.live = false; n.mode = 0; n.marker.visible = false; n.mesh.visible = false; continue; }
+    if (!n.live) { if (n.rc) trUnbind(n, 25); continue; }
+    const c = n.rc; if (!c) { trUnbind(n); continue; }
+    if (n.fade < 1) { n.fade = Math.min(1, n.fade + dt * 2.5); n.mesh.scale.setScalar(0.01 + 0.99 * n.fade); }
     if (n.frozen > 0) { n.frozen -= dt; if (n.frozen <= 0 && n.ice) n.ice.visible = false; }
-    if (n.mode >= 4) { updateHeld(n, dt); continue; }
-    if (n.mode === 3) { updateCity(n, dt); continue; }
-    if (n.mode) { updateFree(n, dt); continue; }
-    const hw = hwAt(n.z), off = laneOff(n.lane, hw);
-    let gap = 1e9, lead = 0;
-    for (const m of npcs) {
-      if (m === n || !m.live || m.mode || m.dir !== n.dir) continue;
-      const dz = (n.z - m.z) * n.dir;
-      if (dz > 0 && dz < gap + 8 && Math.abs(laneOff(m.lane, hw) - off) < 2.0) { const gp = dz - m.halfLen - n.halfLen; if (gp < gap) { gap = gp; lead = m.speed; } }
+    if (n.pup) {
+      const q = n.pup;
+      if (TR.abs - n.pupT > 0.35) { if (q[5] === 6) trUnbind(n, 25); else trRejoin(n); continue; }
+      const k = 1 - Math.exp(-10 * dt); n.x += (q[1] - n.x) * k; n.y += (q[2] - n.y) * k; n.wz += (q[3] - n.wz) * k; n.yaw += wrapPi(q[4] - n.yaw) * k; n.mode = 7; n.speed = 0; n.z = n.wz; n.d = Math.min(14, n.d + dt);
+      n.marker.visible = q[5] === 1; if (q[6] && Math.random() < dt * 9) puffAt(n.x, n.y + 1.1, n.wz);
+      n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(0, n.yaw, 0); continue;
     }
-    const dzp = (n.z - P.z) * n.dir;
-    if (dzp > 0 && Math.abs(pLat - n.dir * off) < 2.0) { const gp = dzp - 2.2 - n.halfLen; if (gp < gap) { gap = gp; lead = Math.max(0, -P.vz * n.dir); } }
-    const cruise = n.cruise * (1 + 0.38 * hw * (n.laneT === 0 ? 1.15 : 1));
-    let target = n.stun > 0 ? 0 : Math.max(0, Math.min(cruise, lead + (gap - 8) * 0.6));
-    if (inCity(0, n.z, 0)) { const m = (n.z + CITY.E) / CITY.P, zc = (n.dir > 0 ? Math.floor(m + 1e-6) : Math.ceil(m - 1e-6)) * CITY.P - CITY.E; target = sigLimit(target, sigNS(), Math.abs(n.z - zc) - 10); }   // avenue traffic stops at reds
-    if (n.frozen > 0) target = Math.min(target, 3.5);
-    n.speed += clamp(target - n.speed, -10 * dt, 3.2 * dt);
-    if (hw > 0.9 && n.lane === n.laneT && n.stun <= 0 && n.type !== 'truck') {   // overtake / move back
-      const want = (gap < 24 && lead < cruise - 2) ? 0 : (n.laneT === 0 && gap > 60 && rnd2(n.z | 0, 5) < 0.004 ? 1 : n.laneT);
-      if (want !== n.laneT) {
-        let clear = !(Math.abs(dzp) < 20 && Math.abs(pLat - n.dir * laneOff(want, hw)) < 2.4);
-        for (const m of npcs) if (m !== n && m.live && m.dir === n.dir && Math.abs(m.z - n.z) < 20 && Math.abs(m.lane - want) < 0.6) clear = false;
-        if (clear) n.laneT = want;
-      }
+    if (n.mode === 7) { trRejoin(n); continue; }
+    if (n.mode) {
+      n.d = Math.min(14, n.d + dt);                  // its slot waits for it, up to a point
+      if (n.mode >= 4) updateHeld(n, dt); else updateFree(n, dt);
+      if (n.live && n.mode !== 1 && n.mode !== 4 && Math.hypot(n.x - P.x, n.wz - P.z) > 700) trUnbind(n);
+      continue;
     }
-    n.lane += clamp(n.laneT - n.lane, -0.45 * dt, 0.45 * dt);
-    const d1 = roadDX(n.z), len = Math.sqrt(1 + d1 * d1);
-    n.z -= n.dir * n.speed * dt / len;
-    n.kx += n.kvx * dt; n.kz += n.kvz * dt; const dk = Math.exp(-3 * dt); n.kvx *= dk; n.kvz *= dk;
-    n.spin += n.spinV * dt; n.spinV *= dk;
-    if (n.stun > 0) n.stun -= dt; else { const r = Math.exp(-1.4 * dt); n.kx *= r; n.kz *= r; n.spin *= r; }
-    const L = n.dir * off;
-    n.x = roadX(n.z) + L / len + n.kx; n.wz = n.z - L * d1 / len + n.kz; n.y = roadY(n.z);
-    n.yaw = Math.atan2(d1, 1) + (n.dir < 0 ? Math.PI : 0) + n.spin;
-    n.mesh.position.set(n.x, n.y, n.wz);
-    n.mesh.rotation.set(Math.atan(-roadSlope(n.z) * n.dir), n.yaw, 0);
+    if (n.spinOut > 0) { n.d = Math.min(14, n.d + dt); updateFree(n, dt); if (n.spinOut <= 0) { n.mode = 2; } continue; }
+    const ddx = n.x - P.x, ddz = n.wz - P.z; if (!n.first && ddx * ddx + ddz * ddz > 360000) { trUnbind(n); continue; }
+    let S = trSample(c, n.d), tgt = n.d > 0.02 ? 1.35 : 1;
+    if (n.stun > 0) { n.stun -= dt; tgt = 0; }
+    else if (!n.first) {
+      const fx = -Math.sin(S.yaw), fz = -Math.cos(S.yaw);
+      const blk = (bx, bz, by, ext) => { if (Math.abs(by - n.y) > 3) return; const ox = bx - n.x, oz = bz - n.wz, ax = ox * fx + oz * fz - n.halfLen - ext, lx = Math.abs(ox * fz - oz * fx); if (ax > -1.5 && ax < 12 && lx < 2.1) tgt = Math.min(tgt, clamp((ax - 2.5) / 6, 0, 1.35)); };
+      blk(P.x, P.z, P.y, HULL.L);
+      for (const r of NET.rem.values()) if (r.init) blk(r.pred.x, r.pred.z, r.pred.y, r.halfLen || 2.2);
+      for (const m of npcs) if (m !== n && m.live && (m.mode || m.d > 0.05 || m.stun > 0)) blk(m.x, m.wz, m.y, m.halfLen);
+      if (n.frozen > 0) tgt = Math.min(tgt, 0.2);
+    }
+    n.pf += clamp(tgt - n.pf, -2.4 * dt, 0.9 * dt); n.d = Math.max(0, n.d + (1 - n.pf) * dt); if (n.d === 0 && n.pf > 1) n.pf = 1;
+    if (n.d > TR.DMAX) { trResync(n); S = trSample(c, 0); }                                         // held up too long: it gives up waiting
+    n.kx += n.kvx * dt; n.kz += n.kvz * dt; const dk = Math.exp(-3 * dt); n.kvx *= dk; n.kvz *= dk; n.spin += n.spinV * dt; n.spinV *= dk;
+    if (n.stun <= 0) { const r = Math.exp(-1.4 * dt); n.kx *= r; n.kz *= r; n.spin *= r; }
+    const tx = S.x + n.kx, tz = S.z + n.kz, ty = S.yaw + n.spin;
+    if (n.first || !c.kind) { n.x = tx; n.wz = tz; n.yaw = ty; }
+    else { const k = 1 - Math.exp(-5 * dt); n.x += (tx - n.x) * k; n.wz += (tz - n.wz) * k; n.yaw += wrapPi(ty - n.yaw) * (1 - Math.exp(-6 * dt)); }
+    n.first = false; n.speed = S.sp * Math.min(1, n.pf); n.z = n.wz; n.y = c.kind ? CITY.y : roadY(n.wz);
+    n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(c.kind ? 0 : Math.atan(-roadSlope(n.wz) * c.dir), n.yaw, 0);
   }
 }
 
@@ -2265,7 +2355,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyB' && CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); }
 });
 addEventListener('keyup', e => { if (e.target && e.target.tagName === 'INPUT') return; keys[e.code] = false; });
-addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; gpPrev = []; gpFireHeld = false; mfire = false; });
 /* ── touch controls. Every control tracks the one pointer that pressed it and captures it, so several fingers work at once
    and a finger that slides off, or a cancelled pointer, always releases the control. ── */
 const touchEls = [];
@@ -2351,27 +2441,56 @@ const inp = { steer: 0, thr: 0, brk: 0, hb: 0, boost: 0, jump: 0, roll: 0, pitch
 const FLOAT_Y = -0.12;
 const PL = { vfly: 95 / 3.6, vstall: 82 / 3.6, vmax: 145 / 3.6, vne: 160 / 3.6, thrust: 9.3 };   // once airborne the wing keeps flying down to 82 km/h
 PL.cd = PL.thrust / (PL.vmax * PL.vmax);
+let gpPrev = [], gpFireHeld = false, gpOn = false, gpRumT = 0;
+const GP = { pad: null };
+function gpPick() { try { const l = navigator.getGamepads ? navigator.getGamepads() : []; for (let i = 0; i < l.length; i++) if (l[i] && l[i].connected && l[i].buttons.length >= 8) return l[i]; } catch (e) { /* not available here */ } return null; }
+function rumble(s) {                                // a thump in the grips on impacts
+  const g = GP.pad, now = performance.now(); if (!g || !g.vibrationActuator || s < 2.5 || now - gpRumT < 160) return; gpRumT = now;
+  try { g.vibrationActuator.playEffect('dual-rumble', { duration: 90 + Math.min(260, s * 14), strongMagnitude: Math.min(1, s / 18), weakMagnitude: Math.min(1, 0.25 + s / 30) }).catch(() => {}); } catch (e) { /* optional */ }
+}
+addEventListener('gamepadconnected', () => toast('Controller connected. RT gas, LT brake, A handbrake or jump, B in/out, X fire or boost, Y camera'));
 function readInput(dt) {
+  let gpJump = false, gpBoost = false, gpFire = false, gpRoll = 0, gpPitch = 0, gpLev = 0;
   let steer = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + touch.sx;
   let thr = keys.KeyW || keys.ArrowUp || touch.g ? 1 : 0, brk = keys.KeyS || keys.ArrowDown || touch.b ? 1 : 0, hb = (keys.KeyE || touch.e || (keys.Space && !CAR.jet && !CAR.plane)) && !CAR.ufo && !CAR.heli && !CAR.foot ? 1 : 0;
-  try {
-    const gp = navigator.getGamepads && navigator.getGamepads()[0];
-    if (gp) {
-      const ax = Math.abs(gp.axes[0]) > 0.12 ? gp.axes[0] : 0, t = gp.buttons[7] ? gp.buttons[7].value : 0, b = gp.buttons[6] ? gp.buttons[6].value : 0;
-      if ((ax || t > 0.05 || b > 0.05) && auto && started) setAuto(false);
-      steer += ax; thr = Math.max(thr, t); brk = Math.max(brk, b); if (gp.buttons[0] && gp.buttons[0].pressed) hb = 1;
+  const gp = GP.pad = gpPick();
+  if (gp) {
+    const dz = v => { v = v || 0; const a = Math.abs(v); return a < 0.14 ? 0 : Math.sign(v) * Math.pow((a - 0.14) / 0.86, 1.4); };   // dead zone, then a gentle curve so small stick moves steer finely
+    const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > 0.5)), V = i => gp.buttons[i] ? gp.buttons[i].value : 0, edge = i => B(i) && !gpPrev[i];
+    const lx = dz(gp.axes[0]), ly = dz(gp.axes[1]), rx = dz(gp.axes[2]), ry = dz(gp.axes[3]), rt = V(7), lt = V(6), dx = (B(15) ? 1 : 0) - (B(14) ? 1 : 0);
+    const stickMove = CAR.foot || CAR.ufo || CAR.heli;                // these go where the left stick points
+    if (!started) { if (edge(0) || edge(9)) begin(); }
+    else {
+      if ((lx || dx || rt > 0.05 || lt > 0.05 || (stickMove && ly)) && auto) setAuto(false);
+      steer += lx + dx; thr = Math.max(thr, rt, stickMove ? -ly : 0); brk = Math.max(brk, lt, stickMove ? ly : 0);
+      if (CAR.plane) { gpPitch = ly; gpLev = (rt > 0.1 ? rt : 0) - (lt > 0.1 ? lt : 0) + (B(12) ? 1 : 0) - (B(13) ? 1 : 0); }
+      else if (CAR.jet && P.air) { thr = Math.max(thr, -ly); brk = Math.max(brk, ly); }
+      const armed = CAR.foot || CAR.heli || CAR.blick;
+      if (B(0)) { if (CAR.foot || CAR.jet || CAR.plane || CAR.heli || CAR.ufo) gpJump = true; else hb = 1; }
+      if (edge(1)) toggleFoot();                                      // B: in and out
+      if (edge(3)) nextCam();                                         // Y: camera
+      if (edge(2)) { if (CAR.heli || CAR.blick) fireMissile(); else if (CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); } }
+      gpFire = CAR.foot && (B(2) || rt > 0.5); if (CAR.foot && rt > 0.5) thr = keys.KeyW || touch.g ? 1 : Math.max(0, -ly);          // on foot the right trigger shoots instead of walking
+      if (CAR.foot && lt > 0.3) brk = Math.max(0, ly);
+      gpBoost = B(10) || (B(2) && !armed && !CAR.ufo);                // click the left stick to sprint or boost; X boosts anything unarmed
+      if (CAR.foot) { if (edge(4) || edge(14)) setGun((GUN.i + GUNS.length - 1) % GUNS.length); if (edge(5) || edge(15)) setGun((GUN.i + 1) % GUNS.length); if (edge(11)) reloadGun(); }
+      else gpRoll = (B(4) ? 1 : 0) - (B(5) ? 1 : 0);
+      if (edge(8)) toggleMap(); if (edge(9)) toggleTravel(); if (edge(12) && !CAR.plane) setAuto(!auto); if (edge(13) && !CAR.plane && !CAR.foot) respawn();
+      if (rx || ry) { AIM.yaw -= rx * 2.9 * dt; AIM.pitch = clamp(AIM.pitch - ry * 2.0 * dt, -0.95, 1.05); }
     }
-  } catch (e) { /* gamepads unavailable in this frame */ }
+    gpPrev = gp.buttons.map((q, i) => B(i));
+    if (!gpOn) { gpOn = true; document.body.classList.add('pad'); }
+  } else if (gpOn) { gpOn = false; gpPrev = []; document.body.classList.remove('pad'); }
   /* touch stick, vertical axis: the saucer flies forward/back on it; the jet pitches on it in the air (up = nose down, like W) */
   if (touch.sy && (CAR.ufo || CAR.heli || CAR.foot || (CAR.jet && P.air))) { thr = Math.max(thr, touch.sy); brk = Math.max(brk, -touch.sy); }
   inp.steer = clamp(steer, -1, 1); inp.thr = thr; inp.brk = brk; inp.hb = hb;
-  const fly = CAR.jet || CAR.plane || CAR.ufo || CAR.heli || CAR.foot; inp.boost = fly && (keys.ShiftLeft || keys.ShiftRight || touch.s) ? 1 : 0; inp.jump = fly && (keys.Space || touch.j) ? 1 : 0;
-  inp.roll = (keys.KeyQ || touch.ql ? 1 : 0) - (keys.KeyE || touch.qr ? 1 : 0);
+  const fly = CAR.jet || CAR.plane || CAR.ufo || CAR.heli || CAR.foot; inp.boost = fly && (keys.ShiftLeft || keys.ShiftRight || touch.s || gpBoost) ? 1 : 0; inp.jump = fly && (keys.Space || touch.j || gpJump) ? 1 : 0; gpFireHeld = gpFire;
+  inp.roll = (keys.KeyQ || touch.ql ? 1 : 0) - (keys.KeyE || touch.qr ? 1 : 0) + gpRoll;
   if (CAR.plane) {                                   // aircraft: W pulls the nose up, S pushes it down; the arrow keys set the throttle lever
-    P.throttle = clamp(P.throttle + ((keys.ArrowUp || touch.g ? 1 : 0) - (keys.ArrowDown || touch.b ? 1 : 0)) * 0.8 * dt, -1, 1);   // lever: -1 full reverse, 0 neutral, +1 full forward
+    P.throttle = clamp(P.throttle + clamp((keys.ArrowUp || touch.g ? 1 : 0) - (keys.ArrowDown || touch.b ? 1 : 0) + gpLev, -1, 1) * 0.8 * dt, -1, 1);   // lever: -1 full reverse, 0 neutral, +1 full forward
     if (inp.boost) P.throttle = Math.min(1, P.throttle + 2.5 * dt);
     P.fwd = Math.max(0, (P.throttle - THR_N) / (1 - THR_N)); P.rev = Math.max(0, (-P.throttle - THR_N) / (1 - THR_N));                 // a neutral band in the middle gives no thrust
-    inp.pitch = clamp((keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0) - touch.sy, -1, 1); inp.thr = P.fwd; inp.brk = P.grounded ? Math.max(P.rev, inp.jump ? 1 : 0) : 0;
+    inp.pitch = clamp((keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0) - touch.sy + gpPitch, -1, 1); inp.thr = P.fwd; inp.brk = P.grounded ? Math.max(P.rev, inp.jump ? 1 : 0) : 0;
   }
 }
 const maxSteer = vf => 0.62 / (1 + vf * vf / 330) + 0.045;
@@ -2404,11 +2523,7 @@ function autoInput() {
   const diff = wrapPi(Math.atan2(-dx, -dz) - P.heading);
   inp.steer = clamp(-Math.atan(5.2 * Math.sin(diff) / look) / maxSteer(vf), -1, 1);
   let target = mix(21, 29, hwAt(P.z));
-  for (const n of npcs) {
-    if (!n.live || n.mode || n.dir !== dir) continue;
-    const g = (P.z - n.z) * dir - n.halfLen - 2.2;
-    if (g > -2 && g < 60 && Math.abs(pLat - dir * laneOff(n.lane, hw)) < 2.1) target = Math.min(target, Math.max(0, n.speed + (g - 11) * 0.5));
-  }
+  { const hx = -Math.sin(P.heading), hz = -Math.cos(P.heading); for (const n of npcs) { if (!n.live) continue; const ox = n.x - P.x, oz = n.wz - P.z, g = ox * hx + oz * hz - n.halfLen - 2.2; if (g > -2 && g < 60 && Math.abs(ox * hz - oz * hx) < 2.1) target = Math.min(target, Math.max(0, (n.mode ? 0 : n.speed * Math.max(0, -Math.sin(n.yaw) * hx - Math.cos(n.yaw) * hz)) + (g - 11) * 0.5)); } }
   if (inCity(P.x, P.z, 0) && Math.abs(P.x) < 6) { const m = (P.z + CITY.E) / CITY.P, zc = (dir > 0 ? Math.floor(m + 1e-6) : Math.ceil(m - 1e-6)) * CITY.P - CITY.E; target = sigLimit(target, sigNS(), Math.abs(P.z - zc) - 11); }
   inp.thr = clamp((target - vf) * 0.5, 0, 1); inp.brk = clamp((vf - target) * 0.3 - 0.15, 0, 1); inp.hb = 0; inp.boost = inp.jump = inp.roll = 0;
 }
@@ -2418,16 +2533,8 @@ let shake = 0, lastHit = 0;
 const SUS = { z: [0, 0, 0, 0], v: [0, 0, 0, 0], vf: 0, head: 0, vy: 0, wasG: true };
 const tmpE = new T.Euler(), tmpQ = new T.Quaternion(), tmpV = new T.Vector3(), AX = new T.Vector3(1, 0, 0), AY = new T.Vector3(0, 1, 0), AZ = new T.Vector3(0, 0, 1);
 function hit(strength) {
-  shake = Math.min(1, shake + strength / 14);
+  shake = Math.min(1, shake + strength / 14); rumble(strength);
   const now = performance.now(); if (now - lastHit > 180 && strength > 1.5) { lastHit = now; crashSound(Math.min(1, strength / 16)); }
-}
-function boxHit(q) {                                // car (as a circle) against an axis-aligned building
-  if (P.y > q[4] - 0.7 || P.x < q[0] - HITR - 0.1 || P.x > q[1] + HITR + 0.1 || P.z < q[2] - HITR - 0.1 || P.z > q[3] + HITR + 0.1) return;
-  const nx = clamp(P.x, q[0], q[1]), nz = clamp(P.z, q[2], q[3]); let dx = P.x - nx, dz = P.z - nz, d = Math.hypot(dx, dz), pen;
-  if (d > HITR) return;
-  if (d > 1e-4) { dx /= d; dz /= d; pen = HITR - d; }
-  else { const a = P.x - q[0], b2 = q[1] - P.x, c2 = P.z - q[2], e = q[3] - P.z, m = Math.min(a, b2, c2, e); dx = m === a ? -1 : m === b2 ? 1 : 0; dz = m === c2 ? -1 : m === e ? 1 : 0; pen = m + HITR; }
-  P.x += dx * pen; P.z += dz * pen; const vn = P.vx * dx + P.vz * dz; if (vn < 0) { P.vx -= dx * vn * 1.25; P.vz -= dz * vn * 1.25; P.vx *= 0.85; P.vz *= 0.85; hit(-vn); }
 }
 function hcStep(dt) {                               // move the carrier; anything standing on its deck moves and turns with it
   const ox = HC.x, oz = HC.z, oy = HC.yaw; if (NET.room) HC.a = (Date.now() / 1000 * HC.w) % (Math.PI * 2); else HC.a += HC.w * dt;   // online, everyone derives the carrier's position from the clock
@@ -2437,40 +2544,74 @@ function hcStep(dt) {                               // move the carrier; anythin
     P.x = HC.x + dx * c + dz * sn; P.z = HC.z - dx * sn + dz * c; P.heading += dy; P.vx = vx * c + vz * sn; P.vz = -vx * sn + vz * c;   // on deck the car's velocity is measured relative to the ship
   }
 }
-function hcHits() {                                 // tower and hull, tested in the carrier's own frame
-  const dx = P.x - HC.x, dz = P.z - HC.z; if (dx * dx + dz * dz > 78400 || P.y > HC.y + 32 || P.y < HC.y - 17) return;
-  let lx = hcLX(P.x, P.z), lz = hcLZ(P.x, P.z), moved = false; const ry = P.y - HC.y;
-  for (const q of HC.boxes) {
-    if (ry < q[4] - 1.5 || ry > q[5] || lx < q[0] - 1.2 || lx > q[1] + 1.2 || lz < q[2] - 1.2 || lz > q[3] + 1.2) continue;
-    const nx = clamp(lx, q[0], q[1]), nz = clamp(lz, q[2], q[3]); let ex = lx - nx, ez = lz - nz, d = Math.hypot(ex, ez), pen;
-    if (d > 1.1) continue;
-    if (d > 1e-4) { ex /= d; ez /= d; pen = 1.1 - d; } else { const a = lx - q[0], b2 = q[1] - lx, c2 = lz - q[2], e = q[3] - lz, m = Math.min(a, b2, c2, e); ex = m === a ? -1 : m === b2 ? 1 : 0; ez = m === c2 ? -1 : m === e ? 1 : 0; pen = m + 1.1; }
-    lx += ex * pen; lz += ez * pen; moved = true;
-    const wx = ex * Math.cos(HC.yaw) + ez * Math.sin(HC.yaw), wz = -ex * Math.sin(HC.yaw) + ez * Math.cos(HC.yaw), rvx = P.vx - (P.onHC ? 0 : HC.vx), rvz = P.vz - (P.onHC ? 0 : HC.vz), vn = rvx * wx + rvz * wz;
-    if (vn < 0) { P.vx -= wx * vn * 1.2; P.vz -= wz * vn * 1.2; hit(-vn); }
+/* ───────────── collisions ─────────────
+   The vehicle's footprint is a row of circles exactly as wide as the body and reaching exactly to its nose and tail, plus a small
+   circle in each corner, so no part of it can enter a wall. Every solid thing is tested against every one of those circles; a hit
+   pushes the vehicle out, takes away the speed going into the surface and turns the car the way a real glancing blow would. */
+function setHull() {
+  const c = HULL.c, t = CAR.type; c.length = 0; HULL.rot = false; HULL.own = [0];
+  if (CAR.foot) { c.push([0, 0, 0.42]); HULL.W = 0.42; HULL.L = 0.42; }
+  else if (CAR.ufo) { c.push([0, 0, 3.2]); HULL.W = 3.2; HULL.L = 3.2; }
+  else if (CAR.heli) { c.push([0, 1.6, 1.2], [0, 0.2, 1.25], [0, -1.2, 1.2], [0, -3.3, 0.55], [0, -4.8, 0.55], [0, -6.3, 0.6]); HULL.W = 1.25; HULL.L = 2.8; }
+  else if (CAR.plane) { for (const f of [3.2, 1.8, 0.4, -1.0, -2.4, -3.2]) c.push([0, f, 0.75]); for (const l of [1.5, 2.9, 4.3, 5.0]) c.push([l, 1.1, 0.8], [-l, 1.1, 0.8]); c.push([1.4, -3.3, 0.5], [-1.4, -3.3, 0.5]); HULL.W = 1.4; HULL.L = 3.9; HULL.own = [-2.4, 0, 2.4]; }
+  else { const W = t === 'muscle' ? 1.13 : t === 'suv' || t === 'pickup' ? 0.98 : 0.96, L = t === 'muscle' ? 2.55 : 2.25, e = L - W;
+    for (let i = 0; i < 5; i++) c.push([0, -e + i * e / 2, W]); for (const a of [-1, 1]) for (const b of [-1, 1]) c.push([a * (W - 0.12), b * (L - 0.12), 0.12]);
+    HULL.W = W; HULL.L = L; HULL.own = [-e, 0, e]; HULL.rot = true; HULL.k2 = (L * L + W * W) / 3; }
+  HULL.sum = HULL.W + 1.0;
+}
+function hullEach(test, bvx, bvz, loss) {           // test(cx, cz, r) fills _hn with the surface normal and the depth, and returns true on contact
+  let any = false; const turn = HULL.rot && P.grounded;
+  for (let i = 0; i < HULL.c.length; i++) {
+    const h = HULL.c[i], fx = -Math.sin(P.heading), fz = -Math.cos(P.heading), ox = Math.cos(P.heading) * h[0] + fx * h[1], oz = -Math.sin(P.heading) * h[0] + fz * h[1];
+    if (!test(P.x + ox, P.z + oz, h[2])) continue; any = true; const nx = _hn[0], nz = _hn[1], pen = _hn[2], c = oz * nx - ox * nz, w = turn ? -P.yawR : 0;
+    P.x += nx * pen; P.z += nz * pen; if (turn) P.heading += clamp(c * pen / HULL.k2 * 0.7, -0.06, 0.06);
+    const vn = (P.vx - bvx + w * oz) * nx + (P.vz - bvz - w * ox) * nz;
+    if (vn < 0) { const j = -vn * 1.2 / (1 + (turn ? c * c / HULL.k2 : 0)); P.vx += nx * j; P.vz += nz * j; if (turn) P.yawR -= c * j / HULL.k2; P.vx = bvx + (P.vx - bvx) * loss; P.vz = bvz + (P.vz - bvz) * loss; if (vn < -1.5) hit(-vn); }
   }
-  if (moved) { P.x = hcWX(lx, lz); P.z = hcWZ(lx, lz); }
+  return any;
+}
+function testBox(cx, cz, r) {                       // circle against an axis-aligned box [x0, x1, z0, z1]
+  const q = _q; if (cx < q[0] - r || cx > q[1] + r || cz < q[2] - r || cz > q[3] + r) return false;
+  const nx = clamp(cx, q[0], q[1]), nz = clamp(cz, q[2], q[3]); let dx = cx - nx, dz = cz - nz; const d = Math.hypot(dx, dz); if (d >= r) return false;
+  if (d > 1e-4) { _hn[0] = dx / d; _hn[1] = dz / d; _hn[2] = r - d; }
+  else { const a = cx - q[0], b = q[1] - cx, c2 = cz - q[2], e = q[3] - cz, m = Math.min(a, b, c2, e); _hn[0] = m === a ? -1 : m === b ? 1 : 0; _hn[1] = _hn[0] ? 0 : m === c2 ? -1 : 1; _hn[2] = m + r; }
+  return true;
+}
+function testCirc(cx, cz, r) { const dx = cx - _c[0], dz = cz - _c[1], rr = _c[2] + r, d2 = dx * dx + dz * dz; if (d2 >= rr * rr || d2 < 1e-6) return false; const d = Math.sqrt(d2); _hn[0] = dx / d; _hn[1] = dz / d; _hn[2] = rr - d; return true; }
+function testHC(cx, cz, r) {                        // the carrier's tower and hull, in the carrier's own frame
+  const q = _q, lx = hcLX(cx, cz), lz = hcLZ(cx, cz); if (lx < q[0] - r || lx > q[1] + r || lz < q[2] - r || lz > q[3] + r) return false;
+  const nx = clamp(lx, q[0], q[1]), nz = clamp(lz, q[2], q[3]); let ex = lx - nx, ez = lz - nz, pen; const d = Math.hypot(ex, ez); if (d >= r) return false;
+  if (d > 1e-4) { ex /= d; ez /= d; pen = r - d; } else { const a = lx - q[0], b = q[1] - lx, c2 = lz - q[2], e = q[3] - lz, m = Math.min(a, b, c2, e); ex = m === a ? -1 : m === b ? 1 : 0; ez = ex ? 0 : m === c2 ? -1 : 1; pen = m + r; }
+  _hn[0] = ex * Math.cos(HC.yaw) + ez * Math.sin(HC.yaw); _hn[1] = -ex * Math.sin(HC.yaw) + ez * Math.cos(HC.yaw); _hn[2] = pen; return true;
+}
+const WALL_T = 0.2; let WALL_O = 12.5;               // speedway wall: half thickness, and its distance outside the racing line
+function testWall(cx, cz, r) {
+  const dx = cx - RW.x, dz = cz - RW.z; if (dx > 0 && Math.abs(dz) < 15.5 - r) return false;      // the gateway
+  const q = Math.abs(dz) - OV_S; let nx, nz, rr; if (q <= 0) { rr = Math.abs(dx); nx = Math.sign(dx) || 1; nz = 0; } else { rr = Math.hypot(dx, q); nx = dx / rr; nz = Math.sign(dz) * q / rr; }
+  const off = rr - OV_R - WALL_O, lim = r + WALL_T; if (Math.abs(off) >= lim) return false; const sg = off < 0 ? -1 : 1; _hn[0] = nx * sg; _hn[1] = nz * sg; _hn[2] = lim - Math.abs(off); return true;
+}
+function hcHits() {
+  const dx = P.x - HC.x, dz = P.z - HC.z; if (dx * dx + dz * dz > 78400 || P.y > HC.y + 32 || P.y < HC.y - 17) return; const ry = P.y - HC.y, bx = P.onHC ? 0 : HC.vx, bz = P.onHC ? 0 : HC.vz;
+  for (const q of HC.boxes) { if (ry < q[4] - 1.5 || ry > q[5]) continue; _q = q; hullEach(testHC, bx, bz, 0.95); }
 }
 function staticHits() {
+  const R = HULL.L + 1.5;
   hcHits();
-  {                                                  // speedway outer wall, open only at the gateway
-    const dx = P.x - RW.x, dz = P.z - RW.z;
-    if (Math.abs(dx) < 140 && Math.abs(dz) < 300 && P.y < RW.h + 1.8 && !(dx > 0 && Math.abs(dz) < 15.5)) {
-      const q = Math.abs(dz) - OV_S; let nx, nz, r;
-      if (q <= 0) { r = Math.abs(dx); nx = Math.sign(dx); nz = 0; } else { r = Math.hypot(dx, q); nx = dx / r; nz = Math.sign(dz) * q / r; }
-      const off = r - OV_R - 8.5;
-      if (Math.abs(off) < 1.05) { const sg = off < 0 ? -1 : 1, push = (1.05 - Math.abs(off)) * sg; P.x += nx * push; P.z += nz * push; const vn = (P.vx * nx + P.vz * nz) * sg; if (vn < 0) { P.vx -= nx * sg * vn * 1.15; P.vz -= nz * sg * vn * 1.15; P.vx *= 0.97; P.vz *= 0.97; if (vn < -2) hit(-vn); } }
-    }
-  }
-  for (let k = 0; k < BOXES.length; k++) boxHit(BOXES[k]);
-  if (inCity(P.x, P.z, 8)) {                         // city buildings, looked up by block
+  if (Math.abs(P.x - RW.x) < OV_R + 40 && Math.abs(P.z - RW.z) < OV_S + OV_R + 40 && P.y < RW.h + RW_TOP) hullEach(testWall, 0, 0, 0.97);
+  for (let k = 0; k < BOXES.length; k++) { const q = BOXES[k]; if (P.y > q[4] - 0.7 || P.x < q[0] - R || P.x > q[1] + R || P.z < q[2] - R || P.z > q[3] + R) continue; _q = q; hullEach(testBox, 0, 0, 0.88); }
+  if (inCity(P.x, P.z, 12)) {                        // city buildings, looked up by block
     const bi0 = Math.floor((P.x + CITY.E) / CITY.P), bj0 = Math.floor((P.z + CITY.E) / CITY.P);
     for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) {
       const bi = bi0 + di, bj = bj0 + dj; if (bi < 0 || bj < 0 || bi > 19 || bj > 19) continue; const arr = CITY.boxes[bi * 20 + bj]; if (!arr) continue;
-      for (let k = 0; k < arr.length; k++) boxHit(arr[k]);
+      for (let k = 0; k < arr.length; k++) { const q = arr[k]; if (P.y > q[4] - 0.7 || P.x < q[0] - R || P.x > q[1] + R || P.z < q[2] - R || P.z > q[3] + R) continue; _q = q; hullEach(testBox, 0, 0, 0.88); }
     }
   }
+  for (let k = 0; k < SOLIDS.length; k++) { const o = SOLIDS[k]; if (P.y >= o[3]) continue; const dx = P.x - o[0], dz = P.z - o[1], rr = o[2] + R; if (dx > rr || dx < -rr || dz > rr || dz < -rr) continue; _c[0] = o[0]; _c[1] = o[1]; _c[2] = o[2]; hullEach(testCirc, 0, 0, 0.82); }   // posts, parked cars, landmarks
+  if (P.y < P.gy + 6) { const ccx = Math.floor(P.x / CH), ccz = Math.floor(P.z / CH);            // trees and rocks
+    for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { const ch = chunks.get((ccx + i) + ',' + (ccz + j)); if (!ch || !ch.trees) continue; const tr = ch.trees;
+      for (let k = 0; k < tr.length; k += 3) { const dx = P.x - tr[k], dz = P.z - tr[k + 1], rr = tr[k + 2] + R; if (dx > rr || dx < -rr || dz > rr || dz < -rr) continue; _c[0] = tr[k]; _c[1] = tr[k + 1]; _c[2] = tr[k + 2]; hullEach(testCirc, 0, 0, 0.75); } } }
 }
+const RW_TOP = 12;
 function stepUfo(dt) {                              // the saucer ignores roads and gravity: it hovers, slides and climbs
   netBeamPull(dt);
   P.heading -= inp.steer * 1.9 * dt;
@@ -2479,12 +2620,11 @@ function stepUfo(dt) {                              // the saucer ignores roads 
     P.vx += (fx * ti + rx * si) * 32 * dt; P.vz += (fz * ti + rz * si) * 32 * dt;
     const sp = Math.hypot(P.vx, P.vz); if (sp > UMAX) { P.vx *= UMAX / sp; P.vz *= UMAX / sp; }
   } else { const d = Math.exp(-5.5 * dt); P.vx *= d; P.vz *= d; }                                // hands off: it stops almost at once
-  P.vy += (((inp.jump ? 17 : 0) - (inp.boost ? 17 : 0)) - P.vy) * (1 - Math.exp(-4 * dt));
+  P.vy += (((inp.jump ? (P.y - P.gy > 110 ? 38 : 17) : 0) - (inp.boost ? (P.y - P.gy > 110 ? 38 : 17) : 0)) - P.vy) * (1 - Math.exp(-4 * dt));
   P.x += P.vx * dt; P.z += P.vz * dt; P.y += P.vy * dt; P.vf = P.vx * fx + P.vz * fz; P.odo += Math.abs(P.vf) * dt;
   staticHits(); netCollide();
-  for (let q = 0; q < SOLIDS.length; q++) { const o = SOLIDS[q], dx = P.x - o[0], dz = P.z - o[1], rr = o[2] + 2.6, d2 = dx * dx + dz * dz; if (d2 < rr * rr && d2 > 1e-4 && P.y < o[3]) { const d = Math.sqrt(d2); P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } }
   P.gy = Math.max(groundAt(P.x, P.z, P.y), 0); const floor = P.gy + 1.5;
-  if (P.y < floor) { P.y += (floor - P.y) * Math.min(1, 10 * dt); if (P.vy < 0) P.vy *= 0.5; } if (P.y > 420) P.y = 420;
+  if (P.y < floor) { P.y += (floor - P.y) * Math.min(1, 10 * dt); if (P.vy < 0) P.vy *= 0.5; } { const top = onMoon(P.x) ? MOON.base + MOON.EXIT + 30 : CAR.space ? MOON.ALT + 30 : 420; if (P.y > top) P.y = top; }
   P.grounded = false; P.air = false; P.drift = P.slip = 0; P.surf = 1; P.waterT = 0;
 }
 /* helicopter: tilts to accelerate, climbs on Space, sinks on Shift, lands on its skids (and rides the carrier when parked on it) */
@@ -2498,7 +2638,6 @@ function stepHeli(dt) {
   P.x += P.vx * dt; P.z += P.vz * dt; P.y += P.vy * dt; P.vf = P.vx * fx + P.vz * fz; P.odo += Math.hypot(P.vx, P.vz) * dt;
   staticHits(); netCollide();
   if (P.frozenT > 0) { P.frozenT -= dt; const fd = Math.exp(-2.2 * dt); P.vx *= fd; P.vz *= fd; }
-  for (let q = 0; q < SOLIDS.length; q++) { const o = SOLIDS[q], dx = P.x - o[0], dz = P.z - o[1], rr = o[2] + 2.2, d2 = dx * dx + dz * dz; if (d2 < rr * rr && d2 > 1e-4 && P.y < o[3]) { const d = Math.sqrt(d2); P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } }
   P.gy = groundAt(P.x, P.z, P.y + 0.6); const floor = Math.max(P.gy, 0.25);
   if (P.y <= floor) { P.y = floor; if (P.vy < 0) P.vy = 0; P.grounded = !inp.jump; } else P.grounded = false;
   { const now = P.grounded && Math.abs(P.y - HC.y) < 0.35 && onDeck(P.x, P.z); if (now && !P.onHC) { P.vx -= HC.vx; P.vz -= HC.vz; } else if (!now && P.onHC) { P.vx += HC.vx; P.vz += HC.vz; } P.onHC = now; }
@@ -2533,7 +2672,7 @@ function stepPlayer(dt) {
     P.steer += (inp.steer * maxSteer(vf) * (1 + 1.0 * D) - P.steer) * (1 - Math.exp(-mix(16, 9, D) * dt));
     const dirS = clamp(vf / 2, -1, 1);                                                                // eases through zero, so a big slide never flips the steering
     let yaw = dirS * Math.max(Math.abs(vf), spd * D) * Math.tan(P.steer) / 2.6;
-    const lim = mix((onRoad ? 1.95 : 1.2) * CAR.grip, 27, D) / Math.max(spd, 3);
+    const lim = mix((onRoad ? 1.95 : 1.2) * CAR.grip * moonGrip(), 27, D) / Math.max(spd, 3);
     yaw = clamp(yaw, -lim, lim);
     if (D > 0.05 && spd > 4) {                       // a sliding car wants to point where it is going: this is what lets you hold and catch a drift
       const sa = Math.atan2(P.vx * Math.cos(P.heading) - P.vz * Math.sin(P.heading), Math.abs(vf) + 2);
@@ -2556,13 +2695,13 @@ function stepPlayer(dt) {
     if (rs && Math.abs(lat) < 1.4) { const d = (P.z - rs.E) * rs.side; if (d > 0 && d < 30 && fz * rs.side < -0.5 && vf < 42) vf += 45 * dt; }
     if (inp.brk > 0 && !burn) { if (vf > 0.5) vf -= inp.brk * 24 * dt; else vf -= inp.brk * 7 * (1 - clamp(-vf / 12, 0, 1)) * dt; }
     if (inp.hb) vf -= Math.sign(vf) * Math.min(Math.abs(vf), 3.5 * dt);
-    vf -= vf * (0.05 + CAR.offDrag * surf + (inWater ? 3 : 0)) * dt;
+    vf -= vf * (0.05 + CAR.offDrag * surf * (P.x > 12000 ? 0.25 : 1) + (inWater ? 3 : 0)) * dt;   // firm regolith and no air on the Moon
     vf -= Math.sign(vf) * Math.min(Math.abs(vf), 0.5 * dt);
     vf -= 9.8 * Math.sin(P.gPitch) * 0.7 * dt;
     const slip = Math.abs(vl) / (spd + 2); P.slip = slip;
     const dT = inp.hb && spd > 5 ? 1 : spd > 7 ? sstep(0.04, 0.24, slip) * (inp.thr > 0 ? 1 : 0.45) : 0;   // grip lets go and comes back progressively, never as a switch
     P.drift += (dT - P.drift) * (1 - Math.exp(-(dT > P.drift ? 5 : 1.5) * dt));
-    vl *= Math.exp(-mix(CAR.grip * 1.4 * (surf === 0 ? 1 : surf < 1 ? 0.68 : 0.5), CAR.driftGrip * (inp.thr > 0 ? 1.0 : 2.0), P.drift) * dt);
+    vl *= Math.exp(-mix(CAR.grip * moonGrip() * 1.4 * (surf === 0 ? 1 : surf < 1 ? 0.68 : 0.5), CAR.driftGrip * (inp.thr > 0 ? 1.0 : 2.0), P.drift) * dt);
     vf -= vf * 0.2 * slip * P.drift * dt;
     P.vx = fx * vf + rx * vl; P.vz = fz * vf + rz * vl;
   } else if (P.air && CAR.plane) {
@@ -2603,23 +2742,9 @@ function stepPlayer(dt) {
   lat = (P.x - roadX(P.z)) / len;
   const pushLat = (to) => { P.x += (to - lat) * len; const vn = P.vx * nx + P.vz * nz; P.vx -= nx * vn * 1.25; P.vz -= nz * vn * 1.25; P.vx *= 0.985; P.vz *= 0.985; if (Math.abs(vn) > 2) hit(Math.abs(vn)); lat = to; };
   const onRd = Math.abs(P.z) < REND;                 // road barriers stop where the road does
-  if (onRd && br > 0.05 && P.y > ry - 0.8 && P.y < ry + 1.5 && Math.abs(lat) < half + 1.0 && Math.abs(lat) > half - 0.75) pushLat(Math.sign(lat) * (half - 0.75));
-  if (onRd && hw >= 0.5 && Math.abs(lat) < 1.3 && P.y < ry + 1.2 && P.y > ry - 1) pushLat((lat >= 0 ? 1 : -1) * 1.3);
-
-  /* trees and rocks */
-  const ccx = Math.floor(P.x / CH), ccz = Math.floor(P.z / CH);
-  if (P.y < P.gy + 6) for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) {
-    const c = chunks.get((ccx + i) + ',' + (ccz + j)); if (!c || !c.trees) continue; const tr = c.trees;
-    for (let k = 0; k < tr.length; k += 3) {
-      const dx = P.x - tr[k], dz = P.z - tr[k + 1], rr = tr[k + 2] + 1.05, d2 = dx * dx + dz * dz;
-      if (d2 < rr * rr && d2 > 1e-4) { const d = Math.sqrt(d2), ux = dx / d, uz = dz / d; P.x += ux * (rr - d); P.z += uz * (rr - d); const vn = P.vx * ux + P.vz * uz; if (vn < 0) { P.vx -= ux * vn * 1.25; P.vz -= uz * vn * 1.25; P.vx *= 0.7; P.vz *= 0.7; hit(-vn); } }
-    }
-  }
-
-  for (let k = 0; k < SOLIDS.length; k++) {         // buildings and towers
-    const q = SOLIDS[k], dx = P.x - q[0], dz = P.z - q[1], rr = q[2] + 1.05, d2 = dx * dx + dz * dz;
-    if (d2 < rr * rr && d2 > 1e-4 && P.y < q[3]) { const d = Math.sqrt(d2), ux = dx / d, uz = dz / d; P.x += ux * (rr - d); P.z += uz * (rr - d); const vn = P.vx * ux + P.vz * uz; if (vn < 0) { P.vx -= ux * vn * 1.25; P.vz -= uz * vn * 1.25; P.vx *= 0.8; P.vz *= 0.8; hit(-vn); } }
-  }
+  const relY = P.heading - Math.atan2(d1, 1), reach = Math.abs(Math.sin(relY)) * HULL.L + Math.abs(Math.cos(relY)) * HULL.W;   // how far the body sticks out sideways at this angle to the road
+  if (onRd && br > 0.05 && P.y > ry - 0.8 && P.y < ry + 1.5 && Math.abs(lat) < half + 1.0 && Math.abs(lat) > half + 0.25 - reach) pushLat(Math.sign(lat) * (half + 0.25 - reach));
+  if (onRd && hw >= 0.5 && Math.abs(lat) < 0.34 + reach && P.y < ry + 1.2 && P.y > ry - 1) pushLat((lat >= 0 ? 1 : -1) * (0.34 + reach));
 
   staticHits();
 
@@ -2627,10 +2752,10 @@ function stepPlayer(dt) {
   for (const n of npcs) {
     if (!n.live || P.y > n.y + 2.6) continue; const ddx = P.x - n.x, ddz = P.z - n.wz; if (ddx * ddx + ddz * ddz > 64) continue;
     const nfx = -Math.sin(n.yaw), nfz = -Math.cos(n.yaw), no = n.halfLen - 0.95;
-    for (const po of [-1.15, 1.15]) for (const qo of n.halfLen > 3 ? [-no, 0, no] : [-no, no]) {
+    for (const po of HULL.own) for (const qo of n.halfLen > 3 ? [-no, 0, no] : [-no, no]) {
       const ax = P.x + fx * po, az = P.z + fz * po, bx = n.x + nfx * qo, bz = n.wz + nfz * qo, dx = ax - bx, dz = az - bz, d2 = dx * dx + dz * dz;
-      if (d2 >= 4 || d2 < 1e-5) continue;
-      const d = Math.sqrt(d2), ux = dx / d, uz = dz / d, pen = 2 - d;
+      if (d2 >= HULL.sum * HULL.sum || d2 < 1e-5) continue;
+      const d = Math.sqrt(d2), ux = dx / d, uz = dz / d, pen = HULL.sum - d;
       P.x += ux * pen * 0.6; P.z += uz * pen * 0.6;
       if (n.mode) { n.x -= ux * pen * 0.4; n.wz -= uz * pen * 0.4; } else { n.kx -= ux * pen * 0.4; n.kz -= uz * pen * 0.4; }
       const nvx = nfx * n.speed + n.kvx, nvz = nfz * n.speed + n.kvz, vr = (P.vx - nvx) * ux + (P.vz - nvz) * uz;
@@ -2654,7 +2779,7 @@ function stepPlayer(dt) {
 
   /* vertical */
   let g = groundAt(P.x, P.z, P.y); if (g < -1.1) g = -1.1; if (CAR.plane && g < FLOAT_Y) g = FLOAT_Y;      // the floats keep the aircraft on top of the water
-  P.vy -= 22 * dt; let ny = P.y + P.vy * dt;
+  P.vy -= gravAt(P.x) * dt; let ny = P.y + P.vy * dt;
   if (ny <= g) { P.vy = clamp((g - P.y) / dt, -30, Math.min(13, 0.5 * Math.hypot(P.vx, P.vz) + 2)); ny = g; P.grounded = true; } else P.grounded = ny - g < 0.25;
   P.y = ny; P.gy = g;
   { const now = P.grounded && Math.abs(P.y - HC.y) < 0.35 && onDeck(P.x, P.z);          // stepping on or off the deck swaps between ship-relative and world velocity, so momentum carries over
@@ -2667,13 +2792,21 @@ function stepPlayer(dt) {
   if (inWater) { P.waterT += dt; if (P.waterT > 1.8) respawn(); } else P.waterT = 0;
 }
 let respawning = false;
-function respawn(turnBack) {
+function spaceHop(toMoon) {                         // the sky has already faded to black on the way up; cut to the other world behind a blink
   if (respawning) return; respawning = true; $('flash').style.opacity = 1;
-  setTimeout(() => { if (turnBack) placeOnRoad(Math.sign(P.z) * (REND - 110), P.z < 0 ? -1 : 1); else placeOnRoad(P.z, Math.cos(P.heading) >= 0 ? 1 : -1); camSnap = true; $('flash').style.opacity = 0; respawning = false; }, 380);
+  setTimeout(() => { const vx = P.vx, vz = P.vz, hd = P.heading, ox = toMoon ? P.x : P.x - MOON.x, oz = toMoon ? P.z : P.z - MOON.z;
+    if (toMoon) { teleport(MOON.x + clamp(ox * 0.4, -1200, 1200), MOON.z + clamp(oz * 0.4, -1200, 1200), hd); P.y = MOON.base + MOON.EXIT - 190; }
+    else { teleport(clamp(ox * 1.4, -2600, 2600), clamp(oz * 1.4, -2600, 2600), hd); P.y = MOON.ALT - 110; }
+    P.vx = vx; P.vz = vz; P.vy = -8; P.grounded = false; camSnap = true; $('flash').style.opacity = 0; respawning = false; toast(toMoon ? 'The Moon. One sixth gravity' : 'Back over the island'); }, 420);
+}
+function respawn(turnBack) {
+  removeParachute(); gpFireHeld = false;
+  if (respawning) return; respawning = true; $('flash').style.opacity = 1;
+  setTimeout(() => { if (onMoon(P.x)) teleport(MOON.x + 30, MOON.z + 30, P.heading); else if (turnBack) placeOnRoad(Math.sign(P.z) * (REND - 110), P.z < 0 ? -1 : 1); else placeOnRoad(P.z, Math.cos(P.heading) >= 0 ? 1 : -1); camSnap = true; $('flash').style.opacity = 0; respawning = false; }, 380);
 }
 
 /* ───────────── time of day ───────────── */
-let tod = 0.3, clockT = 0;
+let tod = 0.3, clockT = 0, todOff = 0, todFix = -1;
 const col = h => new T.Color(h);
 const K = { nZ: col(0x050918), nH: col(0x141d38), dZ: col(0x2e72c6), dH: col(0xaed6ef), kZ: col(0x34407c), kH: col(0xf59a5e),
   sLow: col(0xff7a3a), sHigh: col(0xfff3d6), moon: col(0x9db4ff), litD: col(0xffffff), litN: col(0x2a3350), litK: col(0xffc9a0),
@@ -2681,12 +2814,26 @@ const K = { nZ: col(0x050918), nH: col(0x141d38), dZ: col(0x2e72c6), dH: col(0xa
   lampOff: col(0x9a9a92), lampOn: col(0xffe9b0), hOff: col(0xdedccd), hOn: col(0xfff6cc), tOff: col(0x8e1c1c), tOn: col(0xff2a2a) };
 const tmpC = new T.Color(), sunDir = new T.Vector3(), moonDir = new T.Vector3();
 let night = 0;
+const SPACE_BLK = new T.Color(0x000004);
+const earth = (() => {                               // the Earth, hanging over the Moon
+  const cv = document.createElement('canvas'); cv.width = 256; cv.height = 128; const g = cv.getContext('2d'), im = g.createImageData(256, 128);
+  for (let y = 0; y < 128; y++) for (let x = 0; x < 256; x++) { const u = x / 256 * 6, v = y / 128 * 3, land = perlin(u * 1.3 + 4, v * 1.3 + 1) + perlin(u * 3.1, v * 3.1 + 7) * 0.4, cl = perlin(u * 2.2 + 30, v * 4.5 + 3) + perlin(u * 6 + 9, v * 6) * 0.5, k = (y * 256 + x) * 4, ice = Math.abs(y - 64) > 54;
+    let r = 24, gg = 78, b = 150; if (land > 0.12) { r = 62; gg = 118; b = 60; } if (land > 0.42) { r = 150; gg = 132; b = 92; } if (ice) { r = gg = b = 232; } const c = clamp((cl - 0.1) * 2.2, 0, 0.9); im.data[k] = r + (245 - r) * c; im.data[k + 1] = gg + (245 - gg) * c; im.data[k + 2] = b + (248 - b) * c; im.data[k + 3] = 255; }
+  g.putImageData(im, 0, 0); const m = new T.Mesh(new T.SphereGeometry(300, 32, 20), new T.MeshLambertMaterial({ map: new T.CanvasTexture(cv), fog: false, emissive: 0x1a2c44 })); m.rotation.z = 0.41; m.visible = false; scene.add(m); return m;
+})();
+{                                                    // the landing site: a lander and a flag to find your way back to
+  const g = new T.Group(), gold = new T.MeshLambertMaterial({ color: 0xc9a23a }), grey = new T.MeshLambertMaterial({ color: 0xb9bcc2 }), dk = new T.MeshLambertMaterial({ color: 0x33363c }), lx = MOON.x + 26, lz = MOON.z - 22, y = moonH(lx, lz);
+  const body = new T.Mesh(new T.CylinderGeometry(1.9, 2.3, 1.7, 8), gold); body.position.y = 2.3; g.add(body); const cab = new T.Mesh(new T.BoxGeometry(2.4, 1.9, 2.2), grey); cab.position.y = 4.1; g.add(cab);
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4, leg = new T.Mesh(new T.CylinderGeometry(0.09, 0.09, 3.4, 5), dk); leg.position.set(Math.cos(a) * 2.6, 1.4, Math.sin(a) * 2.6); leg.rotation.z = Math.cos(a) * 0.5; leg.rotation.x = -Math.sin(a) * 0.5; g.add(leg); const pad = new T.Mesh(new T.CylinderGeometry(0.55, 0.55, 0.12, 8), gold); pad.position.set(Math.cos(a) * 3.4, 0.06, Math.sin(a) * 3.4); g.add(pad); }
+  const dish = new T.Mesh(new T.ConeGeometry(0.8, 0.5, 10, 1, true), grey); dish.position.set(1.5, 5.6, 0); dish.rotation.z = -0.9; g.add(dish);
+  const pole = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 3.4, 5), grey); pole.position.set(9, 1.7, 5); g.add(pole); const flag = new T.Mesh(new T.BoxGeometry(1.7, 1, 0.04), new T.MeshLambertMaterial({ color: 0xffc44d })); flag.position.set(9.9, 2.85, 5); g.add(flag);
+  g.position.set(lx, y, lz); g.traverse(o => { o.castShadow = true; }); scene.add(g); SOLIDS.push([lx, lz, 3.3, y + 6], [lx + 9, lz + 5, 0.25, y + 3.4]);
+}
 function updateSky(dt, brake) {
-  const isDay = tod > 0.25 && tod < 0.75;
-  let adv = (isDay ? 0.5 / 400 : 0.5 / 140) * dt;
-  if (todSkip > 0) { const s = Math.min(todSkip, 0.09 * dt); todSkip -= s; adv += s; }
-  tod = (tod + adv) % 1; clockT += dt;
-  const a = (tod - 0.25) * 2 * Math.PI;
+  todOff += Math.min(Math.max(NET.ts - todOff, 0), 0.09 * dt);                                     // time skips are shared: everyone moves to the furthest skip in the room
+  const u = (NET.now() / 1000) % 540; clockT += dt;                                                 // 400 s of daylight, 140 s of night, on the shared clock
+  tod = todFix >= 0 ? todFix : ((u < 400 ? 0.25 + u / 800 : 0.75 + (u - 400) / 280) + todOff) % 1;
+  const moonW = onMoon(P.x), spaceF = moonW ? 1 : sstep(250, MOON.ALT - 15, P.y), a = ((moonW ? 0.4 : tod) - 0.25) * 2 * Math.PI;   // the Moon sits in permanent hard daylight
   sunDir.set(Math.cos(a), Math.sin(a) * 0.9, -0.45).normalize();
   const e = sunDir.y, day = sstep(-0.08, 0.28, e), dusk = Math.exp(-(e * e) / 0.026);
   night = 1 - sstep(-0.12, 0.1, e);
@@ -2700,12 +2847,14 @@ function updateSky(dt, brake) {
   skyU.uNight.value = night; skyU.uDusk.value = dusk; skyU.uTime.value = clockT;
   skyU.uCover.value = 0.5 + 0.1 * Math.sin(clockT * 0.011);
   scene.fog.color.copy(skyU.uHor.value).lerp(skyU.uZen.value, 0.22);
+  if (spaceF > 0) { skyU.uZen.value.lerp(SPACE_BLK, spaceF); skyU.uHor.value.lerp(SPACE_BLK, spaceF); skyU.uNight.value = Math.max(night, spaceF); skyU.uCover.value += spaceF * 2; skyU.uLit.value.lerp(SPACE_BLK, spaceF); skyU.uShade.value.lerp(SPACE_BLK, spaceF); scene.fog.color.lerp(SPACE_BLK, spaceF); if (moonW) skyU.uMoon.value.set(0, -1, 0); }   // blue thins to black and the stars come out
+  water.visible = !moonW; earth.visible = moonW; if (moonW) { earth.position.set(camera.position.x + 1500, camera.position.y + 2100, camera.position.z - 2300); earth.rotation.y += dt * 0.01; }
   renderer.setClearColor(scene.fog.color);
   const sunI = sstep(-0.04, 0.12, e), moonI = sstep(0.04, -0.12, e);
   if (e > 0) { sun.color.copy(skyU.uSunCol.value); sun.intensity = 0.95 * sunI; sun.position.copy(sunDir); }
   else { sun.color.copy(K.moon); sun.intensity = 0.24 * moonI; sun.position.copy(moonDir); }
   sun.position.multiplyScalar(260).add(playerMesh.position); sun.target.position.copy(playerMesh.position);
-  hemi.intensity = mix(0.26, 0.6, day); hemi.color.copy(skyU.uZen.value).lerp(K.white, 0.45);
+  hemi.intensity = moonW ? 0.36 : mix(0.26, 0.6, day); hemi.color.copy(skyU.uZen.value).lerp(K.white, moonW ? 0.75 : 0.45);
   water.material.color.copy(K.wN).lerp(K.wD, day).lerp(skyU.uHor.value, 0.25 + 0.2 * dusk);
   glowMat.color.copy(K.lampOff).lerp(K.lampOn, night); headMat.color.copy(K.hOff).lerp(K.hOn, night); tailMat.color.copy(K.tOff).lerp(K.tOn, night * 0.7);
   brakeMat.color.copy(K.tOff).lerp(K.tOn, Math.max(night * 0.7, brake ? 1 : 0));
@@ -2752,7 +2901,7 @@ let toastT = 0;
 function toast(msg) { const el = $('toast'); el.textContent = msg; el.style.opacity = 1; clearTimeout(toastT); toastT = setTimeout(() => { el.style.opacity = 0; }, 1500); }
 function setAuto(v) { auto = v; autoSt = null; $('bAuto').setAttribute('aria-pressed', v); if (started) toast(v ? 'Auto-drive on' : 'You have the wheel'); }
 function nextCam() { camMode = (camMode + 1) % 3; toast(['Chase camera', 'High camera', 'First person'][camMode]); }
-function skipTime() { todSkip += 1 / 8; toast('Three hours later'); }
+function skipTime() { NET.ts = Math.max(NET.ts, todOff) + 1 / 8; toast(NET.room ? 'Three hours later, for everyone' : 'Three hours later'); }
 function setSound(v) { soundOn = v; $('bSound').setAttribute('aria-pressed', v); if (master) master.gain.value = v ? 0.5 : 0; toast(v ? 'Sound on' : 'Sound off'); }
 function begin() {
   if (started) return; started = true; $('start').classList.add('gone'); $('hud').hidden = false; setAuto(false); initAudio(); camSnap = false;
@@ -2788,7 +2937,7 @@ function updateCamera(dt, time) {
     const cp = Math.cos(AIM.pitch), dx = -Math.sin(AIM.yaw) * cp, dy = Math.sin(AIM.pitch), dz = -Math.cos(AIM.yaw) * cp, sx = Math.cos(AIM.yaw), sz = -Math.sin(AIM.yaw);
     if (camMode === 2 && RIDE) want.set(RIDE.pos.x - RIDE.fz * 0.42 - RIDE.fx * 0.3, RIDE.pos.y + 1.27, RIDE.pos.z + RIDE.fx * 0.42 - RIDE.fz * 0.3);   // the passenger seat of their car
     else if (camMode === 2) want.set(P.x + dx * 0.12, P.y + 1.7, P.z + dz * 0.12);
-    else { const d = RIDE ? 8.5 : camMode ? 6.5 : 3.4, sh = RIDE ? 0 : 0.62; want.set(P.x - dx * d + sx * sh, P.y + (RIDE ? 2.3 : 1.72) - dy * d, P.z - dz * d + sz * sh); }
+    else { const d = RIDE ? 8.5 : CHUTE ? 15 : camMode ? 6.5 : 3.4, sh = RIDE || CHUTE ? 0 : 0.62; want.set(P.x - dx * d + sx * sh, P.y + (RIDE ? 2.3 : CHUTE ? 4.6 : 1.72) - dy * d, P.z - dz * d + sz * sh); }
     look.set(want.x + dx * 30, want.y + dy * 30, want.z + dz * 30);
   } else if (!started) {                            // attract mode: slow orbit
     const a = P.heading + 2.5 + Math.sin(time * 0.07) * 0.7;
@@ -2834,7 +2983,7 @@ function updateSmoke(dt) {
    drawn by easing toward "last state + velocity x age" (age capped at 0.3 s). Nothing a peer sends is trusted:
    every field is validated and clamped, names are only ever drawn as text. Without a room the game is single-player. */
 const PCOLS = ['#ff5a5f', '#ffb020', '#ffe14d', '#7ee04b', '#2fd6a3', '#35c9ff', '#5b8cff', '#a77bff', '#ff6fd0', '#ff8a3d', '#c8f03c', '#f2f2f2'];
-const NET = { dm: new Map(), color: PCOLS[Math.floor(Math.random() * PCOLS.length)], now: () => Date.now(), pre: null, preSeq: 0, frz: null, frzSeen: new Map(), room: null, me: null, name: '', rem: new Map(), seq: 0, sendT: 0, cool: new Map(), beam: null, pulledBy: null, lastHit: null, hits: 0, listT: 0 };
+const NET = { ts: 0, dm: new Map(), color: PCOLS[Math.floor(Math.random() * PCOLS.length)], now: () => Date.now(), pre: null, preSeq: 0, frz: null, frzSeen: new Map(), room: null, me: null, name: '', rem: new Map(), seq: 0, sendT: 0, cool: new Map(), beam: null, pulledBy: null, lastHit: null, hits: 0, listT: 0 };
 try { NET.name = (localStorage.getItem('dd-name') || '').slice(0, 16); } catch (e) { /* storage unavailable */ }
 if (!NET.name) NET.name = 'Driver ' + (100 + Math.floor(Math.random() * 900));
 const num = v => typeof v === 'number' && isFinite(v), vec = (a, n) => Array.isArray(a) && a.length === n && a.every(num);
@@ -2844,7 +2993,7 @@ function netSend() {
   const now = NET.now(); if (!NET.room || now - NET.sendT < 55) return; NET.sendT = now;
   const q = playerMesh.quaternion, v = netVel();
   NET.room.presence({ v: 1, n: NET.name, col: NET.color, rd: RIDE ? 1 : 0, w: HP.dead > 0 ? 1 : 0, hp: Math.round((CAR.foot ? PH.v / PH.max : HP.v / HP.max) * 100), dm: [...NET.dm].slice(-6), g: GUN.i, bl: LB.mine.length ? LB.mine[0].t : 0, c: CAR.id, m: CAR.mass, p: [r2(P.x), r2(P.y), r2(P.z)], q: [r4(q.x), r4(q.y), r4(q.z), r4(q.w)], vel: [r2(v[0]), r2(v[1]), r2(v[2])],
-    bo: beamOn && CAR.ufo ? 1 : 0, beam: NET.beam, frz: NET.frz, oil: NET.oil || null, pre: NET.pre, ice: P.frozenT > 0 ? 1 : 0 }).catch(() => {});
+    bo: beamOn && CAR.ufo ? 1 : 0, beam: NET.beam, frz: NET.frz, oil: NET.oil || null, pre: NET.pre, ice: P.frozenT > 0 ? 1 : 0, ts: NET.ts, nq: netNq() }).catch(() => {});
 }
 function netTag(r) {                                // name tag: text drawn to a canvas, never markup
   const cv = r.tagCv, g = cv.getContext('2d'); g.clearRect(0, 0, 256, 64);
@@ -2892,6 +3041,7 @@ function netUpdate(dt) {
     r.tag.position.set(r.pos.x, r.pos.y + (r.car.foot ? 2.45 : r.car.ufo ? 4.2 : r.car.plane ? 4.6 : r.car.heli ? 5 : 3.1), r.pos.z);
     if (s.ice === 1 && !r.ice) { r.ice = new T.Mesh(new T.BoxGeometry(2.6, 2, r.halfLen * 2 + 0.7), iceMat); r.ice.position.y = 1; r.mesh.add(r.ice); } if (r.ice) r.ice.visible = s.ice === 1;
     const ol = s.oil; if (ol && ol.targetId === NET.me && num(ol.seq) && NET.oilSeen !== pr.peer + ':' + ol.seq) { NET.oilSeen = pr.peer + ':' + ol.seq; if (num(ol.at) && now - ol.at < 4000) { P.oilT = 2.6; P.oilDir = Math.random() < 0.5 ? 1 : -1; toast('Oiled by ' + r.name); oilPuddle(P.x, P.gy, P.z); } }   // their oil gun hit us
+    if (num(s.ts) && s.ts > NET.ts && s.ts < 1e4) NET.ts = s.ts; r.nq = Array.isArray(s.nq) && s.nq.length <= 8 ? s.nq : null;
     const fz = s.frz; if (fz && fz.targetId === NET.me && num(fz.seq) && NET.frzSeen.get(pr.peer) !== fz.seq) { NET.frzSeen.set(pr.peer, fz.seq); if (num(fz.at) && now - fz.at < 4000) { P.frozenT = FREEZE_T; toast('Frozen by ' + r.name); crashSound(0.5); } }   // a freeze missile from that player hit us
     const far = r.pos.distanceToSquared(playerMesh.position) > 1400 * 1400; r.mesh.visible = r.tag.visible = !far; if (s.rd === 1) r.mesh.visible = r.tag.visible = false; if (RIDE === r && camMode === 2) r.mesh.visible = false;
     r.bm.visible = !far && r.car.ufo && s.bo === 1; if (r.bm.visible) { r.bm.position.set(r.pos.x, r.pos.y + 0.1, r.pos.z); r.bm.scale.y = clamp(r.pos.y - Math.max(groundAt(r.pos.x, r.pos.z, r.pos.y), 0) + 0.4, 2, 70); }
@@ -2915,7 +3065,7 @@ function netList() {                                // player list: you first, t
    The other client runs the same test from its side, so between them both cars respond. One impulse per pair per 350 ms. */
 function netCollide() {
   if (!NET.rem.size || CAR.foot) return; const now = NET.now();
-  const fx = -Math.sin(P.heading), fz = -Math.cos(P.heading), big = CAR.ufo || CAR.heli, own = big ? [0] : [-1.15, 1.15], ro = big ? 2.7 : 1.0;
+  const fx = -Math.sin(P.heading), fz = -Math.cos(P.heading), big = CAR.ufo || CAR.heli, own = big ? [0] : HULL.own, ro = big ? 2.7 : HULL.W;
   const hv = P.onHC ? HC : null, m1 = clamp(CAR.mass, 0.3, 3);
   const bump = (r, ux, uz) => {                     // one impulse along the contact normal (restitution 0.3), applied to our own vehicle only
     const fresh = r.preV && now - r.preT < 600, rvx = fresh ? r.preV[0] : r.sv.x, rvz = fresh ? r.preV[1] : r.sv.z;   // if they hit us first, use the speed they had before their own bounce
@@ -2989,7 +3139,7 @@ const eyeOf = () => RIDE ? [0.42, 1.22, 0.28] : CAR.foot ? [0, 1.68, -0.16] : CA
 function vehUI() {
   for (const k of ['jet', 'plane', 'ufo', 'heli', 'blick', 'foot']) for (const el of document.querySelectorAll('.' + k + '-only')) el.hidden = !CAR[k];
   root.dataset.veh = CAR.foot ? 'foot' : CAR.plane ? 'plane' : CAR.ufo ? 'ufo' : CAR.heli ? 'heli' : CAR.jet ? 'jet' : 'car';
-  $('ammo').hidden = !(CAR.heli || CAR.blick || CAR.foot);
+  $('ammo').hidden = !(CAR.heli || CAR.blick || CAR.foot); setHull();
 }
 /* the on-foot character: a jointed figure (hips, knees, shoulders, elbows, neck) built from rounded segments */
 function buildWalker(g, ch, hat) {
@@ -3032,22 +3182,51 @@ function parkSol(m, x, y, z, h, car) {
   if (car.ufo || car.heli) return [[x, z, 2.8, y + 2.5]]; const hl = Math.max(0.2, m.userData.halfLen - 0.95), sx = Math.sin(h), cz = Math.cos(h);
   return [[x - sx * hl, z - cz * hl, 1.1, y + 1.8], [x + sx * hl, z + cz * hl, 1.1, y + 1.8]];
 }
+let CHUTE = null, chuteArm = 0, chuteCut = false, jumpWas = false;
+function buildChute(col) {                          // ram-air canopy: nine cells on an arc, lines gathered into two risers at the shoulders
+  const g = new T.Group(), can = new T.Group(), R = 5.6, N = 9, span = 1.05, c1 = new T.MeshLambertMaterial({ color: col }), c2 = new T.MeshLambertMaterial({ color: 0xf2efe6 }), cd = new T.MeshLambertMaterial({ color: 0x23262b }), lp = [];
+  for (let i = 0; i < N; i++) {
+    const a = (i - (N - 1) / 2) * span / R * 1.04, x = Math.sin(a) * R, y = Math.cos(a) * R, cell = new T.Group(); cell.position.set(x, y, 0); cell.rotation.z = -a;
+    const top = new T.Mesh(new T.BoxGeometry(span, 0.2, 2.5), i & 1 ? c2 : c1); top.position.z = 0.1; cell.add(top);
+    const nose = new T.Mesh(new T.BoxGeometry(span, 0.3, 0.32), cd); nose.position.set(0, -0.02, -1.2); cell.add(nose);             // open leading edge
+    const tail = new T.Mesh(new T.BoxGeometry(span, 0.08, 0.5), i & 1 ? c2 : c1); tail.position.set(0, -0.1, 1.5); tail.rotation.x = 0.28; cell.add(tail);
+    const rib = new T.Mesh(new T.BoxGeometry(0.04, 0.3, 2.5), cd); rib.position.set(-span / 2, -0.05, 0.1); cell.add(rib);
+    can.add(cell);
+    if (i % 2 === 0 || i === N - 1) for (const z of [-1.1, 1.2]) lp.push(x, y - 0.12, z, Math.sign(x || 1) * 0.24, 0, z < 0 ? -0.08 : 0.1);
+  }
+  for (const sd of [-1, 1]) { const a = sd * (N / 2) * span / R * 1.04, st = new T.Mesh(new T.BoxGeometry(0.05, 0.75, 2.2), c1); st.position.set(Math.sin(a) * R, Math.cos(a) * R - 0.36, 0.1); st.rotation.z = -a; can.add(st); }   // stabiliser panels at the tips
+  can.position.y = 1.5; g.add(can);
+  const lg = new T.BufferGeometry(); lg.setAttribute('position', new T.Float32BufferAttribute(lp, 3)); const lines = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x1c1e22 })); lines.position.y = 1.5; g.add(lines);
+  for (const sd of [-1, 1]) { const r = new T.Mesh(new T.BoxGeometry(0.05, 0.42, 0.05), cd); r.position.set(sd * 0.24, 1.32, 0); g.add(r); }
+  const pack = new T.Mesh(new T.BoxGeometry(0.34, 0.4, 0.1), cd); pack.position.set(0, 1.2, 0.17); g.add(pack);
+  g.userData.can = can; g.userData.lines = lines; return g;
+}
+function poseChute(g, open, t, bank, pitch) {       // unfurls from a streamer, then breathes and leans with the turn
+  const e = open * open * (3 - 2 * open), can = g.userData.can, ln = g.userData.lines, sx = 0.12 + 0.88 * e, sy = 0.55 + 0.45 * e + (1 - e) * 0.25, br = 1 + Math.sin(t * 5.1) * 0.012 * e;
+  can.scale.set(sx * br, sy, 0.3 + 0.7 * e); ln.scale.set(sx * br, sy, 0.3 + 0.7 * e);
+  g.rotation.z = bank + Math.sin(t * 1.3) * 0.035 * e; g.rotation.x = pitch + Math.sin(t * 0.9 + 1) * 0.025 * e;
+}
+function openChute() { if (CHUTE) return; const g = buildChute(NET.color); g.rotation.order = 'YXZ'; scene.add(g); CHUTE = { g, t: 0, open: 0, bank: 0 }; chuteArm = 0; }
+function removeParachute() { if (CHUTE) { scene.remove(CHUTE.g); CHUTE = null; } chuteArm = 0; }
 function getOut() {
   if (CAR.foot || HP.dead > 0 || !started) return;
-  if (Math.hypot(P.vx, P.vz) > 4 || (P.y - P.gy > 2.6 && !P.onHC)) { toast('Stop and land first'); return; }
+  const airborneExit = !P.onHC && P.y - Math.max(groundAt(P.x, P.z, P.y + 0.5), -1) > 3.5;              // high enough to bail out under a canopy
+  if (!airborneExit && Math.hypot(P.vx, P.vz) > 4) { toast('Slow down first, or bail out higher up'); return; }
   if (!walker) { walker = makeCar('walker', NET.color, false); scene.remove(walker); walker.rotation.set(0, 0, 0); }
   if (auto) setAuto(false); setBeam(false);
   const m = playerModel; playerMesh.remove(m); scene.add(m); m.position.set(P.x, P.y, P.z); m.rotation.order = 'YXZ'; m.rotation.set(P.pitch, P.heading, P.roll); m.visible = true;
   if (m.userData.driver) m.userData.driver.visible = false; for (const f of flames) f.visible = false;
-  const sol = parkSol(m, P.x, P.y, P.z, P.heading, CAR); SOLIDS.push(...sol);
-  PARK = { car: CAR, model: m, x: P.x, y: P.y, z: P.z, heading: P.heading, pitch: P.pitch, roll: P.roll, sol, onHC: P.onHC, lx: hcLX(P.x, P.z), lz: hcLZ(P.x, P.z), dyaw: P.heading - HC.yaw };
+  const sol = airborneExit ? [] : parkSol(m, P.x, P.y, P.z, P.heading, CAR); SOLIDS.push(...sol);
+  PARK = { car: CAR, model: m, x: P.x, y: P.y, z: P.z, heading: P.heading, pitch: P.pitch, roll: P.roll, sol, onHC: P.onHC, lx: hcLX(P.x, P.z), lz: hcLZ(P.x, P.z), dyaw: P.heading - HC.yaw, fall: airborneExit ? { vx: P.vx, vy: P.vy, vz: P.vz, sp: (Math.random() - 0.5) * 1.2 } : null };
   const side = CAR.ufo || CAR.heli || CAR.plane ? 4.2 : 2.0; CAR = FOOTCAR; playerModel = walker; playerMesh.add(walker);
-  P.x -= Math.cos(P.heading) * side; P.z += Math.sin(P.heading) * side; P.vx = P.vy = P.vz = 0; P.air = false; P.drift = 0; P.hover = P.boosting = P.burn = false; P.pitch = P.roll = 0;
-  AIM.yaw = P.heading; AIM.pitch = 0; vehUI(); toast('On foot. Z gets you back in');
+  P.x -= Math.cos(P.heading) * side; P.z += Math.sin(P.heading) * side; if (!airborneExit) P.vx = P.vy = P.vz = 0; else { P.vy = Math.max(P.vy, -6) + 2.5; P.grounded = false; } P.air = false; P.drift = 0; P.hover = P.boosting = P.burn = false; P.pitch = P.roll = 0;
+  AIM.yaw = P.heading; AIM.pitch = 0;
+  chuteCut = false; if (airborneExit && !onMoon(P.x)) chuteArm = 0.45;
+  vehUI(); toast(airborneExit ? 'Bailed out. A and D steer the canopy, S flares, Space cuts it away' : 'On foot. Z gets you back in');
 }
 function getIn() {
   if (RIDE) { const r = RIDE; RIDE = null; P.x += r.fz * -2.2; P.z += r.fx * 2.2; P.vx = P.vz = 0; vehUI(); toast('On foot'); return; }
-  if (PARK && Math.hypot(P.x - PARK.model.position.x, P.z - PARK.model.position.z) < 4.5 + PARK.model.userData.halfLen) {
+  if (PARK && !PARK.fall && Math.hypot(P.x - PARK.model.position.x, P.z - PARK.model.position.z) < 4.5 + PARK.model.userData.halfLen) {
     const m = PARK.model; dropPark(); scene.remove(m); playerMesh.remove(walker); P.x = m.position.x; P.y = m.position.y; P.z = m.position.z; P.heading = m.rotation.y; P.pitch = PARK.pitch; P.roll = PARK.roll;
     m.position.set(0, 0, 0); m.rotation.set(0, 0, 0); playerMesh.add(m); playerModel = m; if (m.userData.driver) m.userData.driver.visible = true;
     CAR = PARK.car; P.vx = P.vy = P.vz = 0; P.onHC = false; P.grounded = true; PARK = null; try { if (document.pointerLockElement) document.exitPointerLock(); } catch (e) { /* optional */ } vehUI(); toast(CAR.name); return;
@@ -3066,14 +3245,28 @@ function stepFoot(dt) {
   const fx = -Math.sin(P.heading), fz = -Math.cos(P.heading), rx = Math.cos(P.heading), rz = -Math.sin(P.heading);
   let mv = inp.thr - inp.brk, st = inp.steer; const ml = Math.hypot(mv, st); if (ml > 1) { mv /= ml; st /= ml; }
   const sp = (inp.boost ? 9.6 : 5.4) * (mv < -0.1 ? 0.75 : 1), k = 1 - Math.exp(-(P.grounded ? 18 : 3.5) * dt);          // quick to start and stop, some steering in the air
-  P.vx += ((fx * mv + rx * st) * sp - P.vx) * k; P.vz += ((fz * mv + rz * st) * sp - P.vz) * k;
+  if (CHUTE && !P.grounded) {                        // under canopy: it flies forward on its own, A and D turn it, S flares, W dives
+    const c = CHUTE, e = c.open * c.open * (3 - 2 * c.open); c.t += dt; c.open = Math.min(1, c.open + dt / 0.7);
+    AIM.yaw -= st * 1.25 * dt * e; c.bank += (-st * 0.42 - c.bank) * (1 - Math.exp(-3 * dt));
+    const glide = mix(Math.hypot(P.vx, P.vz), 9.5 + mv * (mv > 0 ? 4.5 : 5.5), e), kk = 1 - Math.exp(-2.2 * dt);
+    P.vx += (fx * glide - P.vx) * kk; P.vz += (fz * glide - P.vz) * kk;
+  }
+  else if (!P.grounded && P.y - P.gy > 4) { const kk = 1 - Math.exp(-0.25 * dt); P.vx += ((fx * mv + rx * st) * 3 - P.vx * 0.2) * kk * 4; P.vz += ((fz * mv + rz * st) * 3 - P.vz * 0.2) * kk * 4; }   // free fall keeps the speed you left with
+  else { P.vx += ((fx * mv + rx * st) * sp - P.vx) * k; P.vz += ((fz * mv + rz * st) * sp - P.vz) * k; }
   P.x += P.vx * dt; P.z += P.vz * dt; P.vf = P.vx * fx + P.vz * fz; P.odo += Math.hypot(P.vx, P.vz) * dt;
-  HITR = 0.42; staticHits(); HITR = 1.1;
-  for (let q = 0; q < SOLIDS.length; q++) { const o = SOLIDS[q], dx = P.x - o[0], dz = P.z - o[1], rr = o[2] + 0.4, d2 = dx * dx + dz * dz; if (d2 < rr * rr && d2 > 1e-4 && P.y < o[3]) { const d = Math.sqrt(d2); P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } }
+  staticHits();
   for (const n of npcs) { if (!n.live) continue; const dx = P.x - n.x, dz = P.z - n.wz, rr = n.halfLen * 0.7 + 0.6, d2 = dx * dx + dz * dz; if (d2 < rr * rr && d2 > 1e-4 && Math.abs(P.y - n.y) < 2) { const d = Math.sqrt(d2); P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } }
   let g = groundAt(P.x, P.z, P.y + 0.5); if (g < -1.0) g = -1.0;                                  // wades and swims, never drowns
-  P.vy -= 22 * dt; let ny = P.y + P.vy * dt;
-  if (ny <= g) { ny = g; P.vy = 0; P.grounded = true; if (inp.jump) { P.vy = 7.6; P.grounded = false; } } else P.grounded = ny - g < 0.1;
+  P.vy -= gravAt(P.x) * dt;
+  const jp = inp.jump && !jumpWas; jumpWas = !!inp.jump;
+  { const high = P.y - g;
+    if (chuteArm > 0 && (chuteArm -= dt) <= 0 && high > 2.5) openChute();
+    if (!CHUTE && !P.grounded && high > 5 && P.x < 12000) { if (jp) { chuteCut = false; openChute(); } else if (!chuteCut && P.vy < -15 && high > 7) openChute(); }   // Space pulls it; a long fall pulls it for you
+    else if (CHUTE && jp && CHUTE.open > 0.6) { removeParachute(); chuteCut = true; }                                         // Space again cuts away
+    if (CHUTE) { const c = CHUTE, e = c.open * c.open * (3 - 2 * c.open), sink = -(5.4 + mv * (mv > 0 ? 2.6 : 2.4)); P.vy += gravAt(P.x) * dt * e * 0.999; P.vy += (sink - P.vy) * (1 - Math.exp(-(1.2 + 3.2 * e) * dt));
+      c.g.position.set(P.x, P.y, P.z); c.g.rotation.y = P.heading; poseChute(c.g, c.open, c.t, c.bank, clamp(mv * 0.12, -0.16, 0.12)); } }
+  let ny = P.y + P.vy * dt;
+  if (ny <= g) { const wasCh = !!CHUTE; ny = g; P.vy = 0; P.grounded = true; if (CHUTE) { removeParachute(); P.vx *= 0.3; P.vz *= 0.3; } chuteCut = false; if (inp.jump && !wasCh) { P.vy = P.x > 12000 ? 5.4 : 7.6; P.grounded = false; } } else P.grounded = ny - g < 0.1;
   P.y = ny; P.gy = g; P.air = false; P.drift = P.slip = 0; P.surf = 1; P.waterT = 0;
   { const now = P.grounded && Math.abs(P.y - HC.y) < 0.35 && onDeck(P.x, P.z); if (now && !P.onHC) { P.vx -= HC.vx; P.vz -= HC.vz; } else if (!now && P.onHC) { P.vx += HC.vx; P.vz += HC.vz; } P.onHC = now; }
 }
@@ -3140,7 +3333,7 @@ const flash = new T.Mesh(new T.OctahedronGeometry(0.16), new T.MeshBasicMaterial
 function reloadGun() { const gn = GUNS[GUN.i]; if (!CAR.foot || GUN.rl > 0 || GUN.ammo[GUN.i] >= gn.mag) return; GUN.rl = gn.rl; }
 function footFrame(dt) {
   if (GUN.cool > 0) GUN.cool -= dt;
-  const trig = CAR.foot && started && (keys.KeyX || touch.f || mfire);
+  const trig = CAR.foot && started && (keys.KeyX || touch.f || mfire || gpFireHeld);
   if (trig && (GUNS[GUN.i].auto || !GUN.trig || GUN.i >= 2)) fireGun(); GUN.trig = !!trig;                    // the pistol fires once per press; the SMG sprays; shotgun and rifle cycle as fast as they can
   if (GUN.rl > 0) { GUN.rl -= dt; if (GUN.rl <= 0) { GUN.rl = 0; GUN.ammo[GUN.i] = GUNS[GUN.i].mag; } }
   { const r = GUN.rec * (1 - Math.exp(-7 * dt)); AIM.pitch -= r; GUN.rec -= r; GUN.bloom *= Math.exp(-5 * dt); }
@@ -3153,6 +3346,11 @@ function footFrame(dt) {
   if (playerModel.userData.driver) playerModel.userData.driver.visible = !fp;
   cockpit.visible = !!ck; if (ck && RIDE) { cockpit.position.copy(RIDE.pos); cockpit.quaternion.copy(RIDE.quat); hoodMat.color.set(RIDE.car.color); } else if (ck) { cockpit.position.copy(playerMesh.position); cockpit.quaternion.copy(playerMesh.quaternion); hoodMat.color.set((RIDE ? RIDE.car : CAR).color); }
   gunView.visible = fp && !!CAR.foot;
+  if (PARK && PARK.fall) { const f = PARK.fall, m = PARK.model, dr = Math.exp(-0.35 * dt); f.vy -= gravAt(m.position.x) * dt; f.vx *= dr; f.vz *= dr; if (f.vy < -60) f.vy = -60;
+    m.position.x += f.vx * dt; m.position.y += f.vy * dt; m.position.z += f.vz * dt; m.rotation.x = clamp(m.rotation.x - 0.5 * dt, -1.1, 1.1); m.rotation.z += f.sp * dt;
+    const g = Math.max(groundAt(m.position.x, m.position.z, m.position.y + 0.5), -0.5);
+    if (m.position.y <= g) { m.position.y = g; m.rotation.x = m.rotation.z = 0; PARK.pitch = PARK.roll = 0; PARK.x = m.position.x; PARK.y = g; PARK.z = m.position.z; PARK.fall = null; PARK.onHC = false;
+      PARK.sol = parkSol(m, m.position.x, g, m.position.z, m.rotation.y, PARK.car); SOLIDS.push(...PARK.sol); for (let i = 0; i < 5; i++) puffAt(m.position.x, g + 1, m.position.z); if (Math.hypot(P.x - m.position.x, P.z - m.position.z) < 400) crashSound(0.9); } }
   if (PARK && PARK.onHC) { const m = PARK.model; m.position.set(hcWX(PARK.lx, PARK.lz), HC.y, hcWZ(PARK.lx, PARK.lz)); m.rotation.y = HC.yaw + PARK.dyaw; const s2 = parkSol(m, m.position.x, HC.y, m.position.z, m.rotation.y, PARK.car); PARK.sol.forEach((q, i) => { q[0] = s2[i][0]; q[1] = s2[i][1]; }); }
   const w = $('wreck');
   if (HP.dead > 0) { HP.dead -= dt; if (!HP.foot && Math.random() < dt * 10) puffAt(P.x, P.y + 1.2, P.z); w.hidden = false; $('wreckB').textContent = HP.foot ? 'Down' : 'Wrecked'; $('wreckT').textContent = 'Respawn in ' + Math.max(1, Math.ceil(HP.dead));
@@ -3169,7 +3367,6 @@ const DTMAX = { v: 0.05 };
 /* ───────────── boot + main loop ───────────── */
 planChunks(P.x, P.z, true); updateRoads(P.z, true); booted = true;
 if (CAR.plane) teleport(1300, 240 + 104, 0);
-for (const n of npcs) trySpawn(n, true);
 updateNpcs(0);
 let last = performance.now(), acc = 0, hudT = 0, time = 0;
 const H_STEP = 1 / 120;
@@ -3251,6 +3448,12 @@ function runFrame(now, dt, last0, draw) {
   if (playerModel.userData.ice) playerModel.userData.ice.visible = P.frozenT > 0; else if (P.frozenT > 0) { const im = new T.Mesh(new T.BoxGeometry(2.6, 2, 5.2), iceMat); im.position.y = 1; playerModel.add(im); playerModel.userData.ice = im; }
   if (!respawning) {
     if (auto && Math.abs(P.z) > REND - 45) respawn(true);                                   // auto-drive turns round at the harbours
+    else if (onMoon(P.x)) {
+      const ex = P.x - MOON.x, ez = P.z - MOON.z; if (Math.abs(ex) > MOON.R) { P.x = MOON.x + Math.sign(ex) * MOON.R; P.vx *= -0.2; } if (Math.abs(ez) > MOON.R) { P.z = MOON.z + Math.sign(ez) * MOON.R; P.vz *= -0.2; }
+      if (auto) setAuto(false);
+      if (CAR.space && P.y - MOON.base > MOON.EXIT) spaceHop(false);                          // climb away from the Moon to head home
+    }
+    else if (CAR.space && P.y > MOON.ALT) spaceHop(true);                                     // any vehicle flagged for space leaves the sky behind up here
     else if (Math.abs(P.z) > ZLIM + 900 || Math.abs(P.x) > XLIM + 900) { toast('Edge of the map'); respawn(); }
   }
   updateSky(dt, (inp.brk > 0.1 && P.vf > 0.5) || inp.hb);
@@ -3266,12 +3469,12 @@ function runFrame(now, dt, last0, draw) {
     $('boostFill').style.width = P.fuel + '%';
     if (touchMode) { $('tUB').setAttribute('aria-pressed', beamOn); $('stick').classList.toggle('x-only', !(CAR.plane || CAR.ufo || CAR.heli || CAR.foot || (CAR.jet && P.air))); }
     if (CAR.plane) { $('thrLine').style.top = ((1 - P.throttle) * 50).toFixed(1) + '%'; $('thrPct').textContent = P.fwd > 0 ? 'Fwd ' + Math.round(P.fwd * 100) + '%' : P.rev > 0 ? 'Rev ' + Math.round(P.rev * 100) + '%' : 'Neutral'; $('gearTxt').textContent = P.gear > 0.95 ? 'Gear down' : P.gear < 0.05 ? 'Gear up' : 'Gear moving'; }
-    $('roadLabel').textContent = CAR.foot ? (RIDE ? 'Riding' : 'On foot') : P.onHC ? 'Flight deck' : CAR.heli ? (P.grounded ? 'Landed' : 'Flying') : CAR.ufo ? 'Hovering' : CAR.plane && !P.air && P.gy <= FLOAT_Y + 0.01 ? 'On the water' : P.air && P.y > P.gy + 1.5 ? 'Airborne' : lat > halfOf(hw) + 1.5 ? (P.surf === 0 ? (inCity(P.x, P.z, 8) ? 'City street' : lap.near ? 'Speedway' : 'Paved') : P.surf < 1 ? 'Dirt trail' : 'Off road') : bridgeAt(P.z) > 0.5 ? 'Bridge' : hw > 0.5 ? 'Highway' : inCity(P.x, P.z, 8) ? 'Central Avenue' : 'Country road';
+    $('roadLabel').textContent = onMoon(P.x) ? (CAR.foot ? 'Moonwalk' : 'The Moon') : CAR.foot ? (RIDE ? 'Riding' : 'On foot') : P.onHC ? 'Flight deck' : CAR.heli ? (P.grounded ? 'Landed' : 'Flying') : CAR.ufo ? 'Hovering' : CAR.plane && !P.air && P.gy <= FLOAT_Y + 0.01 ? 'On the water' : P.air && P.y > P.gy + 1.5 ? 'Airborne' : lat > halfOf(hw) + 1.5 ? (P.surf === 0 ? (inCity(P.x, P.z, 8) ? 'City street' : lap.near ? 'Speedway' : 'Paved') : P.surf < 1 ? 'Dirt trail' : 'Off road') : bridgeAt(P.z) > 0.5 ? 'Bridge' : hw > 0.5 ? 'Highway' : inCity(P.x, P.z, 8) ? 'Central Avenue' : 'Country road';
     const m = Math.floor(tod * 1440); $('clock').textContent = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
     $('odo').textContent = (P.odo / 1000).toFixed(1) + ' km';
   }
 }
-window.__drive = { PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { tod = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
+window.__drive = { TR, trSample, HULL, PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { todFix = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
 requestAnimationFrame(frame);
 })();
 </script>
