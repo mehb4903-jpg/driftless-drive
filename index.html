@@ -207,7 +207,60 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 #ammo{font-family:var(--display);font-style:normal;font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#7fe8ff;margin-top:6px}
 #hp{width:150px;height:7px;border-radius:4px;background:var(--panel);border:1px solid var(--line);overflow:hidden;margin:8px 0 0 auto}
 #hp i{display:block;height:100%;width:100%;background:#7ee04b}
+#arm{width:150px;height:5px;border-radius:3px;background:var(--panel);border:1px solid var(--line);overflow:hidden;margin:3px 0 0 auto}
+#arm i{display:block;height:100%;background:#6fb4ff}
+.is-touch #arm{margin:3px auto 0}
 .is-touch #hp{margin:8px auto 0}
+#scope{position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 0,transparent 33vmin,rgba(0,0,0,.55) 33.4vmin,#000 34.5vmin)}
+#scope::before,#scope::after{content:"";position:absolute;left:50%;top:50%;background:rgba(10,10,10,.9)}
+#scope::before{width:68vmin;height:1.5px;margin:-.75px 0 0 -34vmin}
+#scope::after{width:1.5px;height:68vmin;margin:-34vmin 0 0 -.75px}
+#scope i{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#e2483a}
+#scope.hit i{background:#ffe9a0;box-shadow:0 0 6px #ffe9a0}
+#xhair.head::before,#xhair.head::after,#xhair.head i{background:#e2483a!important}
+#cash{color:#7ee04b;font-variant-numeric:tabular-nums}
+#cash.pop{animation:cashpop .45s ease-out}
+@keyframes cashpop{0%{transform:scale(1.35);color:#fff}100%{transform:scale(1)}}
+#shopP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#ffc44d;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
+#shopP kbd{font:inherit;opacity:.65;margin-left:6px}
+#shop{position:fixed;inset:0;pointer-events:none;z-index:40;padding:calc(70px + env(safe-area-inset-top,0px)) 16px 16px max(16px,env(safe-area-inset-left,0px))}
+#shop .sm{pointer-events:auto;width:min(400px,100%);font:500 15px var(--body,system-ui);color:#fff;filter:drop-shadow(0 6px 18px rgba(0,0,0,.45))}
+.smB{height:92px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--sc,#c8463a);background-image:linear-gradient(135deg,rgba(255,255,255,.14),rgba(0,0,0,.18));border-radius:8px 8px 0 0}
+.smB b{font:italic 700 38px/1 var(--display);letter-spacing:.02em;text-transform:uppercase;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.smB span{font:700 20px var(--display);color:#7ee04b;background:rgba(0,0,0,.5);padding:3px 8px;border-radius:4px}
+.smS{display:flex;justify-content:space-between;background:#000;color:#9fd8ff;font:600 14px var(--display);letter-spacing:.1em;text-transform:uppercase;padding:7px 14px}
+#smL{list-style:none;margin:0;padding:0;max-height:min(46vh,340px);overflow:auto;background:rgba(0,0,0,.66)}
+#smL li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 14px;font:600 17px var(--display);letter-spacing:.04em;cursor:pointer}
+#smL li small{font:500 14px var(--display);color:#bdbdbd}
+#smL li.on{background:#f2f2ee;color:#0e161e}
+#smL li.on small{color:#3a3d44}
+#smL li.dim{color:#8a8f98}
+.smD{background:rgba(0,0,0,.82);border-top:2px solid var(--sc,#c8463a);padding:10px 14px;font-size:13px;line-height:1.4;color:#d8d8d8;min-height:40px}
+.smK{display:flex;gap:12px;align-items:center;background:rgba(0,0,0,.82);padding:7px 14px 9px;font:600 12px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#8a8f98;border-radius:0 0 8px 8px}
+#smX{margin-left:auto;font:600 13px var(--display);letter-spacing:.08em;text-transform:uppercase;background:#2b3038;color:#fff;border:1px solid #444;border-radius:4px;padding:5px 10px;cursor:pointer}
+.is-touch .smK span{display:none}
+#atmP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#7ee04b;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
+#atmP.off{background:var(--panel);color:var(--ink-dim);border:1px solid var(--line)}
+#atmP kbd{font:inherit;opacity:.65;margin-left:6px}
+#hack{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,8,12,.55);pointer-events:auto;z-index:40;padding:16px}
+#hack .hk{width:100%;max-width:400px;background:#0b1a14;border:1px solid #2f6a4a;border-radius:10px;padding:16px 18px;color:#c9f5d8;font:500 14px var(--body,system-ui);box-shadow:0 0 40px rgba(60,220,140,.15)}
+.hkh{display:flex;justify-content:space-between;align-items:baseline;font:700 22px var(--display);letter-spacing:.06em;text-transform:uppercase;color:#7ee04b}
+#hkT{font-variant-numeric:tabular-nums}
+#hkT.low{color:#e2483a}
+#hack p{margin:8px 0;font-size:13px;line-height:1.4;color:#9fd8b6}
+#hack .hkf{font-size:11px;color:#5f9a7a;margin-bottom:0}
+#hkD{display:flex;gap:10px;justify-content:center;margin:10px 0}
+#hkD span{width:52px;height:60px;border:1px solid #2f6a4a;border-radius:6px;display:flex;align-items:center;justify-content:center;font:700 34px var(--display);color:#eafff1;background:#06110c}
+#hkD span.cur{border-color:#7ee04b;box-shadow:0 0 0 1px #7ee04b inset}
+#hkD span.pend{color:#4f8a6a}
+#hkLog{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:4px;font:600 16px var(--display);letter-spacing:.12em;text-align:center;min-height:20px}
+#hkLog .up{color:#ffc44d}#hkLog .dn{color:#6fb4ff}#hkLog .ok{color:#7ee04b}
+#hkPad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#hkPad button{font:700 20px var(--display);padding:10px 0;border-radius:6px;border:1px solid #2f6a4a;background:#0f2a1e;color:#eafff1;cursor:pointer}
+#hkPad button:active{background:#1f4a34}
+#hkPad button.ok{background:#2f9a52;color:#06110c}
+#wanted{position:fixed;left:50%;top:calc(112px + env(safe-area-inset-top,0px));transform:translateX(-50%);pointer-events:none;font:700 16px var(--display);letter-spacing:.14em;text-transform:uppercase;color:#fff;padding:6px 14px;border-radius:6px;animation:siren .7s steps(1) infinite}
+@keyframes siren{0%{background:#c8261e}50%{background:#1d4fd0}}
 #xhair{position:fixed;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;pointer-events:none}
 #xhair::before,#xhair::after{content:"";position:absolute;background:rgba(255,255,255,.92);box-shadow:0 0 2px rgba(0,0,0,.9)}
 #xhair::before{left:12px;top:0;width:2px;height:26px;clip-path:polygon(0 0,100% 0,100% 30%,0 30%,0 70%,100% 70%,100% 100%,0 100%)}
@@ -275,11 +328,12 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 <body>
 
 <canvas id="c"></canvas>
+<div id="scope" hidden><i></i></div>
 
 <div id="hud" hidden>
   <div class="top">
     <div class="lcol">
-      <div class="plate"><span id="roadLabel">Country road</span><i></i><span id="clock">07:00</span><i></i><span id="odo">0.0 km</span><i></i><span id="netStat" class="wait">Connecting</span></div>
+      <div class="plate"><span id="roadLabel">Country road</span><i></i><span id="clock">07:00</span><i></i><span id="odo">0.0 km</span><i></i><span id="cash">$0</span><i></i><span id="netStat" class="wait">Connecting</span></div>
       <div class="plate" id="lap" hidden><span>Lap</span><i></i><span id="lapT"></span></div>
       <div id="lb" hidden><div class="ph">Best laps</div><ol id="lbList"></ol><div id="lbNote"></div></div>
       <canvas id="mini" width="150" height="150" aria-label="Minimap"></canvas>
@@ -313,8 +367,8 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <b>G</b><span>Fast travel (debug)</span>
       <b>Z</b><span>Get out / get in (or ride with a player)</span>
       <b class="foot-only" hidden>On foot</b><span class="foot-only" hidden>W A S D move, mouse looks (click to capture it), Q E turn, Shift run, Space jump</span>
-      <b class="foot-only" hidden>X</b><span class="foot-only" hidden>Shoot (or left mouse). Right mouse aims. R reloads</span>
-      <b class="foot-only" hidden>1 &ndash; 4</b><span class="foot-only" hidden>Pistol, SMG, Shotgun, Rifle</span>
+      <b class="foot-only" hidden>X</b><span class="foot-only" hidden>Shoot or punch (or left mouse). Right mouse aims; with the rifle it scopes in. R reloads</span>
+      <b class="foot-only" hidden>1 &ndash; 0</b><span class="foot-only" hidden>Fists, Pistol, SMG, Shotgun, Rifle, then what you buy at Iron Works</span>
       <b class="jet-only" hidden>Shift</b><span class="jet-only" hidden>Rear jet boost</span>
       <b class="jet-only" hidden>Space</b><span class="jet-only" hidden>Jump, hold in the air to hover</span>
       <b class="jet-only" hidden>In air</b><span class="jet-only" hidden>W S pitch, A D yaw, Q E roll</span>
@@ -334,7 +388,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <b class="blick-only" hidden>W + S</b><span class="blick-only" hidden>Hold both when stopped for a burnout</span>
     </div>
     <div class="touch" id="stick" role="group" aria-label="Steering stick"><div id="knob"></div></div>
-    <div class="speed"><span id="spd">0</span><small>km/h</small><div id="boost" class="jet-only" hidden><i id="boostFill"></i></div><div id="hp"><i id="hpFill"></i></div><div id="ammo" hidden></div></div>
+    <div class="speed"><span id="spd">0</span><small>km/h</small><div id="boost" class="jet-only" hidden><i id="boostFill"></i></div><div id="hp"><i id="hpFill"></i></div><div id="arm" hidden><i id="armFill"></i></div><div id="ammo" hidden></div></div>
     <div id="thr" class="plane-only" hidden><b id="thrPct">Neutral</b><div class="trk"><div class="zf"><em>F</em></div><div class="zn"><em>N</em></div><div class="zr"><em>R</em></div><i id="thrLine"></i></div><span>Throttle</span><span id="gearTxt">Gear down</span></div>
     <div class="touch" id="pad">
       <!-- data-v: vehicles the button belongs to. --c/--r landscape cell, --pc/--pr portrait cell (see the touch CSS) -->
@@ -358,8 +412,8 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <button id="tFF" type="button" class="go" data-v="foot" style="--c:3;--r:3;--pc:2;--pr:4">Fire</button>
       <button id="tFJ" type="button" data-v="foot" style="--c:2;--r:3;--pc:1;--pr:4">Jump</button>
       <button id="tFS" type="button" data-v="foot" style="--c:3;--r:2;--pc:2;--pr:3">Run</button>
+      <button id="tFA" type="button" data-v="foot" aria-pressed="false" aria-label="Aim, or the rifle scope" style="--c:3;--r:1;--pc:2;--pr:2">Aim</button>
       <button id="tFW" type="button" data-v="foot" aria-label="Next gun" style="--c:2;--r:2;--pc:1;--pr:3">Gun</button>
-      <button id="tFA" type="button" data-v="foot" aria-pressed="false" aria-label="Aim" style="--c:3;--r:1;--pc:2;--pr:2">Aim</button>
       <button id="tHF" type="button" data-v="heli" aria-label="Fire freeze missile" style="--c:2;--r:2;--pc:1;--pr:3">Fire</button>
       <button id="tUL" type="button" data-v="ufo heli" aria-label="Slide left" style="--c:1;--r:3;--pc:1;--pr:4">Slide L</button>
       <button id="tUR" type="button" data-v="ufo heli" aria-label="Slide right" style="--c:2;--r:3;--pc:2;--pr:4">Slide R</button>
@@ -378,6 +432,22 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 <div id="travel" hidden><div class="tvin"><button id="tvClose" type="button" class="touch-only">Close</button><h2>Fast travel</h2><div id="tvList"></div><p>Debug menu. G or Esc closes it.</p></div></div>
 <div id="map" hidden><div class="mapin"><canvas id="mapCanvas"></canvas><p id="mapNote"></p></div></div>
 <div id="xhair" hidden><i></i></div>
+<button id="shopP" type="button" hidden>Talk</button>
+<div id="shop" hidden><div class="sm" role="dialog" aria-label="Shop">
+  <div class="smB" id="smB"><b id="smN">Shop</b><span id="smCash">$0</span></div>
+  <div class="smS"><span id="smH">Categories</span><span id="smC">1/6</span></div>
+  <ul id="smL"></ul>
+  <div class="smD" id="smD"></div>
+  <div class="smK"><span>&#8593;&#8595; choose</span><span>Enter select</span><span>Backspace back</span><button id="smX" type="button">Close</button></div>
+</div></div>
+<button id="atmP" type="button" hidden>Rob ATM <kbd>F</kbd></button>
+<div id="hack" hidden><div class="hk" role="dialog" aria-label="ATM override">
+  <div class="hkh"><b>ATM override</b><span id="hkT">35</span></div>
+  <p id="hkMsg">Crack the 3-digit PIN. After each guess every digit shows &#9650; (the real one is higher), &#9660; (lower) or &#10003;. Six tries.</p>
+  <div id="hkD"></div><ol id="hkLog"></ol><div id="hkPad"></div>
+  <p class="hkf">Keys: 0&ndash;9, Backspace, Enter &middot; Controller: D-pad up/down, A enters, B deletes, Y quits &middot; Esc walks away</p>
+</div></div>
+<div id="wanted" hidden>Mall police</div>
 <div id="wreck" hidden><b id="wreckB">Wrecked</b><span id="wreckT"></span></div>
 <div id="lock" hidden><span id="lockTxt"></span></div>
 <div id="flash"></div>
@@ -696,7 +766,10 @@ const HWL = 1400, RW0 = 1250, RW1 = 2150;
 /* The Moon is a second region in the same coordinate space, far off to the east, so positions (and multiplayer) need nothing special:
    which world you are in is just a question of where you are. Vehicles with `space: true` cross over by climbing past MOON.ALT. */
 const MOON = { x: 24000, z: 0, R: 1700, base: 40, ALT: 520, EXIT: 620 }, GRAV = 22;
-const onMoon = x => x > 12000, gravAt = x => x > 12000 ? GRAV / 6 : GRAV, moonGrip = () => P.x > 12000 ? 0.55 : 1;
+/* The mall is bigger on the inside: its interior is a third far-off region, to the west. Walking up to the doors swaps you between them. */
+const MALLI = { x: -24000, z: 0, y: 60 }, inMall = x => x < -12000; let MALLDOOR = null;
+const SPC = { x: 48000, RE: 2500, RM: 1100, HOP: 260, ex: 48000, ey: -2500, ez: 0, mx: 48000, my: 5450, mz: -7380 };   // open space: the Earth and the Moon as real spheres, far apart
+const inSpace = x => x > 36000, onMoon = x => x > 12000 && x < 36000, gravAt = x => x > 12000 ? GRAV / 6 : GRAV, moonGrip = () => P.x > 12000 ? 0.55 : 1;
 function moonCrater(gx, gz, o) {                    // one crater per 240 m cell (three in four cells): [x, z, radius], relative to the Moon's centre
   if (rnd2(gx * 7 + 3, gz * 13 + 5) > 0.75) return false; const q = rnd2(gx * 5 + 1, gz * 3 + 9);
   o[0] = (gx + 0.25 + 0.5 * rnd2(gx * 3 + 1, gz * 5 + 2)) * 240; o[1] = (gz + 0.25 + 0.5 * rnd2(gx * 11 + 4, gz * 7 + 6)) * 240; o[2] = 20 + 72 * q * q; return true;
@@ -717,7 +790,7 @@ const PADS = [], DECKS = [], PAVED = [], SOLIDS = [], BOXES = [];
 /* the city fills the middle of the island: 21 x 21 streets, 400 blocks, dead flat. Hills and mountains start beyond CF. */
 const CITYH = 8, CF = 1530;
 const CITY = { ok: true, x: 0, z: 0, h: CITYH, y: CITYH + 0.04, E: 1200, P: 120, N: 21, NB: 20, boxes: [] };
-const CITY_RES = { city: [10, 10], park: [9, 9], diner: [10, 5], dealer: [7, 10], barn: [13, 15], observatory: [15, 7], trap: [5, 14], lookout: [11, 12] };
+const CITY_RES = { mall: [12, 8], city: [10, 10], park: [9, 9], diner: [10, 5], dealer: [7, 10], barn: [13, 15], observatory: [15, 7], trap: [5, 14], lookout: [11, 12] };
 const blkC = q => [-CITY.E + q[0] * CITY.P + 60, -CITY.E + q[1] * CITY.P + 60];
 /* the helicarrier circles the island at altitude. Local frame: -z is its bow, +x its starboard side, y = 0 its flight deck */
 const HC = { a: -2.2, R: 2250, w: 15 / 2250, y: 190, hw: 36, hl: 240, x: 0, z: 0, yaw: 0, vx: 0, vz: 0,
@@ -816,6 +889,8 @@ const brI = i => 1 - sstep(yAt(i) - 8, yAt(i) - 5, gAt(i));
 function bridgeAt(z) { const f = z / RS, i = Math.floor(f); return mix(brI(i), brI(i + 1), f - i); }
 
 function terrainH(x, z, cell) {
+  if (x < -12000) return MALLI.y;
+  if (x > 36000) return -30000;
   if (x > 12000) return moonH(x, z);
   const d1 = roadDX(z), len2 = 1 + d1 * d1, lt = (x - roadX(z)) / Math.sqrt(len2), a = Math.abs(lt);
   let h = hNoRoad(x, z, a);
@@ -1024,6 +1099,7 @@ const cSand = C('#d8c78c'), cBed = C('#6c7256'), cG1 = C('#8abb53'), cG2 = C('#5
 let _r = 0, _g = 0, _b = 0;
 const bl = (c, k) => { _r += (c[0] - _r) * k; _g += (c[1] - _g) * k; _b += (c[2] - _b) * k; };
 function tColor(x, z, h, sl, cell) {
+  if (x < -12000) { _r = 0.16; _g = 0.17; _b = 0.19; return; }
   if (x > 12000) { const X = x - MOON.x, Z = z - MOON.z, v = clamp(0.66 + perlin(X / 90, Z / 90) * 0.08 + perlin(X / 17, Z / 17) * 0.035 - sl * 0.24 - 0.13 * sstep(0.05, 0.45, perlin(X / 700 + 20, Z / 700)), 0.16, 0.8); _r = v * 0.98; _g = v * 0.98; _b = v * 1.01; return; }   // regolith: grey, darker on slopes and in the maria
   const X = x + SX, Z = z + SZ, v = perlin(X / 70 + 11, Z / 70) * 0.5 + 0.5;
   _r = mix(cG1[0], cG2[0], v); _g = mix(cG1[1], cG2[1], v); _b = mix(cG1[2], cG2[2], v);
@@ -1093,7 +1169,7 @@ function addRock(b, x, y, z, s, seed) {
   b.o = null;
 }
 function buildProps(cx, cz) {
-  if (cx * CH > 12000) return { mesh: null, trees: [] };       // nothing grows on the Moon
+  if (cx * CH > 12000 || cx * CH < -12000) return { mesh: null, trees: [] };       // nothing grows on the Moon
   const b = new GB(), trees = [], G = 16, sp = CH / G, x0 = cx * CH, z0 = cz * CH;
   for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) {
     const gx = cx * G + i, gz = cz * G + j, r1 = rnd2(gx, gz);
@@ -1258,8 +1334,8 @@ function updateRoads(pz, all) {
 /* ───────────── cars ───────────── */
 const cGlass = C('#1d2630'), cTyre = C('#17181a'), cChassis = C('#26292d'), cRim = C('#b9bec4');
 function wheel(b, x, y, z, r, hw) { b.cylX(x, y, z, r, hw, 14, cTyre); b.cylX(x + Math.sign(x) * 0.02, y, z, r * 0.58, hw, 10, cRim); }
-function carParts(type, col, noW) {
-  const b = new GB(), hd = new GB(), tl = new GB(), W = [], wh = (x, y, z, r, hw) => { W.push([x, y, z, r, hw]); if (!noW) wheel(b, x, y, z, r, hw); };
+function carParts(type, col, noW, sepGlass) {
+  const b = new GB(), gs = sepGlass ? new GB() : b, hd = new GB(), tl = new GB(), W = [], wh = (x, y, z, r, hw) => { W.push([x, y, z, r, hw]); if (!noW) wheel(b, x, y, z, r, hw); };
   let halfLen = 2.2;
   if (type === 'walker') {                           // the player on foot: white tee, jeans, shades, gold chain; `col` is the cap, in the player's own colour
     halfLen = 0.4; const tee = C('#f4f4f0'); b.box(-0.01, 0.01, 1, 1.02, -0.01, 0.01, tee);   // the figure itself is built as a jointed rig in makeCar
@@ -1329,7 +1405,7 @@ function carParts(type, col, noW) {
   } else if (type === 'truck') {
     halfLen = 3.9;
     b.box(-1.1, 1.1, 0.45, 0.95, -3.9, 3.9, cChassis);
-    b.box(-1.15, 1.15, 0.95, 2.0, -3.9, -1.9, col); b.box(-1.1, 1.1, 2.0, 2.75, -3.75, -1.9, cGlass); b.box(-1.12, 1.12, 2.75, 2.85, -3.8, -1.85, col);
+    b.box(-1.15, 1.15, 0.95, 2.0, -3.9, -1.9, col); gs.box(-1.1, 1.1, 2.0, 2.75, -3.75, -1.9, cGlass); b.box(-1.12, 1.12, 2.75, 2.85, -3.8, -1.85, col);
     b.box(-1.25, 1.25, 0.95, 3.3, -1.6, 3.9, C('#e7e4da'));
     for (const z of [-2.9, 1.9, 3.0]) for (const x of [-1.05, 1.05]) wh(x, 0.5, z, 0.5, 0.17);
     b.box(-1.2, 1.2, 0.4, 0.75, -4.02, -3.86, cChassis); b.box(-1.25, 1.25, 0.45, 0.7, 3.86, 3.98, cChassis); b.box(-0.7, 0.7, 1.0, 1.5, -3.94, -3.9, cChassis);
@@ -1341,7 +1417,7 @@ function carParts(type, col, noW) {
     const top = suv ? 1.72 : roadster ? 1.2 : sport ? 1.28 : 1.45, belt = suv ? 1.0 : 0.88, W = 0.92;
     b.hex([[-W, 0.32, -2.2], [W, 0.32, -2.2], [W, 0.32, 2.2], [-W, 0.32, 2.2], [-W * 0.94, belt - 0.12, -2.2], [W * 0.94, belt - 0.12, -2.2], [W, belt, 2.15], [-W, belt, 2.15]], col);
     const c0 = suv ? -0.6 : -0.45, c1 = pickup ? 0.55 : suv ? 2.05 : 1.55, t0 = suv ? -0.15 : sport ? 0.2 : 0.0, t1 = pickup ? 0.4 : suv ? 1.95 : 1.15;
-    b.hex([[-0.86, belt - 0.06, c0], [0.86, belt - 0.06, c0], [0.86, belt, c1], [-0.86, belt, c1], [-0.72, top, t0], [0.72, top, t0], [0.72, top, t1], [-0.72, top, t1]], cGlass);
+    gs.hex([[-0.86, belt - 0.06, c0], [0.86, belt - 0.06, c0], [0.86, belt, c1], [-0.86, belt, c1], [-0.72, top, t0], [0.72, top, t0], [0.72, top, t1], [-0.72, top, t1]], sepGlass ? C('#9fb6c8') : cGlass);
     b.box(-0.74, 0.74, top, top + 0.06, t0 - 0.04, t1 + 0.04, col);
     if (sport && !roadster) b.box(-0.85, 0.85, belt + 0.18, belt + 0.24, 1.85, 2.2, cChassis);
     if (pickup) { b.box(-0.92, -0.84, belt, belt + 0.32, 0.6, 2.15, col); b.box(0.84, 0.92, belt, belt + 0.32, 0.6, 2.15, col); b.box(-0.92, 0.92, belt, belt + 0.32, 2.07, 2.15, col); }
@@ -1362,10 +1438,12 @@ function carParts(type, col, noW) {
     hd.box(-0.8, -0.42, 0.56, 0.72, -2.23, -2.19, cWhite); hd.box(0.42, 0.8, 0.56, 0.72, -2.23, -2.19, cWhite);
     tl.box(-0.84, -0.4, 0.66, 0.8, 2.16, 2.21, cWhite); tl.box(0.4, 0.84, 0.66, 0.8, 2.16, 2.21, cWhite);
   }
-  return { body: b, head: hd, tail: tl, halfLen, wheels: W };
+  return { body: b, glass: gs !== b && !gs.empty ? gs : null, head: hd, tail: tl, halfLen, wheels: W };
 }
-function makeCar(type, colHex, player) {
-  const parts = carParts(type, C(colHex), player), g = new T.Group(), ch = new T.Group();
+const seeGlassMat = new T.MeshPhongMaterial({ vertexColors: true, transparent: true, opacity: 0.42, depthWrite: false, side: T.DoubleSide, specular: 0x8899aa, shininess: 90 });
+function makeCar(type, colHex, player, seeThrough) {
+  const parts = carParts(type, C(colHex), player, seeThrough), g = new T.Group(), ch = new T.Group();
+  if (parts.glass) { const gm = new T.Mesh(parts.glass.geo(), seeGlassMat); gm.renderOrder = 2; ch.add(gm); }        // tinted windows you can see the driver through
   const body = new T.Mesh(parts.body.geo(), carMat); body.castShadow = true; ch.add(body);
   ch.add(new T.Mesh(parts.head.geo(), headMat)); ch.add(new T.Mesh(parts.tail.geo(), player ? brakeMat : tailMat));
   g.add(ch); g.userData.chassis = ch; g.userData.wheels = [];
@@ -1471,6 +1549,132 @@ function bRaceway(p, b, ln, gl) {
   const xa = x + R + HW, xb = -CITY.E - 7; RW.x0 = xa; RW.x1 = xb;       // short access link to the city's west edge
   let pv = null;
   for (let xx0 = xa; xx0 <= xb + 3; xx0 += 3) { const xx = Math.min(xx0, xb), yy = Math.max(terrainH(xx, z, 5), terrainH(xx, z - 4, 5), terrainH(xx, z + 4, 5)) + 0.16; if (pv) b.quad([pv[0], pv[1], z - 4], [pv[0], pv[1], z + 4], [xx, yy, z + 4], [xx, yy, z - 4], cAsph); pv = [xx, yy]; }
+}
+function mallSign(text, w, h, bg, fg) {                 // a flat sign board with lettering
+  const cv = document.createElement('canvas'); cv.width = 512; cv.height = Math.round(512 * h / w); const g = cv.getContext('2d'); g.fillStyle = bg; g.fillRect(0, 0, cv.width, cv.height);
+  g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 ' + Math.round(cv.height * 0.56) + 'px "Barlow Condensed", Arial Narrow, sans-serif'; g.fillText(text, 256, cv.height * 0.54, 480);
+  return new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshBasicMaterial({ map: new T.CanvasTexture(cv) }));
+}
+/* Mall shops: which unit is which (0-4 west side, 5-9 east side, north to south), the keeper's look and the menu's categories */
+const SHOPDEF = {
+  0: { id: 'clothes', name: 'Threads', kind: 'Clothing', col: '#c8463a', seed: 9101, hi: 'Looking sharp. What are we trying on?', cats: ['Hats', 'Shirts', 'Jackets', 'Pants', 'Glasses', 'Chains'] },
+  1: { id: 'guns', name: 'Iron Works', kind: 'Gun shop', col: '#3a3d44', seed: 9207, hi: 'Licensed and loaded. Take a look.', cats: ['Pistols', 'SMGs', 'Shotguns', 'Rifles', 'Heavy', 'Ammo', 'Body armour'] },
+  2: { id: 'mods', name: 'Tactical Bench', kind: 'Gun attachments', col: '#5b4a8a', seed: 9311, hi: 'Bring me a gun, I will make it better.', cats: ['Scopes', 'Suppressors', 'Extended mags', 'Grips', 'Lasers', 'Finishes'] },
+  3: { id: 'shoes', name: 'Sole Search', kind: 'Shoes', col: '#d9783a', seed: 9419, hi: 'Fresh pairs just came in.', cats: ['Sneakers', 'Boots', 'Slides', 'Laces'] },
+  5: { id: 'decals', name: 'Wrap City', kind: 'Car decals', col: '#5aa7c4', seed: 9523, hi: 'Pick a look, we wrap it while you wait.', cats: ['Stripes', 'Flames', 'Numbers', 'Liveries', 'Window tint', 'Full wraps'] },
+  6: { id: 'tune', name: 'Torque Shop', kind: 'Car upgrades', col: '#a8382f', seed: 9631, hi: 'Faster, louder, harder to stop. Your call.', cats: ['Engine', 'Turbo', 'Brakes', 'Suspension', 'Tyres', 'Nitrous'] }
+};
+const SHOPS = [];                                        // filled in as the mall is built: where each counter and keeper is
+function shopProps(b, gl, n, def) {                       // the inside of one shop: a counter across the middle, the keeper behind it, and stock to look at
+  const X = MALLI.x, Z = MALLI.z, y = MALLI.y, sd = n < 5 ? -1 : 1, k = n % 5, xa = X + sd * 8, z0 = Z - 55 + k * 22, zm = z0 + 11;
+  const D = d => xa + sd * d, bx = (d0, d1, y0, y1, za, zb, c) => b.box(Math.min(D(d0), D(d1)), Math.max(D(d0), D(d1)), y + y0, y + y1, za, zb, c), gx = (d0, d1, y0, y1, za, zb, c) => gl.box(Math.min(D(d0), D(d1)), Math.max(D(d0), D(d1)), y + y0, y + y1, za, zb, c);
+  const tc = C(def.col), wood = C('#8a5f35'), dk = C('#22262b'), st = C('#8a9098'), wh = C('#f2f2ee'), glass = C('#bfe3f0');
+  bx(10.4, 11.4, 0, 0.98, zm - 4, zm + 4, def.id === 'guns' || def.id === 'mods' ? dk : wood); bx(10.3, 11.5, 0.98, 1.06, zm - 4.1, zm + 4.1, def.id === 'guns' || def.id === 'mods' ? glass : tc);   // the counter
+  bx(10.38, 10.42, 0.2, 0.85, zm - 3.8, zm + 3.8, tc);
+  BOXES.push([Math.min(D(10.4), D(11.4)), Math.max(D(10.4), D(11.4)), zm - 4, zm + 4, y + 1.06]);
+  bx(17.6, 17.75, 0.3, 3.2, zm - 8, zm + 8, def.id === 'guns' || def.id === 'mods' ? C('#3a3020') : C('#e8e2d4'));                                 // feature wall behind the keeper
+  gx(17.5, 17.55, 3.5, 3.9, zm - 6, zm + 6, wh);
+  const id = def.id;
+  if (id === 'clothes') {
+    const cols = ['#c8463a', '#3d6fb8', '#e9e6dc', '#2c2f36', '#c9a23a', '#4f9a6a', '#5b4a8a', '#d9783a'];
+    for (const zc of [zm - 7, zm - 2.5, zm + 2.5, zm + 7]) { bx(2.5, 2.6, 0, 1.6, zc - 0.03, zc + 0.03, st); bx(7.4, 7.5, 0, 1.6, zc - 0.03, zc + 0.03, st); bx(2.5, 7.5, 1.55, 1.6, zc - 0.03, zc + 0.03, st);   // a rail of hanging shirts
+      for (let i = 0; i < 12; i++) { const d = 2.9 + i * 0.37, c = C(cols[(i + Math.round(zc)) & 7]); bx(d, d + 0.07, 0.85, 1.52, zc - 0.28, zc + 0.28, c); } BOXES.push([Math.min(D(2.5), D(7.5)), Math.max(D(2.5), D(7.5)), zc - 0.35, zc + 0.35, y + 1.6]); }
+    for (let r = 0; r < 3; r++) for (let i = 0; i < 9; i++) bx(17.1, 17.55, 0.9 + r * 0.7, 1.05 + r * 0.7, zm - 7 + i * 1.6, zm - 6.2 + i * 1.6, C(cols[(i + r * 3) & 7]));   // folded stacks on the wall
+    for (let r = 0; r < 3; r++) bx(17.0, 17.6, 0.85 + r * 0.7, 0.9 + r * 0.7, zm - 7.5, zm + 7.5, wood);
+  } else if (id === 'guns') {
+    for (let r = 0; r < 4; r++) for (let i = 0; i < 5; i++) { const zc = zm - 6 + i * 3, yy = 1.0 + r * 0.55, L = 0.7 + ((i + r) % 3) * 0.25; bx(17.45, 17.55, yy, yy + 0.1, zc - L / 2, zc + L / 2, dk); bx(17.45, 17.55, yy - 0.12, yy + 0.02, zc - L / 2 + 0.1, zc - L / 2 + 0.22, C('#5a4030')); }   // rifles and shotguns on the wall
+    for (let i = 0; i < 6; i++) { const zc = zm - 3 + i * 1.2; bx(10.6, 11.2, 0.75, 0.8, zc - 0.25, zc + 0.15, dk); }                                       // pistols under the glass
+    for (let i = 0; i < 4; i++) for (let h = 0; h < 3; h++) bx(1.5, 2.3, h * 0.32, h * 0.32 + 0.3, zm - 9.5 + i * 0.8, zm - 8.8 + i * 0.8, C(h & 1 ? '#c9a23a' : '#4f6a3a'));   // ammo crates
+    bx(17.3, 17.42, 3.08, 3.3, zm - 2.2, zm + 2.2, C('#4f5a3a')); bx(17.28, 17.44, 3.05, 3.33, zm - 2.3, zm - 2.15, dk); bx(17.28, 17.44, 3.05, 3.33, zm + 2.15, zm + 2.3, dk);   // the bazooka, top and centre
+    bx(4, 4.1, 0, 2.6, zm + 7, zm + 9, dk); gx(4.12, 4.14, 1.2, 2.2, zm + 7.4, zm + 8.6, wh); gl.box(Math.min(D(4.14), D(4.16)), Math.max(D(4.14), D(4.16)), y + 1.6, y + 1.8, zm + 7.9, zm + 8.1, C('#e2483a'));   // a range target
+  } else if (id === 'mods') {
+    bx(17.45, 17.55, 0.9, 3.0, zm - 7, zm + 7, C('#c9b48a'));                                                                                          // pegboard
+    for (let r = 0; r < 5; r++) for (let i = 0; i < 10; i++) { const zc = zm - 6.2 + i * 1.38, yy = 1.1 + r * 0.38, t = (i + r) % 4; bx(17.3, 17.45, yy, yy + (t === 0 ? 0.1 : 0.16), zc - (t === 1 ? 0.35 : 0.18), zc + (t === 1 ? 0.35 : 0.18), t === 2 ? C('#e2483a') : dk); }
+    for (const zc of [zm - 6.5, zm + 6.5]) { bx(4, 6.5, 0, 0.9, zc - 0.6, zc + 0.6, dk); bx(4, 6.5, 0.9, 1.3, zc - 0.6, zc + 0.6, glass); for (let i = 0; i < 4; i++) bx(4.4 + i * 0.55, 4.7 + i * 0.55, 0.92, 1.0, zc - 0.2, zc + 0.2, dk); BOXES.push([Math.min(D(4), D(6.5)), Math.max(D(4), D(6.5)), zc - 0.6, zc + 0.6, y + 1.3]); }
+  } else if (id === 'shoes') {
+    const cols = ['#f2f2ee', '#e2483a', '#3d6fb8', '#16171a', '#c9a23a', '#4f9a6a'];
+    for (let r = 0; r < 5; r++) { bx(17.0, 17.6, 0.55 + r * 0.55, 0.6 + r * 0.55, zm - 7.5, zm + 7.5, wood); for (let i = 0; i < 12; i++) { const zc = zm - 7 + i * 1.25, c = C(cols[(i + r * 2) % 6]); bx(17.1, 17.5, 0.6 + r * 0.55, 0.72 + r * 0.55, zc - 0.28, zc - 0.02, c); bx(17.1, 17.5, 0.6 + r * 0.55, 0.72 + r * 0.55, zc + 0.02, zc + 0.28, c); } }   // pairs on shelves
+    for (const zc of [zm - 5, zm + 5]) { bx(3.5, 7.5, 0, 0.45, zc - 0.45, zc + 0.45, C('#5a4a3a')); BOXES.push([Math.min(D(3.5), D(7.5)), Math.max(D(3.5), D(7.5)), zc - 0.45, zc + 0.45, y + 0.45]); }   // try-on benches
+    bx(1.5, 1.6, 0, 1.2, zm - 0.6, zm + 0.6, st); gx(1.62, 1.64, 0.1, 1.1, zm - 0.5, zm + 0.5, glass);                                                  // a floor mirror
+  } else if (id === 'decals') {
+    const cols = ['#e2483a', '#ffc44d', '#3d6fb8', '#7ee04b', '#5b4a8a', '#ff6fd0', '#16171a', '#f2f2ee', '#d9783a', '#5aa7c4'];
+    for (let r = 0; r < 4; r++) for (let i = 0; i < 10; i++) bx(17.45, 17.55, 0.9 + r * 0.6, 1.4 + r * 0.6, zm - 7 + i * 1.45, zm - 6 + i * 1.45, C(cols[(i * 3 + r) % 10]));   // a wall of vinyl swatches
+    for (let i = 0; i < 6; i++) b.cylX(Math.min(D(1.6), D(2.8)) + 0.6, y + 0.18, zm + 6 + i * 0.42, 0.17, 0.6, 10, C(cols[i]));                                  // rolls on the floor
+  } else if (id === 'tune') {
+    for (let i = 0; i < 3; i++) for (let h = 0; h < 4; h++) b.cylX(Math.min(D(1.5), D(2.4)) + 0.45, y + 0.36 + h * 0.0, zm - 9 + i * 0.85, 0.34, 0.12 + h * 0.0, 12, C('#17181a'));   // tyre stacks
+    for (let i = 0; i < 3; i++) for (let h = 0; h < 3; h++) { const zc = zm - 9 + i * 0.85; b.box(Math.min(D(1.5), D(2.4)), Math.max(D(1.5), D(2.4)), y + h * 0.26, y + h * 0.26 + 0.24, zc - 0.34, zc + 0.34, C('#17181a')); }
+    for (let i = 0; i < 6; i++) b.cylX(Math.min(D(17.35), D(17.5)) + (sd < 0 ? 0.05 : 0.1), y + 1.5 + (i & 1) * 0.9, zm - 6 + Math.floor(i / 2) * 6, 0.38, 0.06, 14, C(['#b9bec4', '#c9a23a', '#16171a'][i % 3]));   // rims on the wall
+    bx(3.5, 4.5, 0, 0.9, zm + 7, zm + 9, C('#c8463a')); bx(3.6, 4.4, 0.9, 1.25, zm + 7.4, zm + 8.6, C('#6b6f78')); bx(3.7, 4.3, 1.25, 1.4, zm + 7.6, zm + 8.4, C('#e2483a'));   // an engine on a stand
+    BOXES.push([Math.min(D(3.5), D(4.5)), Math.max(D(3.5), D(4.5)), zm + 7, zm + 9, y + 1.4]);
+  }
+  if (id === 'decals' || id === 'tune') { bx(2.5, 7.5, 0, 0.18, zm - 3, zm + 3, id === 'tune' ? C('#e9b93a') : C('#3a3d44')); BOXES.push([Math.min(D(2.5), D(7.5)), Math.max(D(2.5), D(7.5)), zm - 2.6, zm + 2.6, y + 1.6]); }   // a show car's plinth
+  SHOPS.push({ n, def, sd, x: D(12.4), z: zm, y, spot: [D(9.4), zm], yaw: sd * Math.PI / 2, show: id === 'decals' || id === 'tune' ? [D(5), zm] : null, manq: id === 'clothes' ? [[D(1.6), zm - 4.5], [D(1.6), zm + 4.5]] : null });
+}
+function bMall(p, b, ln, gl) {                           // the outside: a low, wide box store on its own block with a car park in front
+  const x = p.x, z = p.z, y = p.h, cW = C('#e8e2d4'), cB = C('#c8463a'), cG = C('#1d2630'), cD = C('#2b3038'), cA = C('#3c3e44'), cS = C('#b7b4aa'), cWh = C('#ecebe4');
+  b.box(x - 36, x + 36, y, y + 10, z - 30, z + 14, cW); b.box(x - 36.3, x + 36.3, y + 9.2, y + 10.4, z - 30.3, z + 14.3, cD);                     // main block and parapet
+  b.box(x - 9, x + 9, y, y + 12, z + 12, z + 16, cB); b.box(x - 4, x + 4, y, y + 4.2, z + 15.9, z + 16.1, cG); b.box(x - 0.08, x + 0.08, y, y + 4.2, z + 16.05, z + 16.15, cS);   // entrance tower and glass doors
+  b.box(x - 11, x + 11, y + 4.4, y + 4.9, z + 16, z + 20, cD); for (const g of [-1, 1]) b.box(x + g * 10.4 - 0.25, x + g * 10.4 + 0.25, y, y + 4.4, z + 19.3, z + 19.8, cS);       // canopy
+  for (let k = -3; k <= 3; k++) if (Math.abs(k) > 0) b.box(x + k * 9 - 3, x + k * 9 + 3, y + 1, y + 4, z + 13.95, z + 14.1, cG);                  // shop windows along the front
+  for (const q of [[-22, -12], [6, -18], [20, -4]]) b.box(x + q[0] - 3, x + q[0] + 3, y + 10, y + 11.6, z + q[1] - 2, z + q[1] + 2, cS);          // roof plant
+  flatQ(b, x - 44, x + 44, z + 20, z + 47, y + 0.07, cA); PAVED.push({ x0: x - 44, x1: x + 44, z0: z + 16, z1: z + 47 });
+  for (let k = -12; k <= 12; k++) { flatQ(ln, x + k * 3.4 - 0.07, x + k * 3.4 + 0.07, z + 24, z + 29.5, y + 0.09, cWh); flatQ(ln, x + k * 3.4 - 0.07, x + k * 3.4 + 0.07, z + 37, z + 42.5, y + 0.09, cWh); }
+  b.box(x + 40, x + 40.5, y, y + 11, z + 44, z + 44.5, cS); b.box(x + 37.2, x + 43.3, y + 7.4, y + 11.2, z + 44.05, z + 44.45, cB);                 // roadside pylon
+  BOXES.push([x - 36, x + 36, z - 30, z + 14, y + 10], [x - 9, x + 9, z + 12, z + 16, y + 12]); SOLIDS.push([x - 10.4, z + 19.55, 0.4, y + 4.4], [x + 10.4, z + 19.55, 0.4, y + 4.4], [x + 40.25, z + 44.25, 0.5, y + 11]);
+  const sg = mallSign('DRIFTLESS MALL', 15, 2.4, '#c8463a', '#fff6e0'); sg.position.set(x, y + 9.2, z + 16.06); p.grp.add(sg);
+  const s2 = mallSign('MALL', 5.6, 3.2, '#c8463a', '#fff6e0'); s2.position.set(x + 40.25, y + 9.3, z + 44.47); p.grp.add(s2);
+  MALLDOOR = { x, z: z + 17, y };
+  buildMallInside();
+}
+function buildMallInside() {                             // the inside: a 130 m concourse with five shop units down each side, all still to let
+  const b = new GB(), gl = new GB(), X = MALLI.x, Z = MALLI.z, y = MALLI.y, top = y + 9, grp = new T.Group();
+  const t1 = C('#ece7dc'), t2 = C('#d6cfc0'), wall = C('#f4f0e7'), trim = C('#2b3440'), ceil = C('#dfe3e6'), wood = C('#8a5f35'), leaf = C('#4d8c3c'), pot = C('#b7b4aa'), lite = C('#fff6dc'), sky = C('#cfe9ff'), water = C('#6fc3e6'), exitG = C('#58d27a');
+  const tints = ['#c8463a', '#3d6fb8', '#c9a23a', '#4f9a6a', '#5b4a8a', '#d9783a', '#5aa7c4', '#a8382f', '#3a7a40', '#8a8f98'], floors = [C('#cdbfa6'), C('#b9c4cc'), C('#c9c2b2'), C('#bfc9b8'), C('#c6bccb')];
+  for (let i = -2; i < 2; i++) for (let k = -17; k < 17; k++) flatQ(b, X + i * 4, X + i * 4 + 4, Z + k * 4, Z + k * 4 + 4, y + 0.05, (i + k) & 1 ? t1 : t2);          // tiled concourse
+  flatQ(b, X - 0.6, X + 0.6, Z - 52, Z + 62, y + 0.06, trim);
+  for (const sd of [-1, 1]) for (let k = 0; k < 5; k++) {
+    const z0 = Z - 55 + k * 22, z1 = z0 + 22, zm = z0 + 11, xa = X + sd * 8, xb = X + sd * 26, x0 = Math.min(xa, xb), x1 = Math.max(xa, xb), n = k + (sd > 0 ? 5 : 0), tint = C(tints[n]);
+    flatQ(b, x0, x1, z0, z1, y + 0.05, floors[k]);
+    b.box(xa - 0.25, xa + 0.25, y, y + 3.8, z0, z0 + 5, wall); b.box(xa - 0.25, xa + 0.25, y, y + 3.8, z1 - 5, z1, wall); b.box(xa - 0.25, xa + 0.25, y + 3.8, top, z0, z1, wall);   // shopfront: two piers and a header over a 12 m opening
+    b.box(Math.min(xa - sd * 0.3, xa - sd * 0.42), Math.max(xa - sd * 0.3, xa - sd * 0.42), y + 3.85, y + 5.2, z0 + 1, z1 - 1, tint);                                      // fascia in the unit's colour
+    gl.box(xa - 0.2, xa + 0.2, y + 3.72, y + 3.8, z0 + 5.2, z1 - 5.2, lite);
+    b.box(x0, x1, y, y + 5.4, z0 - 0.2, z0 + 0.2, wall); b.box(xb - 0.25, xb + 0.25, y, y + 5.4, z0, z1, wall); b.box(x0, x1, y + 5.4, y + 5.7, z0, z1, ceil);
+    for (const q of [-4.5, 4.5]) gl.box((xa + xb) / 2 - 3.5, (xa + xb) / 2 + 3.5, y + 5.3, y + 5.4, zm + q - 0.35, zm + q + 0.35, lite);
+    const sh = SHOPDEF[n], sg = mallSign(sh ? sh.name.toUpperCase() + '  ·  ' + sh.kind.toUpperCase() : 'UNIT ' + (n + 1) + '  ·  TO LET', 9, 1.05, sh ? sh.col : '#fbf8f0', sh ? '#fbf8f0' : tints[n]);
+    if (sh) shopProps(b, gl, n, sh); sg.position.set(xa - sd * 0.45, y + 4.52, zm); sg.rotation.y = -sd * Math.PI / 2; grp.add(sg);
+    BOXES.push([xa - 0.25, xa + 0.25, z0, z0 + 5, top], [xa - 0.25, xa + 0.25, z1 - 5, z1, top], [x0, x1, z0 - 0.2, z0 + 0.2, top], [xb - 0.25, xb + 0.25, z0, z1, top]);
+    if (k === 4) { b.box(x0, x1, y, y + 5.4, z1 - 0.2, z1 + 0.2, wall); BOXES.push([x0, x1, z1 - 0.2, z1 + 0.2, top]); }
+  }
+  for (const sd of [-1, 1]) for (const e of [-1, 1]) { const za = Z + e * 55, zb = Z + e * 65.5; b.box(X + sd * 8 - 0.25, X + sd * 8 + 0.25, y, top, Math.min(za, zb), Math.max(za, zb), wall); BOXES.push([X + sd * 8 - 0.25, X + sd * 8 + 0.25, Math.min(za, zb), Math.max(za, zb), top]); }
+  b.box(X - 8, X + 8, y, top, Z + 65, Z + 65.5, wall); b.box(X - 8, X + 8, y, top, Z - 65.5, Z - 65, wall); BOXES.push([X - 8.5, X + 8.5, Z + 65, Z + 65.5, top], [X - 8.5, X + 8.5, Z - 65.5, Z - 65, top]);
+  b.box(X - 2.4, X + 2.4, y, y + 3.2, Z + 64.9, Z + 65, C('#1d2630')); b.box(X - 0.06, X + 0.06, y, y + 3.2, Z + 64.85, Z + 64.9, pot); gl.box(X - 1.2, X + 1.2, y + 3.4, y + 3.9, Z + 64.85, Z + 64.95, exitG);   // the way out
+  b.box(X - 8, X + 8, top, top + 0.4, Z - 65, Z + 65, ceil); for (let k = 0; k < 5; k++) gl.box(X - 2.2, X + 2.2, top - 0.06, top, Z - 55 + k * 22 + 3, Z - 55 + k * 22 + 19, sky);    // rooflights
+  for (let k = 0; k < 16; k++) { const a = k / 16 * 6.2832, c = Math.cos(a), sn = Math.sin(a); b.box(X + c * 3 - 0.5, X + c * 3 + 0.5, y, y + 0.7, Z - 58 + sn * 3 - 0.5, Z - 58 + sn * 3 + 0.5, pot); }     // fountain at the far end
+  flatQ(gl, X - 2.6, X + 2.6, Z - 60.6, Z - 55.4, y + 0.5, water); b.box(X - 0.3, X + 0.3, y, y + 2.2, Z - 58.3, Z - 57.7, pot); SOLIDS.push([X, Z - 58, 3.5, y + 1]);
+  for (const k of [-38, -16, 6, 28]) {                                                                                                                                   // benches and planters down the middle
+    b.box(X - 0.45, X + 0.45, y + 0.35, y + 0.5, Z + k - 1.7, Z + k + 1.7, wood); for (const e of [-1.4, 1.4]) b.box(X - 0.4, X + 0.4, y, y + 0.35, Z + k + e - 0.1, Z + k + e + 0.1, trim);
+    b.box(X - 1, X + 1, y, y + 0.8, Z + k + 6, Z + k + 8, pot); b.box(X - 0.75, X + 0.75, y + 0.8, y + 2.3, Z + k + 6.25, Z + k + 7.75, leaf);
+    SOLIDS.push([X, Z + k - 0.9, 0.7, y + 1], [X, Z + k + 0.9, 0.7, y + 1], [X, Z + k + 7, 1.25, y + 2.3]);
+  }
+  const m = new T.Mesh(b.geo(), propMat); m.receiveShadow = false; m.castShadow = false; grp.add(m);
+  grp.add(new T.Mesh(gl.geo(), new T.MeshBasicMaterial({ vertexColors: true, side: T.DoubleSide })));
+  const dr = mallSign('DIRECTORY  ·  10 UNITS TO LET', 7, 0.9, '#2b3440', '#fff6e0'); dr.position.set(X, y + 5.6, Z + 64.8); dr.rotation.y = Math.PI; grp.add(dr);
+  scene.add(grp);
+}
+let mallBusy = false;
+function mallGo(inside) {                                // through the doors
+  if (mallBusy || respawning) return; mallBusy = true; $('flash').style.opacity = 1;
+  setTimeout(() => { if (inside) teleport(MALLI.x, MALLI.z + 59, 0); else teleport(MALLDOOR.x, MALLDOOR.z + 5.5, Math.PI);
+    AIM.yaw = P.heading; AIM.pitch = 0; P.grounded = true; camSnap = true; $('flash').style.opacity = 0; mallBusy = false; toast(inside ? 'Driftless Mall. Six shops open' : 'Back outside'); }, 380);
+}
+function drawMallMap(g, labels) {                        // the mall's floor plan
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); const W = g.canvas.width, H = g.canvas.height, k = Math.min(W / 70, H / 150), X = x => W / 2 + (x - MALLI.x) * k, Y = z => H / 2 + (z - MALLI.z) * k;
+  g.fillStyle = '#0e161e'; g.fillRect(0, 0, W, H); g.fillStyle = '#e4dfd2'; g.fillRect(X(MALLI.x - 8), Y(MALLI.z - 65), 16 * k, 130 * k);
+  const tints = ['#c8463a', '#3d6fb8', '#c9a23a', '#4f9a6a', '#5b4a8a', '#d9783a', '#5aa7c4', '#a8382f', '#3a7a40', '#8a8f98']; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '600 ' + Math.max(9, Math.round(k * 7)) + 'px ' + getComputedStyle(document.body).getPropertyValue('--display');
+  for (const sd of [-1, 1]) for (let i = 0; i < 5; i++) { const n = i + (sd > 0 ? 5 : 0), x0 = sd > 0 ? MALLI.x + 8 : MALLI.x - 26, z0 = MALLI.z - 55 + i * 22; g.fillStyle = tints[n]; g.globalAlpha = 0.55; g.fillRect(X(x0), Y(z0), 18 * k, 22 * k); g.globalAlpha = 1; g.strokeStyle = '#f6f2e4'; g.lineWidth = 1; g.strokeRect(X(x0), Y(z0), 18 * k, 22 * k); if (labels) { g.fillStyle = '#fff'; g.fillText(SHOPDEF[n] ? SHOPDEF[n].kind.toUpperCase() : String(n + 1), X(x0 + 9), Y(z0 + 11)); } }
+  g.fillStyle = '#58d27a'; g.fillRect(X(MALLI.x - 2.4), Y(MALLI.z + 64), 4.8 * k, 2.5 * k); if (labels) { g.fillStyle = '#58d27a'; g.fillText('EXIT', X(MALLI.x), Y(MALLI.z + 70)); }
+  for (const r of NET.rem.values()) { if (!r.init || !inMall(r.pos.x)) continue; g.beginPath(); g.arc(X(r.pos.x), Y(r.pos.z), 4.5, 0, TAU); g.fillStyle = r.color; g.fill(); }
+  g.translate(X(P.x), Y(P.z)); g.rotate(-P.heading); g.beginPath(); g.moveTo(0, -8); g.lineTo(5, 5); g.lineTo(0, 2.5); g.lineTo(-5, 5); g.closePath(); g.fillStyle = NET.room ? NET.color : '#e2483a'; g.fill(); g.lineWidth = 1.5; g.strokeStyle = '#fff'; g.stroke(); g.restore();
 }
 function bDiner(p, b, ln, gl) {
   const x = p.x, z = p.z, y = p.h;
@@ -1867,7 +2071,7 @@ const POI = [];
     ['raceway', 'Driftless Speedway', 'fix', [-1500, -240], 230, bRaceway], ['city', 'Downtown', 'blk', 0, 55, bCity],
     ['dealer', 'XJet Dealership', 'blk', 0, 45, bDealer], ['lookout', 'Fire Lookout', 'blk', 0, 45, bLookout],
     ['airfield', 'City Airfield', 'fix', [1300, 240], 110, bAirfield], ['trap', 'The Trap', 'blk', 0, 45, bTrap],
-    ['barn', 'Old Red Barn', 'blk', 0, 45, bBarn], ['carrier', 'Helicarrier', 'air', [0, 0], 230, bCarrier], ['harbourS', 'South Harbour', 'road', REND, 46, bHarbour]
+    ['barn', 'Old Red Barn', 'blk', 0, 45, bBarn], ['mall', 'Driftless Mall', 'blk', 0, 45, bMall], ['carrier', 'Helicarrier', 'air', [0, 0], 230, bCarrier], ['harbourS', 'South Harbour', 'road', REND, 46, bHarbour]
   ];
   let found = []; try { found = JSON.parse(localStorage.getItem('dd-poi') || '[]'); } catch (e) { /* storage unavailable */ }
   for (const [id, name, kind, a, r, build] of defs) {
@@ -1990,6 +2194,8 @@ function drawMoonMap(g, k, labels) {                   // the space map: the Moo
   g.fillStyle = NET.room ? NET.color : '#e2483a'; g.fill(); g.lineWidth = 1.5 / k; g.strokeStyle = '#fff'; g.stroke(); g.restore();
 }
 function drawMap(g, k, labels) {                       // g is already scaled so one unit is one map pixel; k = screen px per map px
+  if (inMall(P.x)) return drawMallMap(g, labels);
+  if (inSpace(P.x)) return drawSpaceMap(g, labels);
   if (onMoon(P.x)) return drawMoonMap(g, k, labels);
   g.imageSmoothingEnabled = true; g.drawImage(mapCv, 0, 0);
   g.lineJoin = g.lineCap = 'round';
@@ -2016,7 +2222,8 @@ function drawMap(g, k, labels) {                       // g is already scaled so
     if (labels) { const up = i & 1, tx = p.name.toUpperCase(), w = g.measureText(tx).width, lx = clamp(X - w / 2, 2 / k, MW - w - 2 / k), ly = Y + (up ? -15 : 16) / k;
       g.fillStyle = 'rgba(14,22,30,.72)'; g.fillRect(lx - 4 / k, ly - 8 / k, w + 8 / k, 16 / k); g.fillStyle = p.found ? '#ffc44d' : '#f6f2e4'; g.fillText(tx, lx, ly); }
   });
-  for (const r of NET.rem.values()) { if (!r.init || onMoon(r.pos.x)) continue; g.beginPath(); g.arc(mpx(r.pos.x), mpy(r.pos.z), 4.5 / k, 0, TAU); g.fillStyle = r.color; g.fill(); g.lineWidth = 1.3 / k; g.strokeStyle = '#0e161e'; g.stroke(); if (labels) { g.fillStyle = r.color; g.fillText(r.name, mpx(r.pos.x) + 7 / k, mpy(r.pos.z)); } }
+  for (const a of ATMS) { g.fillStyle = a.until > NET.clk() / 1000 ? '#4a5a50' : '#7ee04b'; g.fillRect(mpx(a.x) - 2.6 / k, mpy(a.z) - 2.6 / k, 5.2 / k, 5.2 / k); g.lineWidth = 1 / k; g.strokeStyle = '#0e161e'; g.strokeRect(mpx(a.x) - 2.6 / k, mpy(a.z) - 2.6 / k, 5.2 / k, 5.2 / k); }   // ATMs: green while there is cash in them
+  for (const r of NET.rem.values()) { if (!r.init || Math.abs(r.pos.x) > 12000) continue; g.beginPath(); g.arc(mpx(r.pos.x), mpy(r.pos.z), 4.5 / k, 0, TAU); g.fillStyle = r.color; g.fill(); g.lineWidth = 1.3 / k; g.strokeStyle = '#0e161e'; g.stroke(); if (labels) { g.fillStyle = r.color; g.fillText(r.name, mpx(r.pos.x) + 7 / k, mpy(r.pos.z)); } }
   g.save(); g.translate(mpx(P.x), mpy(P.z)); g.rotate(-P.heading); g.beginPath(); g.moveTo(0, -8 / k); g.lineTo(5 / k, 5 / k); g.lineTo(0, 2.5 / k); g.lineTo(-5 / k, 5 / k); g.closePath();
   g.fillStyle = NET.room ? NET.color : '#e2483a'; g.fill(); g.lineWidth = 1.5 / k; g.strokeStyle = '#fff'; g.stroke(); g.restore();
 }
@@ -2026,6 +2233,8 @@ let mapOpen = false, placeT = 0;
 function toggleMap(v) { mapOpen = v === undefined ? !mapOpen : v; $('map').hidden = !mapOpen; if (mapOpen) drawBig(); }
 function drawBig() {
   bigG.setTransform(BK, 0, 0, BK, 0, 0);
+  if (inMall(P.x)) { drawMap(bigG, BK, true); $('mapNote').textContent = 'Driftless Mall · Clothing, guns, attachments, shoes, decals and car upgrades · The green doors lead back outside · M or Esc closes the map'; return; }
+  if (inSpace(P.x)) { drawMap(bigG, BK, true); $('mapNote').textContent = 'Open space · Earth ' + (SP.dE / 1000).toFixed(1) + ' km · Moon ' + (SP.dM / 1000).toFixed(1) + ' km · M or Esc closes the map'; return; }
   if (onMoon(P.x)) { const sc = MXW / (MOON.R + 160); bigG.translate(MW / 2, MH / 2); bigG.scale(sc, sc); bigG.translate(-mpx(MOON.x), -mpy(MOON.z)); drawMap(bigG, BK * sc, true); $('mapNote').textContent = 'The Moon · Climb past ' + MOON.EXIT + ' m in the saucer to fly home · M or Esc closes the map'; return; }
   drawMap(bigG, BK, true);
   $('mapNote').textContent = POI.filter(p => p.found).length + ' of ' + POI.length + ' places found · Best lap ' + fmtLap(lap.best) + ' · M or Esc closes the map';
@@ -2051,11 +2260,13 @@ let travelOpen = false;
 function toggleTravel(v) { travelOpen = v === undefined ? !travelOpen : v; $('travel').hidden = !travelOpen; }
 for (const p of POI) { const el = document.createElement('button'); el.type = 'button'; el.textContent = p.name; el.addEventListener('click', e => { e.stopPropagation(); travelTo(p); }); $('tvList').appendChild(el); }
 { const el = document.createElement('button'); el.type = 'button'; el.textContent = 'The Moon'; el.addEventListener('click', e => { e.stopPropagation(); if (auto) setAuto(false); teleport(MOON.x + 40, MOON.z + 40, 0); toggleTravel(false); toast('The Moon. One sixth gravity'); }); $('tvList').appendChild(el); }
+{ const el = document.createElement('button'); el.type = 'button'; el.textContent = 'Open space'; el.addEventListener('click', e => { e.stopPropagation(); toggleTravel(false); if (!CAR.space) { toast('You need a spacecraft: take the saucer'); return; } spaceHop(onMoon(P.x) ? 'upMoon' : 'up'); }); $('tvList').appendChild(el); }
 $('travel').addEventListener('click', () => toggleTravel(false));
 $('bTravel').addEventListener('click', e => { toggleTravel(); e.currentTarget.blur(); });
 function updatePlaces(dt) {
   if (mapRow < MH) pumpMap(3);
   updateLap(dt);
+  if (started && CAR.foot && !RIDE && HP.dead <= 0 && MALLDOOR) { if (inMall(P.x)) { if (Math.hypot(P.x - MALLI.x, P.z - MALLI.z - 64.6) < 2.3) mallGo(false); } else if (Math.hypot(P.x - MALLDOOR.x, P.z - MALLDOOR.z) < 2.3 && Math.abs(P.y - MALLDOOR.y) < 3) mallGo(true); }
   for (const p of POI) { if (p.kind === 'air') { p.x = HC.x; p.z = HC.z; p.h = 0; p.grp.position.set(HC.x, HC.y, HC.z); p.grp.rotation.y = HC.yaw; for (const m of p.fast) m.rotation.y += dt * 11; }
     if (p.spin) for (const m of p.spin) m.rotation.x += dt * 0.7; if (p.turn) for (const m of p.turn) m.rotation.y += dt * 0.45; }
   if (playerModel.userData.prop) playerModel.userData.prop.rotation.z += dt * (8 + Math.abs(P.vf));
@@ -2099,7 +2310,7 @@ const CARS = [
 const gearMat = new T.MeshPhongMaterial({ color: 0x9aa3ab, specular: 0x333333, shininess: 30 });
 const GEAR = { ny: 1.15, nz: -2.3, nl: 0.85, hx: 0.55, hy: 0.9, mz: 0.2, ml: Math.hypot(0.75, 0.56), a0: Math.atan2(-0.56, 0.75) };
 const HULL = { c: [], own: [0], W: 0.95, L: 2.2, sum: 1.95, k2: 2, rot: false }, _hn = [0, 0, 0]; let _q = null, _c = [0, 0, 0];
-let PARK = null, RIDE = null, walker = null, HITR = 1.1; const AIM = { yaw: 0, pitch: 0 }, PH = { v: 100, max: 100, hurtT: 9 }; const HP = { v: 100, max: 100, dead: 0 }, GUN = { i: 0, cool: 0, shots: 0, hits: 0, ammo: [12, 30, 6, 5], rl: 0, bloom: 0, rec: 0, ads: false, trig: false };
+let PARK = null, RIDE = null, walker = null, HITR = 1.1; const AIM = { yaw: 0, pitch: 0 }, PH = { v: 100, max: 100, hurtT: 9 }; const HP = { v: 100, max: 100, dead: 0 }, GUN = { i: 4, punch: 0, cool: 0, shots: 0, hits: 0, ammo: [12, 30, 6, 5, 1, 6, 25, 2, 30, 0], rl: 0, bloom: 0, rec: 0, ads: false, trig: false };
 const FOOTCAR = { id: 'foot', name: 'On foot', type: 'walker', color: '#f2f2f2', accel: 0, vmax: 8, grip: 9, driftGrip: 9, offDrag: 0, mass: 0.08, foot: true, hidden: true };
 let fillCards = () => {};
 let CAR = CARS[1], playerModel = null, booted = false; const flames = [], UNL = {};
@@ -2205,6 +2416,7 @@ function updateFree(n, dt) {
   let lat = (n.x - roadX(n.wz)) / len, tx, tz, tsp;
   if (n.mode === 1) {
     n.t -= dt; const dist = Math.hypot(P.x - n.x, P.z - n.wz);
+    if (CAR.foot && !RIDE && dist < 18 && !n.driverOut && n.rc) { exitDriver(n, false); return; }      // you are on foot: they stop and come at you in person
     if (n.t <= 0 || dist > 340) { n.mode = 2; n.marker.visible = false; }
     tx = P.x + P.vx * 0.35; tz = P.z + P.vz * 0.35; tsp = clamp(Math.hypot(P.vx, P.vz) + 9, 13, 46); if (n.frozen > 0) tsp = 4;
     const aim = Math.abs(wrapPi(Math.atan2(-(tx - n.x), -(tz - n.wz)) - n.yaw));
@@ -2229,9 +2441,11 @@ function updateFree(n, dt) {
   n.marker.position.y = (n.type === 'truck' ? 4.3 : 2.6) + Math.sin(performance.now() * 0.012) * 0.2; n.marker.rotation.y += dt * 4;
 }
 function makeNpc(type, ci) {
-  const mesh = makeCar(type, NPC_COLS[ci], false); mesh.visible = false;
+  const mesh = makeCar(type, NPC_COLS[ci], false, true); mesh.visible = false;
   const marker = new T.Mesh(angryGeo, angryMat); marker.position.y = type === 'truck' ? 4.3 : 2.6; marker.visible = false; mesh.add(marker);
-  return { mesh, type, look: type + ci, halfLen: mesh.userData.halfLen, z: 0, dir: 1, lane: 1, speed: 0, kx: 0, kz: 0, kvx: 0, kvz: 0, spin: 0, spinV: 0, stun: 0, x: 0, y: 0, wz: 0, yaw: 0, live: false, mode: 0, t: 0, marker, rc: null, d: 0, pf: 1, fade: 1, first: true, pup: null, pupT: 0, frozen: 0 };
+  const L = lookOf(ci * 31 + 7), dg = new GB(); sitMan(dg, 0, 0, 0, 0, -1, L.sh, L.pa, L.sk, L.ha, false, {});                    // someone at the wheel
+  const dgeo = dg.geo(); dgeo.scale(0.36, 0.36, 0.36); const drv = new T.Mesh(dgeo, carMat); drv.position.set(-0.42, type === 'truck' ? 1.62 : type === 'suv' ? 1.12 : 0.98, type === 'truck' ? -mesh.userData.halfLen + 1.9 : 0.32); mesh.userData.chassis.add(drv);
+  return { drv, driverOut: false, mesh, type, look: type + ci, halfLen: mesh.userData.halfLen, z: 0, dir: 1, lane: 1, speed: 0, kx: 0, kz: 0, kvx: 0, kvz: 0, spin: 0, spinV: 0, stun: 0, x: 0, y: 0, wz: 0, yaw: 0, live: false, mode: 0, t: 0, marker, rc: null, d: 0, pf: 1, fade: 1, first: true, pup: null, pupT: 0, frozen: 0 };
 }
 function cityPose(n) {                              // city cars keep right on the grid
   const C = CITY, c = n.fi * C.P - C.E, fx = n.axis === 0 ? n.cd : 0, fz = n.axis === 0 ? 0 : n.cd;
@@ -2303,7 +2517,7 @@ function trSample(c, d) {                            // where rail car c was d s
 function trBind(c) {
   const look = c.type + c.ci; let n = null; for (const m of npcs) if (!m.live && !m.rc && m.look === look) { n = m; break; }
   if (!n) { n = makeNpc(c.type, c.ci); npcs.push(n); }
-  n.rc = c; c.act = n; n.live = true; n.mode = 0; n.d = 0; n.pf = 1; n.fade = 0; n.first = true; n.pup = null; n.city = c.kind === 1; n.dir = c.kind ? 1 : c.dir; n.lane = c.kind ? 1 : c.lane;
+  n.rc = c; c.act = n; n.driverOut = false; n.live = true; n.mode = 0; n.d = 0; n.pf = 1; n.fade = 0; n.first = true; n.pup = null; n.city = c.kind === 1; n.dir = c.kind ? 1 : c.dir; n.lane = c.kind ? 1 : c.lane;
   n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = n.stun = 0; n.spinOut = 0; n.frozen = 0; n.hp = null; n.wreck = false; n.t = 0; if (n.ice) n.ice.visible = false; n.marker.visible = false; n.mesh.visible = true; n.mesh.scale.setScalar(0.01);
   return n;
 }
@@ -2352,7 +2566,7 @@ function updateNpcs(dt) {
     else if (!n.first) {
       const fx = -Math.sin(S.yaw), fz = -Math.cos(S.yaw);
       const blk = (bx, bz, by, ext) => { if (Math.abs(by - n.y) > 3) return; const ox = bx - n.x, oz = bz - n.wz, ax = ox * fx + oz * fz - n.halfLen - ext, lx = Math.abs(ox * fz - oz * fx); if (ax > -1.5 && ax < 12 && lx < 2.1) tgt = Math.min(tgt, clamp((ax - 2.5) / 6, 0, 1.35)); };
-      blk(P.x, P.z, P.y, HULL.L);
+      blk(P.x, P.z, P.y, HULL.L); for (const a of ACT) blk(a.x, a.z, a.y, 0.4); for (const e of REMA.values()) blk(e.x, e.z, e.y, 0.4);
       for (const r of NET.rem.values()) if (r.init) blk(r.pred.x, r.pred.z, r.pred.y, r.halfLen || 2.2);
       for (const m of npcs) if (m !== n && m.live && (m.mode || m.d > 0.05 || m.stun > 0)) blk(m.x, m.wz, m.y, m.halfLen);
       if (n.frozen > 0) tgt = Math.min(tgt, 0.2);
@@ -2369,6 +2583,431 @@ function updateNpcs(dt) {
   }
 }
 
+/* ───────────── people ─────────────
+   Pedestrians walk loops round the city blocks on the sidewalk, placed purely from the shared clock, so every player sees the same
+   people in the same places. Anyone who is set off (hit, shot at, or the driver of a car you shot) becomes an "actor": a person this
+   game runs and tells the others about, who fights, flees or goes back to their car. */
+const PSH = ['#c8463a', '#3d6fb8', '#e9e6dc', '#2c2f36', '#c9a23a', '#4f9a6a', '#5b4a8a', '#d9783a', '#8a8f98', '#f2f2ee', '#7a3b2e', '#2f6f6a'], PPA = ['#2b3440', '#3f5673', '#5a4a3a', '#1c1d20', '#6b6f78', '#8a7a5a', '#3a3d44'],
+  PSK = ['#f1c9a5', '#d9a47a', '#b07a52', '#7a5238', '#5a3b28'], PHA = ['#1a1410', '#3b2a1a', '#6b4a2a', '#c9a23a', '#8a8f98', '#141414'];
+const lookOf = sd => { const pk = (a, k) => a[Math.floor(rnd2(sd, k) * a.length)]; return { sh: C(pk(PSH, 1)), pa: C(pk(PPA, 2)), sk: C(pk(PSK, 3)), ha: C(pk(PHA, 4)), cap: rnd2(sd, 5) < 0.22, tall: 0.94 + rnd2(sd, 6) * 0.12 }; };
+function makePerson(sd, gun, ov) {                       // a light figure: body, two legs, two arms; forward is -z like everything else
+  const L = ov ? Object.assign(lookOf(sd), ov) : lookOf(sd), g = new T.Group(), ch = new T.Group(); g.add(ch); g.rotation.order = 'YXZ'; ch.scale.setScalar(L.tall); const shoe = C('#e8e6df'), dk = C('#17181a');
+  const part = (x, y, z, build) => { const b = new GB(); build(b); const m = new T.Mesh(b.geo(), carMat); m.castShadow = true; const q = new T.Group(); q.position.set(x, y, z); q.add(m); ch.add(q); return q; };
+  part(0, 0, 0, b => { b.box(-0.17, 0.17, 0.84, 1.0, -0.1, 0.1, L.pa); b.box(-0.2, 0.2, 0.98, 1.47, -0.115, 0.115, L.sh); b.box(-0.05, 0.05, 1.46, 1.54, -0.05, 0.05, L.sk); b.box(-0.11, 0.11, 1.52, 1.77, -0.11, 0.11, L.sk);
+    b.box(-0.115, 0.115, 1.71, 1.81, -0.118, 0.118, L.ha); b.box(-0.07, -0.03, 1.64, 1.67, -0.122, -0.108, dk); b.box(0.03, 0.07, 1.64, 1.67, -0.122, -0.108, dk);
+    if (L.cap) { b.box(-0.12, 0.12, 1.76, 1.85, -0.12, 0.12, L.hat || L.sh); b.box(-0.1, 0.1, 1.76, 1.79, -0.24, -0.12, L.hat || L.sh); }
+    if (L.badge) { b.box(0.06, 0.13, 1.3, 1.37, -0.125, -0.115, C('#e2b33c')); b.box(-0.2, 0.2, 0.98, 1.04, -0.12, 0.12, C("#0b0f18")); } });
+  const leg = x => part(x, 0.92, 0, b => { b.box(-0.075, 0.075, -0.84, 0, -0.08, 0.08, L.pa); b.box(-0.08, 0.08, -0.92, -0.84, -0.14, 0.09, shoe); });
+  const arm = x => part(x, 1.43, 0, b => { b.box(-0.06, 0.06, -0.3, 0.03, -0.065, 0.065, L.sh); b.box(-0.05, 0.05, -0.6, -0.3, -0.05, 0.05, L.sk); });
+  const lL = leg(-0.1), lR = leg(0.1), aL = arm(-0.27), aR = arm(0.27);
+  const gm = new T.Mesh(new T.BoxGeometry(0.06, 0.13, 0.24), new T.MeshLambertMaterial({ color: 0x16171a })); gm.position.set(0, -0.62, -0.09); gm.visible = !!gun; if (gun === 2) { gm.scale.set(1.1, 1, 3.2); gm.position.z = -0.32; } aR.add(gm);
+  g.userData = { ch, lL, lR, aL, aR, gm }; return g;
+}
+function posePerson(m, ph, amt, mode, p) {           // mode: 0 walk/run, 1 fists up (p = punch), 2 gun out
+  const u = m.userData, s = Math.sin(ph) * (0.35 + 0.35 * amt) * Math.min(1, amt * 2.5);
+  u.lL.rotation.x = s; u.lR.rotation.x = -s; u.ch.rotation.x = -0.12 * amt;
+  if (mode === 1) { u.aR.rotation.set(1.0 + 0.6 * p, 0, 0.1); u.aL.rotation.set(1.15, 0, -0.15); }
+  else if (mode === 2) { u.aR.rotation.set(1.5, 0, 0); u.aL.rotation.set(1.2, 0, -0.35); }
+  else { u.aL.rotation.set(-s * 0.9, 0, -0.05); u.aR.rotation.set(s * 0.9, 0, 0.05); }
+}
+function disposePerson(m) { scene.remove(m); m.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
+function actorBar() { const cv = document.createElement('canvas'); cv.width = 64; cv.height = 10; const sp = new T.Sprite(new T.SpriteMaterial({ map: new T.CanvasTexture(cv), depthWrite: false })); sp.scale.set(0.95, 0.15, 1); sp.renderOrder = 5; sp.userData.cv = cv; sp.userData.v = -1; scene.add(sp); return sp; }
+function drawBar(sp, v) { if (sp.userData.v === v) return; sp.userData.v = v; const g = sp.userData.cv.getContext('2d'); g.clearRect(0, 0, 64, 10); g.fillStyle = 'rgba(0,0,0,.75)'; g.fillRect(0, 0, 64, 10); g.fillStyle = v > 0.6 ? '#7ee04b' : v > 0.3 ? '#ffc44d' : '#e2483a'; g.fillRect(1, 1, 62 * clamp(v, 0, 1), 8); sp.material.map.needsUpdate = true; }
+
+const PED_IN = 9.7, PEDN = 7, PED_RES = new Set(Object.values(CITY_RES).map(q => q[0] + ',' + q[1]));
+const pedOK = (bi, bj) => bi >= 0 && bj >= 0 && bi < 20 && bj < 20 && !PED_RES.has(bi + ',' + bj) && Math.hypot(bi - 9.5, bj - 9.5) <= 8.5;
+function pedAt(bi, bj, k, t, o) {                    // where pedestrian k of block (bi, bj) is at time t: a loop of the block's sidewalk
+  const sd = bi * 977 + bj * 131 + k * 17 + 5, ins = PED_IN + (rnd2(sd, 504) - 0.5) * 1.0, side = CITY.P - 2 * ins, per = 4 * side, sp = 1.0 + 0.7 * rnd2(sd, 502), dir = rnd2(sd, 503) < 0.5 ? 1 : -1;
+  const u = ((rnd2(sd, 501) * per + dir * sp * t) % per + per) % per, e = Math.floor(u / side), f = u - e * side; let lx, lz, yaw;
+  if (e === 0) { lx = ins + f; lz = ins; yaw = -Math.PI / 2; } else if (e === 1) { lx = CITY.P - ins; lz = ins + f; yaw = Math.PI; } else if (e === 2) { lx = CITY.P - ins - f; lz = CITY.P - ins; yaw = Math.PI / 2; } else { lx = ins; lz = CITY.P - ins - f; yaw = 0; }
+  if (dir < 0) { lx = e === 0 || e === 2 ? lx : lx; yaw += Math.PI; }
+  o.x = -CITY.E + bi * CITY.P + lx; o.z = -CITY.E + bj * CITY.P + lz; o.yaw = yaw; o.sp = sp; o.seed = sd; o.ph = rnd2(sd, 505) * 6 + sp * t * 2.6; return o;
+}
+const PEOPLE = { vis: new Map(), hide: new Map(), HID: new Set() }, ACT = [], REMA = new Map(), _po = { x: 0, z: 0, yaw: 0, sp: 0, seed: 0, ph: 0 };
+function spawnActor(src, x, y, z, yaw, sd, o) {
+  { const ex = ACT.find(q => q.src === src); if (ex) return ex; const pv = PEOPLE.vis.get(src); if (pv) { disposePerson(pv.m); PEOPLE.vis.delete(src); } }   // one body per person
+  if (ACT.length >= 14) { const i = ACT.findIndex(a => a.st === 2 || a.st === 1); if (i < 0) return null; dropActor(ACT[i], 30); }
+  const a = { src, x, y, z, yaw, sd, vx: 0, vy: 0, vz: 0, hp: o.hp || 60, max: o.hp || 60, st: o.st || 0, gun: !!o.gun, car: o.car || null, tgtId: 'me', t: 0, far: 0, cool: 0.5 + Math.random() * 0.6, punch: 0, stag: 0, ph: 0, air: false, m: makePerson(sd, o.cop ? 2 : !!o.gun, o.cop ? COPLOOK : null), bar: actorBar(), cop: !!o.cop, wpn: o.wpn || '', rise: o.rise || 0, k: o.k || 0, fol: 0, lag: 0, burst: 0 };
+  a.m.position.set(x, y, z); a.m.rotation.y = yaw; scene.add(a.m); ACT.push(a); return a;
+}
+function dropActor(a, hideFor) { const i = ACT.indexOf(a); if (i >= 0) ACT.splice(i, 1); disposePerson(a.m); scene.remove(a.bar); a.bar.material.map.dispose(); a.bar.material.dispose(); if (hideFor) PEOPLE.hide.set(a.src, NET.clk() / 1000 + hideFor); }
+function exitDriver(n, hurt) {                        // the driver climbs out of the driver's door
+  if (n.driverOut || !n.rc) return; n.driverOut = true; n.drv.visible = false; n.marker.visible = false; if (!hurt) { n.mode = 8; n.t = 75; n.speed = 0; n.stun = 0; }
+  const rx = Math.cos(n.yaw), rz = -Math.sin(n.yaw), id = n.rc.id, x = n.x - rx * 1.75, z = n.wz - rz * 1.75;
+  const a = spawnActor('d' + id, x, groundAt(x, z, n.y + 2), z, n.yaw, n.rc.ci * 31 + 7, { st: 0, gun: rnd2(id, 91 + TR.epoch) < 0.35, car: n, hp: hurt ? 40 : 70 });
+  if (a && hurt) a.stag = 1; toast(hurt ? 'The driver stumbles out' : 'The driver is getting out');
+}
+function hurtActor(a, d, sx, sz) {
+  if (a.st === 2) return; a.hp -= d; a.stag = Math.max(a.stag, 0.22); const dx = a.x - sx, dz = a.z - sz, l = Math.hypot(dx, dz) || 1;
+  if (a.hp <= 0) { dropCash(a.x, a.y, a.z, a.cop ? 80 + Math.floor(Math.random() * 160) : a.src[0] === 'd' ? 40 + Math.floor(Math.random() * 120) : 8 + Math.floor(Math.random() * 60), 1); a.hp = 0; a.st = 2; a.t = 0; a.vx = dx / l * 3.5; a.vz = dz / l * 3.5; a.vy = 2.5; a.air = true; return; }
+  a.vx += dx / l * 2.2; a.vz += dz / l * 2.2; if (a.st === 3) a.st = 0;
+}
+function hitPerson(h, d, sx, sz) {                    // something in the target list was hit: one of ours, someone else's, or a passer-by
+  if (h.pp.a) hurtActor(h.pp.a, d, sx, sz);
+  else if (h.pp.e) { const k = h.pp.e.owner + '|' + h.pp.e.src; NET.adm.set(k, (NET.adm.get(k) || 0) + d); }
+  else if (h.pp.keep) { const sh = h.pp.keep; sh.down = 120; dropCash(sh.m.position.x, sh.y, sh.m.position.z, 40 + Math.floor(Math.random() * 80), 1); toast(sh.def.name + ' is closed for now'); if (SHOP.on && SHOP.s === sh) closeShop(); mallAlarm(); }
+  else if (h.pp.ped) { const q = h.pp.ped, fight = rnd2(q.seed, 77) < 0.55; const a = spawnActor(q.key, q.x, q.y, q.z, q.yaw, q.seed, { st: fight ? 0 : 1, gun: fight && rnd2(q.seed, 78) < 0.2, hp: 50 }); if (a) hurtActor(a, d, sx, sz); }
+}
+function peopleTargets(tg, R) {
+  const both = (pp, x, y, z) => { tg.push({ pp, x, y: y + 1.0, z, R }); tg.push({ pp, head: true, x, y: y + 1.66, z, R: 0.15 }); };
+  for (const a of ACT) if (a.st !== 2) both({ a }, a.x, a.y, a.z);
+  for (const e of REMA.values()) if (e.st !== 2) both({ e }, e.x, e.y, e.z);
+  for (const v of PEOPLE.vis.values()) both({ ped: v }, v.x, v.y, v.z);
+  if (shopBuilt && inMall(P.x)) for (const sh of SHOPS) if (!(sh.down > 0)) both({ keep: sh }, sh.m.position.x, sh.y, sh.m.position.z);
+}
+function peoplePanic(x, z, rad) {                     // gunfire sends the nearest passers-by running
+  let n = 0; for (const v of [...PEOPLE.vis.values()]) { if (n >= 3 || ACT.length >= 12) break; if (Math.hypot(v.x - x, v.z - z) > rad) continue; if (spawnActor(v.key, v.x, v.y, v.z, v.yaw, v.seed, { st: 1, hp: 50 })) n++; }
+}
+function punch(gn) {                                   // a jab at whatever is in front of you
+  GUN.cool = gn.rate; GUN.punch = 0.3; GUN.shots++; const fx = -Math.sin(AIM.yaw), fz = -Math.cos(AIM.yaw), tg = []; peopleTargets(tg, 0.45);
+  for (const r of NET.rem.values()) if (r.init && r.car.foot && r.pres.rd !== 1 && r.pres.w !== 1) tg.push({ r, x: r.pred.x, y: r.pred.y + 1, z: r.pred.z, R: 0.45 });
+  for (const n of npcs) if (n.live && n.mode !== 6) tg.push({ n, x: n.x, y: n.y + 1, z: n.wz, R: n.halfLen * 0.55 });
+  let best = null, bd = 1e9; for (const t of tg) { const dx = t.x - P.x, dz = t.z - P.z, d = Math.hypot(dx, dz); if (d > gn.range + t.R || d < 1e-3 || Math.abs(t.y - 1 - P.y) > 1.4) continue; if ((dx * fx + dz * fz) / d < 0.5) continue; if (d - t.R < bd) { bd = d - t.R; best = t; } }
+  if (!best) { personSound(P.x, P.z, 0.12, 900); return; }
+  GUN.hits++; if (best.pp) hitPerson(best, gn.dmg, P.x, P.z); else if (best.r) NET.dm.set(best.r.id, (NET.dm.get(best.r.id) || 0) + gn.dmg); else if (best.n) dmgNpc(best.n, 3);
+  personSound(P.x, P.z, 0.5, 170); shake = Math.min(1, shake + 0.06); const xh = $('xhair'); xh.classList.add('hit'); clearTimeout(fireGun.t); fireGun.t = setTimeout(() => xh.classList.remove('hit'), 110);
+}
+function personSound(x, z, vol, freq) {               // a thump or a shot, quieter with distance
+  if (!AC || !soundOn || !noiseBuf) return; const v = vol / (1 + Math.hypot(x - P.x, z - P.z) / 22); if (v < 0.015) return;
+  const t = AC.currentTime, src = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain(); src.buffer = noiseBuf; f.type = freq < 400 ? 'lowpass' : 'bandpass'; f.frequency.value = freq; f.Q.value = 0.8;
+  g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + (freq < 400 ? 0.12 : 0.16)); src.connect(f); f.connect(g); g.connect(master); src.start(t, Math.random()); src.stop(t + 0.3);
+}
+function tgtOf(a) {                                   // the player this person is after, if they can still be reached
+  if (a.tgtId === 'me') return started && HP.dead <= 0 && (Math.abs(P.x) < 12000 || inMall(P.x)) && !inSpace(P.x) ? { me: true, x: P.x, y: P.y, z: P.z, foot: CAR.foot && !RIDE, sp: Math.hypot(P.vx, P.vz) } : null;
+  const r = NET.rem.get(a.tgtId); return r && r.init && r.pres.w !== 1 && Math.abs(r.pred.x) < 12000 ? { r, x: r.pred.x, y: r.pred.y, z: r.pred.z, foot: r.car.foot && r.pres.rd !== 1, sp: Math.hypot(r.sv.x, r.sv.z) } : null;
+}
+function hurtTarget(t, d) { if (t.me) damage(d); else NET.dm.set(t.r.id, (NET.dm.get(t.r.id) || 0) + d); }
+function pushOutPerson(o, r) {                        // keep a person out of buildings, posts and parked cars
+  if (inCity(o.x, o.z, 12)) { const bi0 = Math.floor((o.x + CITY.E) / CITY.P), bj0 = Math.floor((o.z + CITY.E) / CITY.P);
+    for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) { const bi = bi0 + di, bj = bj0 + dj; if (bi < 0 || bj < 0 || bi > 19 || bj > 19) continue; const arr = CITY.boxes[bi * 20 + bj]; if (!arr) continue;
+      for (const q of arr) { if (o.y > q[4] - 0.5 || o.x < q[0] - r || o.x > q[1] + r || o.z < q[2] - r || o.z > q[3] + r) continue; const nx = clamp(o.x, q[0], q[1]), nz = clamp(o.z, q[2], q[3]), dx = o.x - nx, dz = o.z - nz, d = Math.hypot(dx, dz);
+        if (d > 1e-4) { if (d < r) { o.x += dx / d * (r - d); o.z += dz / d * (r - d); } } else { const a = o.x - q[0], b = q[1] - o.x, c = o.z - q[2], e = q[3] - o.z, m = Math.min(a, b, c, e); if (m === a) o.x = q[0] - r; else if (m === b) o.x = q[1] + r; else if (m === c) o.z = q[2] - r; else o.z = q[3] + r; } } } }
+  for (const q of BOXES) { if (o.y > q[4] - 0.5 || o.x < q[0] - r || o.x > q[1] + r || o.z < q[2] - r || o.z > q[3] + r) continue; const nx = clamp(o.x, q[0], q[1]), nz = clamp(o.z, q[2], q[3]), dx = o.x - nx, dz = o.z - nz, d = Math.hypot(dx, dz);   // the mall's walls and counters, and the other places' buildings
+    if (d > 1e-4) { if (d < r) { o.x += dx / d * (r - d); o.z += dz / d * (r - d); } } else { const a = o.x - q[0], b = q[1] - o.x, c = o.z - q[2], e = q[3] - o.z, m = Math.min(a, b, c, e); if (m === a) o.x = q[0] - r; else if (m === b) o.x = q[1] + r; else if (m === c) o.z = q[2] - r; else o.z = q[3] + r; } }
+  for (const q of SOLIDS) { if (o.y >= q[3]) continue; const dx = o.x - q[0], dz = o.z - q[1], rr = q[2] + r; if (dx > rr || dx < -rr || dz > rr || dz < -rr) continue; const d = Math.hypot(dx, dz); if (d < rr && d > 1e-4) { o.x += dx / d * (rr - d); o.z += dz / d * (rr - d); } }
+}
+function pushFromPeople() {                           // on foot you cannot walk through people
+  const one = (x, z) => { const dx = P.x - x, dz = P.z - z, d = Math.hypot(dx, dz), rr = 0.72; if (d < rr && d > 1e-4) { P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } };
+  for (const a of ACT) if (a.st !== 2) one(a.x, a.z); for (const v of PEOPLE.vis.values()) one(v.x, v.z); for (const e of REMA.values()) if (e.st !== 2) one(e.x, e.z);
+}
+function carHits(x, y, z) {                            // is this spot inside the player's moving vehicle?
+  if (CAR.foot || Math.abs(y - P.y) > 2.2) return 0; const sp = Math.hypot(P.vx, P.vz), dx = x - P.x, dz = z - P.z, fx = -Math.sin(P.heading), fz = -Math.cos(P.heading);
+  const lf = dx * fx + dz * fz, lr = dx * fz - dz * fx; return Math.abs(lf) < HULL.L + 0.35 && Math.abs(lr) < HULL.W + 0.35 ? (sp > 3 ? 2 : 1) : 0;
+}
+function stepActor(a, dt) {
+  a.t += dt; if (a.punch > 0) a.punch = Math.max(0, a.punch - dt); if (a.stag > 0) a.stag -= dt;
+  if (a.st === 2) {                                    // down: falls, then lies still and is cleared away
+    if (a.air) { a.vy -= GRAV * dt; a.x += a.vx * dt; a.z += a.vz * dt; a.y += a.vy * dt; const g = groundAt(a.x, a.z, a.y + 1); if (a.y <= g) { a.y = g; a.air = false; } } else { a.y = groundAt(a.x, a.z, a.y + 1); }
+    if (a.t > 15) dropActor(a, 70); return;
+  }
+  const t = tgtOf(a), sp = Math.hypot(a.vx, a.vz); let wx = 0, wz = 0, run = 0, face = null, mode = 0;
+  if (a.rise > 0) {                                    // mall police climbing up out of the fountain
+    a.rise -= dt; const F = MALLI.z - 58, k = clamp(a.rise / 1.1, 0, 1); a.y = MALLI.y + 0.5 - 1.9 * k; a.mode = 2; if (Math.random() < dt * 14) puffAt(a.x + (Math.random() - 0.5), MALLI.y + 0.7, a.z + (Math.random() - 0.5), 0xcfe9ff);
+    if (t) a.yaw = Math.atan2(-(t.x - a.x), -(t.z - a.z));
+    if (a.rise <= 0) { const ang = Math.atan2(a.x - MALLI.x, a.z - F) || a.k; a.x = MALLI.x + Math.sin(ang) * 4.1; a.z = F + Math.cos(ang) * 4.1; a.y = MALLI.y; for (let i = 0; i < 6; i++) puffAt(a.x, a.y + 0.6, a.z, 0xcfe9ff); }
+    return;
+  }
+  if (a.st === 0 && a.cop) { const r = copStep(a, t, dt); wx = r[0]; wz = r[1]; run = r[2]; face = r[3]; mode = 2; }
+  else if (a.st === 0) {
+    if (!t) a.st = 3; else {
+      const dx = t.x - a.x, dz = t.z - a.z, d = Math.hypot(dx, dz) || 1; face = Math.atan2(-dx, -dz); a.far = d > 45 ? a.far + dt : 0; if (a.far > 6) a.st = 3;
+      if (a.gun) { mode = 2; if (d > 16) { wx = dx / d; wz = dz / d; run = 4.6; } else if (d < 6) { wx = -dx / d; wz = -dz / d; run = 2.5; }
+        a.cool -= dt; if (a.cool <= 0 && d < 42 && a.stag <= 0) { a.cool = 0.9 + Math.random() * 0.9; const ch = clamp(0.55 - d * 0.009 - t.sp * 0.025, 0.1, 0.55), hitIt = Math.random() < ch;
+          const fx = -Math.sin(a.yaw), fz = -Math.cos(a.yaw), mx = a.x + fx * 0.75 + Math.cos(a.yaw) * 0.27, my = a.y + 1.42, mz = a.z + fz * 0.75 - Math.sin(a.yaw) * 0.27;
+          const tr = tracers[tracerI = (tracerI + 1) % tracers.length], q = tr.geometry.attributes.position.array, mis = hitIt ? 0 : 1.5; q[0] = mx; q[1] = my; q[2] = mz; q[3] = t.x + (Math.random() - 0.5) * mis * 2; q[4] = t.y + 1.1 + (Math.random() - 0.5) * mis; q[5] = t.z + (Math.random() - 0.5) * mis * 2;
+          tr.geometry.attributes.position.needsUpdate = true; tr.userData.life = 0.07; tr.visible = true; personSound(a.x, a.z, 0.35, 1400); if (hitIt) hurtTarget(t, 16); } }
+      else { mode = 1; if (d > 1.15) { wx = dx / d; wz = dz / d; run = d > 6 ? 5.4 : 3.6; }
+        a.cool -= dt; if (a.cool <= 0 && d < 1.55 && a.stag <= 0) { a.cool = 0.75 + Math.random() * 0.4; a.punch = 0.32; personSound(a.x, a.z, 0.4, 170); if (t.foot) hurtTarget(t, 14); } }
+    }
+  } else if (a.st === 1) {                             // running away
+    const ox = t ? t.x : P.x, oz = t ? t.z : P.z, dx = a.x - ox, dz = a.z - oz, d = Math.hypot(dx, dz) || 1; wx = dx / d; wz = dz / d; run = 5.6; if (a.t > 10 || d > 70) { dropActor(a, 40); return; }
+  } else {                                             // calm: back to the car, or off about their business
+    const n = a.car; if (n && n.live && n.rc && n.mode === 8 && n.rc.id + '' === a.src.slice(1)) { const rx = Math.cos(n.yaw), rz = -Math.sin(n.yaw), dx = n.x - rx * 1.75 - a.x, dz = n.wz - rz * 1.75 - a.z, d = Math.hypot(dx, dz);
+      if (d < 0.9) { n.driverOut = false; n.drv.visible = true; n.mode = 2; n.stun = 0.4; n.speed = 0; dropActor(a, 0); return; } wx = dx / d; wz = dz / d; run = 1.6; }
+    else { wx = -Math.sin(a.yaw); wz = -Math.cos(a.yaw); run = 1.4; if (a.t > 30) { dropActor(a, 30); return; } }
+  }
+  if (a.stag > 0) run *= 0.2; const k = 1 - Math.exp(-7 * dt); a.vx += (wx * run - a.vx) * k; a.vz += (wz * run - a.vz) * k;
+  a.x += a.vx * dt; a.z += a.vz * dt; pushOutPerson(a, 0.32);
+  for (const b of ACT) if (b !== a && b.st !== 2) { const dx = a.x - b.x, dz = a.z - b.z, d = Math.hypot(dx, dz); if (d < 0.6 && d > 1e-4) { a.x += dx / d * (0.6 - d) * 0.5; a.z += dz / d * (0.6 - d) * 0.5; } }
+  a.y = groundAt(a.x, a.z, a.y + 1);
+  if (face === null && sp > 0.3) face = Math.atan2(-a.vx, -a.vz); if (face !== null) a.yaw += wrapPi(face - a.yaw) * (1 - Math.exp(-10 * dt));
+  a.ph += sp * dt * 2.6; a.mode = mode;
+  const hitBy = carHits(a.x, a.y, a.z); if (hitBy === 2) { const v = Math.hypot(P.vx, P.vz); hurtActor(a, 15 + v * 4, P.x - P.vx, P.z - P.vz); a.vx = P.vx * 0.7; a.vz = P.vz * 0.7; a.vy = 3 + v * 0.12; a.air = true; hit(2.5); }
+  else if (hitBy === 1) { const dx = a.x - P.x, dz = a.z - P.z, d = Math.hypot(dx, dz) || 1; a.x += dx / d * 0.15; a.z += dz / d * 0.15; }
+}
+function drawActor(m, bar, x, y, z, yaw, st, ph, amt, mode, p, hp) {
+  m.position.set(x, y + (st === 2 ? 0.15 : 0), z); m.rotation.set(st === 2 ? -1.5 : 0, yaw, 0); if (st !== 2) posePerson(m, ph, amt, mode, p);
+  bar.visible = st !== 2 && (st === 0 || hp < 1); if (bar.visible) { bar.position.set(x, y + 2.15, z); drawBar(bar, hp); }
+}
+function netAc() {                                    // the people this game runs: [src, x, y, z, yaw, state, gun, health %, anim, look]
+  if (!ACT.length) return null; return ACT.slice(0, 12).map(a => [a.src, Math.round(a.x * 10) / 10, Math.round(a.y * 10) / 10, Math.round(a.z * 10) / 10, Math.round(a.yaw * 100) / 100, a.st, a.gun ? 1 : 0, Math.round(a.hp / a.max * 100), a.punch > 0 ? 3 : Math.hypot(a.vx, a.vz) > 3 ? 2 : Math.hypot(a.vx, a.vz) > 0.4 ? 1 : 0, a.sd, a.mode || 0, a.cop ? (a.wpn === 'sg' ? 2 : 1) : 0]);
+}
+function netAdm() { if (!NET.adm.size) return null; return [...NET.adm].slice(-8).map(([k, v]) => { const i = k.indexOf('|'); return [k.slice(0, i), k.slice(i + 1), v]; }); }
+function peopleFrame(dt) {
+  const now = NET.clk() / 1000, HID = PEOPLE.HID; HID.clear();
+  for (const a of ACT) HID.add(a.src); for (const [k, e] of PEOPLE.hide) { if (e < now) PEOPLE.hide.delete(k); else HID.add(k); }
+  /* other players' people */
+  const seen = new Set();
+  for (const r of NET.rem.values()) { if (!r.init || !r.ac) continue; for (const q of r.ac) {
+    if (!Array.isArray(q) || q.length < 11 || typeof q[0] !== 'string' || q[0].length > 24 || !num(q[1]) || !num(q[2]) || !num(q[3]) || !num(q[4]) || !num(q[9])) continue;
+    const k = r.id + '|' + q[0]; seen.add(k); HID.add(q[0]); let e = REMA.get(k);
+    if (!e) { e = { owner: r.id, src: q[0], m: makePerson(q[9], q[11] ? 2 : q[6] === 1, q[11] ? COPLOOK : null), bar: actorBar(), x: q[1], y: q[2], z: q[3], yaw: q[4], ph: 0 }; scene.add(e.m); REMA.set(k, e); }
+    e.tx = q[1]; e.ty = q[2]; e.tz = q[3]; e.tyaw = q[4]; e.st = q[5]; e.hp = clamp(num(q[7]) ? q[7] : 100, 0, 100) / 100; e.anim = q[8]; e.mode = q[10]; } }
+  for (const [k, e] of REMA) { if (!seen.has(k)) { disposePerson(e.m); scene.remove(e.bar); REMA.delete(k); continue; }
+    const kk = 1 - Math.exp(-10 * dt), ox = e.x, oz = e.z; e.x += (e.tx - e.x) * kk; e.y += (e.ty - e.y) * kk; e.z += (e.tz - e.z) * kk; e.yaw += wrapPi(e.tyaw - e.yaw) * kk; const v = Math.hypot(e.x - ox, e.z - oz) / Math.max(dt, 1e-3); e.ph += v * dt * 2.6;
+    drawActor(e.m, e.bar, e.x, e.y, e.z, e.yaw, e.st, e.ph, Math.min(1, v / 5), e.mode, e.anim === 3 ? 1 : 0, e.hp); }
+  /* our people */
+  for (const a of [...ACT]) { stepActor(a, dt); if (ACT.includes(a)) drawActor(a.m, a.bar, a.x, a.y, a.z, a.yaw, a.st, a.ph, Math.min(1, Math.hypot(a.vx, a.vz) / 5), a.mode, a.punch > 0 ? Math.sin((1 - a.punch / 0.32) * Math.PI) : 0, a.hp / a.max); }
+  for (const n of npcs) if (n.drv && n.rc) n.drv.visible = !n.driverOut && !HID.has('d' + n.rc.id);
+  /* passers-by near you */
+  const want = new Map();
+  if (inCity(P.x, P.z, 160) && Math.abs(P.y - CITY.y) < 120) {
+    const bi0 = Math.floor((P.x + CITY.E) / CITY.P), bj0 = Math.floor((P.z + CITY.E) / CITY.P), cand = [];
+    for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) { const bi = bi0 + di, bj = bj0 + dj; if (!pedOK(bi, bj)) continue;
+      for (let k = 0; k < PEDN; k++) { const key = 'p' + (bi * 20 + bj) + '_' + k; if (HID.has(key)) continue; pedAt(bi, bj, k, now, _po); const d = Math.hypot(_po.x - P.x, _po.z - P.z); if (d < 150) cand.push({ key, d, x: _po.x, z: _po.z, yaw: _po.yaw, seed: _po.seed, ph: _po.ph }); } }
+    cand.sort((a, b) => a.d - b.d); for (let i = 0; i < Math.min(44, cand.length); i++) want.set(cand[i].key, cand[i]);
+  }
+  for (const [k, v] of PEOPLE.vis) if (!want.has(k)) { disposePerson(v.m); PEOPLE.vis.delete(k); }
+  for (const [k, c] of want) { let v = PEOPLE.vis.get(k); if (!v) { v = { key: k, m: makePerson(c.seed, false), seed: c.seed }; scene.add(v.m); PEOPLE.vis.set(k, v); }
+    v.x = c.x; v.z = c.z; v.yaw = c.yaw; v.y = groundAt(c.x, c.z, CITY.y + 2); v.m.position.set(v.x, v.y, v.z); v.m.rotation.set(0, v.yaw, 0); posePerson(v.m, c.ph, 0.35, 0, 0);
+    if (carHits(v.x, v.y, v.z) === 2) { const sp = Math.hypot(P.vx, P.vz), a = spawnActor(k, v.x, v.y, v.z, v.yaw, v.seed, { st: 1, hp: 50 }); if (a) { hurtActor(a, 30 + sp * 4, P.x - P.vx, P.z - P.vz); a.vx = P.vx * 0.7; a.vz = P.vz * 0.7; a.vy = 3 + sp * 0.12; a.air = true; } hit(2.5); disposePerson(v.m); PEOPLE.vis.delete(k); } }
+}
+
+/* ───────────── money ─────────────
+   Cash is kept on this device. People drop it when they go down, and so do players (a quarter of what they carry). Piles are shared:
+   the game that dropped a pile lists it, anyone can grab it, and a grab is announced so it vanishes for everyone. */
+const MONEY = { v: 0 }; try { MONEY.v = Math.max(0, parseInt(localStorage.getItem('dd-cash') || '0', 10) || 0); } catch (e) { /* storage unavailable */ }
+function addCash(n) { MONEY.v = Math.max(0, Math.round(MONEY.v + n)); try { localStorage.setItem('dd-cash', String(MONEY.v)); } catch (e) { /* storage unavailable */ } const el = $('cash'); el.textContent = '$' + MONEY.v.toLocaleString('en-US'); if (n > 0) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); } }
+addCash(0);
+const cashGeo = (() => { const b = new GB(), g1 = C('#5fae5a'), g2 = C('#3e8a41'), w = C('#e9e6dc'); b.box(-0.2, 0.2, 0, 0.07, -0.1, 0.1, g1); b.box(-0.17, 0.23, 0.07, 0.13, -0.08, 0.12, g2); b.box(-0.05, 0.05, -0.003, 0.133, -0.103, 0.123, w); return b.geo(); })();
+const cashMat = new T.MeshLambertMaterial({ vertexColors: true, emissive: 0x1c4a1c }), CASH = [], REMCASH = new Map(); let cashId = 0;
+function cashMesh() { const m = new T.Mesh(cashGeo, cashMat); m.scale.setScalar(1.7); m.castShadow = true; scene.add(m); return m; }
+function dropCash(x, y, z, amt, n) {                  // a little spray of piles
+  amt = Math.round(amt); if (amt <= 0) return; n = Math.max(1, Math.min(n || 1, amt)); let left = amt;
+  for (let i = 0; i < n; i++) { const a = i === n - 1 ? left : Math.round(amt / n); left -= a; const ang = Math.random() * 6.28, r = n > 1 ? 0.6 + Math.random() * 1.2 : 0, o = { x: x + Math.cos(ang) * r, y, z: z + Math.sin(ang) * r }; pushOutPerson(o, 0.7); const px = o.x, pz = o.z;   // never inside a car, post or wall
+    CASH.push({ id: ++cashId, x: px, y: groundAt(px, pz, y + 1.5) + 0.05, z: pz, amt: a, t: 0, m: cashMesh(), ph: Math.random() * 6 }); }
+  while (CASH.length > 30) { const c = CASH.shift(); scene.remove(c.m); }
+}
+function canGrab(x, y, z) {                           // on foot you walk over it; in a car you drive over it
+  if (HP.dead > 0 || !started || RIDE) return false; if (Math.abs(y - P.y) > 2.6) return false;
+  if (CAR.foot) return Math.hypot(x - P.x, z - P.z) < 1.3;
+  const dx = x - P.x, dz = z - P.z, fx = -Math.sin(P.heading), fz = -Math.cos(P.heading); return Math.abs(dx * fx + dz * fz) < HULL.L + 0.5 && Math.abs(dx * fz - dz * fx) < HULL.W + 0.6;
+}
+function grabbed(amt) { addCash(amt); toast('+$' + amt.toLocaleString('en-US')); personSound(P.x, P.z, 0.32, 2600); }
+function netCd() { if (!CASH.length) return null; return CASH.slice(-14).map(c => [c.id, Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10, Math.round(c.z * 10) / 10, c.amt]); }
+/* ATMs: on sidewalks around downtown, each against a building face, facing the street */
+const ATMS = [];
+{ const b = new GB(), gl = new GB(), grey = C('#8d949b'), dk = C('#2b3038'), grn = C('#2f9a52'), scr = C('#6fd0ff'), wht = C('#f2f2ee'), y = CITY.y + 0.18;
+  for (let i = 0; i < 400 && ATMS.length < 18; i++) {
+    const bi = Math.floor(rnd2(i, 601) * 20), bj = Math.floor(rnd2(i, 602) * 20); if (!pedOK(bi, bj) || ATMS.some(a => Math.abs(a.bi - bi) + Math.abs(a.bj - bj) < 3)) continue;
+    const side = Math.floor(rnd2(i, 603) * 4), f = 26 + rnd2(i, 604) * 68, ins = 11.3, x0 = -CITY.E + bi * CITY.P, z0 = -CITY.E + bj * CITY.P;
+    const [lx, lz, yaw] = side === 0 ? [f, ins, 0] : side === 1 ? [CITY.P - ins, f, -Math.PI / 2] : side === 2 ? [f, CITY.P - ins, Math.PI] : [ins, f, Math.PI / 2];
+    const x = x0 + lx, z = z0 + lz, fx = -Math.sin(yaw), fz = -Math.cos(yaw), cx = x - fx * 0.32, cz = z - fz * 0.32;
+    b.obox(cx, y, y + 1.78, cz, fx, fz, 0.32, 0.46, grey); b.obox(x + fx * 0.07, y + 0.9, y + 1.0, z + fz * 0.07, fx, fz, 0.08, 0.22, dk); b.obox(x + fx * 0.01, y + 0.6, y + 0.72, z + fz * 0.01, fx, fz, 0.02, 0.2, dk);
+    b.obox(cx, y + 1.78, y + 2.12, cz, fx, fz, 0.34, 0.48, grn); gl.obox(x + fx * 0.012, y + 1.12, y + 1.48, z + fz * 0.012, fx, fz, 0.01, 0.3, scr); gl.obox(x + fx * 0.025, y + 1.86, y + 2.04, z + fz * 0.025, fx, fz, 0.01, 0.3, wht);
+    SOLIDS.push([cx, cz, 0.5, y + 2.1]); ATMS.push({ i: ATMS.length, bi, bj, x, z, y, fx, fz, until: 0 });
+  }
+  const m = new T.Mesh(b.geo(), propMat); m.castShadow = true; scene.add(m); scene.add(new T.Mesh(gl.geo(), new T.MeshBasicMaterial({ vertexColors: true }))); }
+let ATMNEAR = null;
+function netAt() { const now = NET.clk() / 1000, a = ATMS.filter(q => q.until > now); return a.length ? a.map(q => [q.i, Math.round(q.until)]) : null; }
+const HACK = { on: false, atm: null, code: '', guess: '', pend: 0, tries: 0, t: 0 };
+{ const pad = $('hkPad'); for (const k of ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'del', '0', 'ok']) { const bt = document.createElement('button'); bt.type = 'button'; bt.textContent = k === 'del' ? '⌫' : k === 'ok' ? 'Enter' : k; if (k === 'ok') bt.className = 'ok'; if (k === 'del') bt.setAttribute('aria-label', 'Delete');
+    bt.addEventListener('click', e => { e.stopPropagation(); hackKey(k); }); pad.appendChild(bt); } }
+$('atmP').addEventListener('click', e => { e.stopPropagation(); tryRob(); e.currentTarget.blur(); });
+function tryRob() {
+  const a = ATMNEAR; if (!a || HACK.on || !CAR.foot || RIDE) return; const left = a.until - NET.clk() / 1000;
+  if (left > 0) { toast('This ATM is empty. Back in ' + Math.floor(left / 60) + ':' + String(Math.floor(left % 60)).padStart(2, '0')); return; }
+  HACK.on = true; HACK.atm = a; HACK.code = String(Math.floor(Math.random() * 1000)).padStart(3, '0'); HACK.guess = ''; HACK.pend = 0; HACK.tries = 0; HACK.t = 35; $('hkLog').innerHTML = '';
+  $('hkMsg').innerHTML = 'Crack the 3-digit PIN. After each guess every digit shows &#9650; (the real one is higher), &#9660; (lower) or &#10003;. Six tries.';
+  $('hack').hidden = false; try { if (document.pointerLockElement) document.exitPointerLock(); } catch (e) { /* optional */ } for (const k in keys) keys[k] = false; drawHack();
+}
+function drawHack() {
+  const d = $('hkD'); d.innerHTML = ''; for (let i = 0; i < 3; i++) { const sp = document.createElement('span'); const ch = HACK.guess[i]; sp.textContent = ch !== undefined ? ch : i === HACK.guess.length && GP.pad ? String(HACK.pend) : ''; if (i === HACK.guess.length) sp.className = 'cur' + (ch === undefined && GP.pad ? ' pend' : ''); d.appendChild(sp); }
+  const t = $('hkT'); t.textContent = Math.ceil(HACK.t) + 's'; t.classList.toggle('low', HACK.t < 10);
+}
+function hackKey(k) {
+  if (!HACK.on) return;
+  if (k === 'del') HACK.guess = HACK.guess.slice(0, -1);
+  else if (k === 'ok') { if (HACK.guess.length === 3) hackSubmit(); return; }
+  else if (/^\d$/.test(k) && HACK.guess.length < 3) { HACK.guess += k; if (HACK.guess.length === 3 && GP.pad) { drawHack(); return hackSubmit(); } }
+  personSound(P.x, P.z, 0.08, 3200); drawHack();
+}
+function hackPad(edge) { if (edge(12)) HACK.pend = (HACK.pend + 1) % 10; if (edge(13)) HACK.pend = (HACK.pend + 9) % 10; if (edge(0)) return hackKey(String(HACK.pend)); if (edge(1)) hackKey('del'); if (edge(3) || edge(9)) return closeHack('You walked away from the ATM'); if (edge(12) || edge(13)) drawHack(); }
+function hackSubmit() {
+  const g = HACK.guess, c = HACK.code; HACK.tries++; const li = document.createElement('li');
+  for (let i = 0; i < 3; i++) { const sp = document.createElement('span'), up = c[i] > g[i], dn = c[i] < g[i]; sp.className = up ? 'up' : dn ? 'dn' : 'ok'; sp.textContent = g[i] + (up ? '▲' : dn ? '▼' : '✓') + ' '; li.appendChild(sp); }
+  $('hkLog').appendChild(li); HACK.guess = '';
+  if (g === c) {                                       // cracked: it spits out its cash
+    const a = HACK.atm, amt = 250 + Math.floor(Math.random() * 650); a.until = NET.clk() / 1000 + 300; dropCash(a.x + a.fx * 1.1, a.y, a.z + a.fz * 1.1, amt, 6);
+    closeHack(null); toast('Cracked it. $' + amt + ' on the pavement: grab it'); personSound(P.x, P.z, 0.4, 2600); return;
+  }
+  if (HACK.tries >= 6) return hackFail('Six wrong guesses');
+  $('hkMsg').textContent = (6 - HACK.tries) + (6 - HACK.tries === 1 ? ' try' : ' tries') + ' left.'; drawHack();
+}
+function hackFail(why) { const a = HACK.atm; a.until = NET.clk() / 1000 + 120; closeHack(why + '. The alarm went off and the ATM locked up'); alarmSound(); peoplePanic(a.x, a.z, 40); }
+function closeHack(msg) { HACK.on = false; $('hack').hidden = true; if (msg) toast(msg); }
+function alarmSound() { if (!AC || !soundOn) return; const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain(); o.type = 'square'; for (let i = 0; i < 6; i++) o.frequency.setValueAtTime(i & 1 ? 660 : 880, t + i * 0.25); g.gain.setValueAtTime(0.06, t); g.gain.setValueAtTime(0.0001, t + 1.5); o.connect(g); g.connect(master); o.start(t); o.stop(t + 1.5); }
+function moneyFrame(dt) {
+  /* our piles */
+  const claimed = new Set(); for (const r of NET.rem.values()) if (r.cg) for (const k of r.cg) claimed.add(k);
+  for (let i = CASH.length - 1; i >= 0; i--) { const c = CASH[i]; c.t += dt;
+    if (c.t > 150 || claimed.has(NET.me + '|' + c.id)) { scene.remove(c.m); CASH.splice(i, 1); continue; }
+    c.m.position.set(c.x, c.y + 0.25 + Math.sin(c.ph + c.t * 3) * 0.08, c.z); c.m.rotation.y = c.ph + c.t * 1.8;
+    if (canGrab(c.x, c.y, c.z)) { grabbed(c.amt); scene.remove(c.m); CASH.splice(i, 1); } }
+  /* piles other players dropped */
+  const seen = new Set();
+  for (const r of NET.rem.values()) { if (!r.init || !r.cd) continue; for (const q of r.cd) {
+    if (!Array.isArray(q) || q.length < 5 || !num(q[0]) || !num(q[1]) || !num(q[2]) || !num(q[3]) || !num(q[4])) continue; const k = r.id + '|' + q[0]; if (claimed.has(k) || NET.cg.includes(k)) continue; seen.add(k);
+    let e = REMCASH.get(k); if (!e) { e = { m: cashMesh(), ph: Math.random() * 6, t: 0 }; REMCASH.set(k, e); } e.x = q[1]; e.y = q[2]; e.z = q[3]; e.amt = clamp(Math.round(q[4]), 0, 5000); } }
+  for (const [k, e] of REMCASH) { if (!seen.has(k)) { scene.remove(e.m); REMCASH.delete(k); continue; } e.t += dt; e.m.position.set(e.x, e.y + 0.25 + Math.sin(e.ph + e.t * 3) * 0.08, e.z); e.m.rotation.y = e.ph + e.t * 1.8;
+    if (canGrab(e.x, e.y, e.z)) { grabbed(e.amt); NET.cg.push(k); if (NET.cg.length > 40) NET.cg.splice(0, NET.cg.length - 40); scene.remove(e.m); REMCASH.delete(k); } }
+  /* the nearest ATM you could use */
+  ATMNEAR = null; if (CAR.foot && !RIDE && started && HP.dead <= 0) for (const a of ATMS) { if (Math.hypot(P.x - (a.x + a.fx * 0.8), P.z - (a.z + a.fz * 0.8)) < 1.4 && Math.abs(P.y - a.y) < 1.5) { ATMNEAR = a; break; } }
+  const bp = $('atmP'), now = NET.clk() / 1000; bp.hidden = !ATMNEAR || HACK.on;
+  if (ATMNEAR) { const left = ATMNEAR.until - now; bp.classList.toggle('off', left > 0); bp.innerHTML = left > 0 ? 'ATM empty &middot; ' + Math.floor(left / 60) + ':' + String(Math.floor(left % 60)).padStart(2, '0') : (touchMode ? 'Rob ATM' : 'Rob ATM <kbd>' + (GP.pad ? 'D-pad up' : 'F') + '</kbd>'); }
+  if (HACK.on) { HACK.t -= dt; if (HACK.t <= 0) hackFail('Out of time'); else if (!CAR.foot || HP.dead > 0 || Math.hypot(P.x - HACK.atm.x, P.z - HACK.atm.z) > 3) closeHack('You left the ATM'); else drawHack(); }
+}
+
+/* ───────────── mall shops: keepers, the talk prompt and the menu ───────────── */
+let SHOPNEAR = null, shopBuilt = false; const SHOP = { on: false, s: null, page: 'cats', cat: 0, i: 0, rows: [] };
+function shopBuild() {                                // the people in the shops, made the first time you are in the mall
+  shopBuilt = true;
+  for (const sh of SHOPS) {
+    sh.m = makePerson(sh.def.seed, false); sh.m.position.set(sh.x, sh.y, sh.z); sh.m.rotation.y = sh.yaw; scene.add(sh.m); posePerson(sh.m, 0, 0, 0, 0);
+    if (sh.manq) for (const q of sh.manq) { const mq = makePerson(sh.def.seed + 50 + q[1], false); mq.position.set(q[0], sh.y, q[1]); mq.rotation.y = sh.yaw; mq.userData.aL.rotation.z = -0.5; mq.userData.aR.rotation.z = 0.5; scene.add(mq); SOLIDS.push([q[0], q[1], 0.35, sh.y + 1.9]); }
+    if (sh.show) { const car = makeCar(sh.def.id === 'tune' ? 'muscle' : 'sport', sh.def.id === 'tune' ? '#16171a' : '#f2f2ee', false); car.position.set(sh.show[0], sh.y + 0.18, sh.show[1]); car.rotation.y = 0.5; scene.add(car);
+      if (sh.def.id === 'decals') { const st = new T.Mesh(new T.BoxGeometry(0.34, 0.02, 4.6), new T.MeshLambertMaterial({ color: 0x3d6fb8 })); for (const x of [-0.25, 0.25]) { const m = st.clone(); m.position.set(x, 1.28, 0); car.userData.chassis.add(m); } } }   // racing stripes on the show car
+  }
+}
+function shopFrame(dt) {
+  if (!shopBuilt && inMall(P.x)) shopBuild();
+  SHOPNEAR = null; if (inMall(P.x) && CAR.foot && !RIDE && started && HP.dead <= 0) for (const sh of SHOPS) { if (!(sh.down > 0) && Math.hypot(P.x - sh.spot[0], P.z - sh.spot[1]) < 2.2) { SHOPNEAR = sh; break; } }
+  if (shopBuilt) for (const sh of SHOPS) { if (sh.down > 0) { sh.down -= dt; sh.m.rotation.x = -1.5; sh.m.position.y = sh.y + 0.15; continue; } sh.m.rotation.x = 0; sh.m.position.y = sh.y; const m = sh.m, near = Math.hypot(P.x - sh.x, P.z - sh.z) < 9; const want = near ? Math.atan2(-(P.x - sh.x), -(P.z - sh.z)) : sh.yaw; m.rotation.y += wrapPi(want - m.rotation.y) * (1 - Math.exp(-4 * dt)); m.userData.ch.scale.y = 1 + Math.sin(performance.now() / 700 + sh.n) * 0.008; }   // keepers watch you come in
+  const bp = $('shopP'); bp.hidden = !SHOPNEAR || SHOP.on || HACK.on;
+  if (SHOPNEAR && !bp.hidden) bp.innerHTML = 'Talk to ' + SHOPNEAR.def.name + (touchMode ? '' : ' <kbd>' + (GP.pad ? 'D-pad up' : 'F') + '</kbd>');
+  if (SHOP.on && (!SHOPNEAR || SHOPNEAR !== SHOP.s)) closeShop();
+}
+$('shopP').addEventListener('click', e => { e.stopPropagation(); if (SHOPNEAR) openShop(SHOPNEAR); e.currentTarget.blur(); });
+$('smX').addEventListener('click', e => { e.stopPropagation(); closeShop(); });
+function openShop(sh) {
+  if (SHOP.on || HACK.on) return; SHOP.on = true; SHOP.s = sh; SHOP.page = 'cats'; SHOP.i = 0; for (const k in keys) keys[k] = false;
+  try { if (document.pointerLockElement) document.exitPointerLock(); } catch (e) { /* optional */ }
+  $('shop').hidden = false; $('shop').style.setProperty('--sc', sh.def.col); $('smN').textContent = sh.def.name; toast(sh.def.hi); drawShop();
+}
+function closeShop() { SHOP.on = false; $('shop').hidden = true; }
+function drawShop() {
+  const sh = SHOP.s, d = sh.def, L = $('smL'); $('smCash').textContent = '$' + MONEY.v.toLocaleString('en-US');
+  if (SHOP.page === 'cats') { SHOP.rows = d.cats.map(c => ({ name: c, right: '›' })); $('smH').textContent = d.kind; }
+  else { SHOP.rows = shopStock(d, d.cats[SHOP.cat]); $('smH').textContent = d.kind + ' › ' + d.cats[SHOP.cat]; }
+  SHOP.i = clamp(SHOP.i, 0, SHOP.rows.length - 1); $('smC').textContent = (SHOP.i + 1) + '/' + SHOP.rows.length; L.innerHTML = '';
+  SHOP.rows.forEach((r, i) => { const li = document.createElement('li'); if (i === SHOP.i) li.className = 'on'; if (r.dim) li.classList.add('dim'); const a = document.createElement('span'); a.textContent = r.name; const b = document.createElement('small'); b.textContent = r.right; li.append(a, b);
+    li.addEventListener('click', e => { e.stopPropagation(); if (SHOP.i === i || touchMode) { SHOP.i = i; shopPick(); } else { SHOP.i = i; drawShop(); } }); L.appendChild(li); });
+  const on = L.children[SHOP.i]; if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest' });
+  const row = SHOP.rows[SHOP.i]; $('smD').textContent = SHOP.page === 'cats' ? '“' + d.hi + '”' : row && row.blurb ? row.blurb : 'The ' + d.cats[SHOP.cat].toLowerCase() + ' are still being stocked. Check back soon.';
+}
+function shopMove(k) { if (!SHOP.on) return; SHOP.i = (SHOP.i + k + SHOP.rows.length) % SHOP.rows.length; personSound(P.x, P.z, 0.06, 3000); drawShop(); }
+function shopPick() { if (!SHOP.on) return; if (SHOP.page === 'cats') { SHOP.cat = SHOP.i; SHOP.page = 'items'; SHOP.i = 0; personSound(P.x, P.z, 0.08, 2400); drawShop(); return; } const r = SHOP.rows[SHOP.i]; if (r && r.buy) r.buy(); else toast('Not in stock yet'); drawShop(); }
+const $$ = n => '$' + n.toLocaleString('en-US');
+function pay(n, what) { if (MONEY.v < n) { toast('Not enough cash for ' + what + ' (' + $$(n) + ')'); personSound(P.x, P.z, 0.12, 300); return false; } addCash(-n); personSound(P.x, P.z, 0.3, 2600); return true; }
+function shopStock(d, cat) {                          // what each counter sells; rows are { name, right, blurb, dim, buy }
+  if (d.id !== 'guns') return [{ name: 'Coming soon', right: '', dim: true }];
+  const stats = g => (g.n > 1 ? g.n + ' pellets × ' + g.dmg : g.dmg + ' damage') + ' · ' + g.mag + ' rounds · ' + Math.round(1 / g.rate * 60) + ' a minute';
+  const gunRow = i => { const g = GUNS[i], own = OWN.has(i); return { name: g.name, right: own ? (GUN.i === i ? 'Equipped' : 'Owned') : $$(g.price), blurb: (g.blurb || 'Standard issue. Yours already.') + (g.rocket ? '' : ' ' + stats(g)) + (own ? ' Select it to equip.' : ''),
+    buy: () => { if (own) { setGun(i); toast(g.name + ' equipped'); return; } if (!pay(g.price, g.name)) return; OWN.add(i); if (g.rocket) { ROCK.v += 2; GUN.ammo[i] = 1; } else GUN.ammo[i] = g.mag; saveKit(); setGun(i); toast('Bought the ' + g.name); } }; };
+  if (cat === 'Pistols') return [gunRow(0), gunRow(5)]; if (cat === 'SMGs') return [gunRow(1), gunRow(6)]; if (cat === 'Shotguns') return [gunRow(2), gunRow(7)]; if (cat === 'Rifles') return [gunRow(3), gunRow(8)]; if (cat === 'Heavy') return [gunRow(9)];
+  if (cat === 'Ammo') { const rk = (n, p) => ({ name: n + (n === 1 ? ' rocket' : ' rockets'), right: $$(p), blurb: 'Bazooka rockets. You carry ' + ROCK.v + '.' + (OWN.has(9) ? '' : ' You will need the bazooka to fire them.'), buy: () => { if (pay(p, 'rockets')) { ROCK.v += n; saveKit(); toast('+' + n + (n === 1 ? ' rocket' : ' rockets')); } } });
+    return [rk(1, 150), rk(5, 650), { name: 'Refill magazines', right: 'Free', blurb: 'Tops up every gun you own. Bullets are on the house; rockets are not.', buy: () => { for (const i of OWN) if (!GUNS[i].melee && !GUNS[i].rocket) GUN.ammo[i] = GUNS[i].mag; GUN.rl = 0; toast('Magazines full'); } }]; }
+  if (cat === 'Body armour') { const ar = (n, add, p) => ({ name: n, right: ARM.v >= 99.5 ? 'Full' : $$(p), blurb: 'Soaks up 70% of every hit until it is gone. Yours: ' + Math.round(ARM.v) + '/100.', buy: () => { if (ARM.v >= 99.5) { toast('Your armour is already full'); return; } if (pay(p, n)) { ARM.v = Math.min(100, ARM.v + add); saveKit(); toast(n + ' on'); } } });
+    return [ar('Light vest', 50, 300), ar('Heavy vest', 100, 700)]; }
+  return [{ name: 'Coming soon', right: '', dim: true }];
+}
+function shopBack() { if (!SHOP.on) return; if (SHOP.page === 'items') { SHOP.page = 'cats'; SHOP.i = SHOP.cat; drawShop(); } else closeShop(); }
+
+/* ───────────── mall police ─────────────
+   Gunfire inside the mall, or hurting a shopkeeper, brings four officers up out of the fountain: two with assault rifles, two with
+   shotguns. They only fire when they can see you, they follow you through the mall doors, and out in the city they keep catching
+   up. They stop only when you are down. */
+const COPLOOK = { sh: C('#1f2c45'), pa: C('#151c2c'), hat: C('#0e1420'), cap: true, badge: true, tall: 1.04 };
+function mallAlarm() {
+  if (ACT.some(a => a.cop && a.st === 0)) return; const F = MALLI.z - 58;
+  for (let k = 0; k < 4; k++) { const ang = k * 1.57 + 0.4; spawnActor('cop' + k + '_' + Math.floor(NET.clk() / 1000), MALLI.x + Math.sin(ang) * 1.6, MALLI.y - 1.4, F + Math.cos(ang) * 1.6, 0, 7700 + k, { st: 0, gun: true, cop: true, wpn: k & 1 ? 'sg' : 'ar', hp: 120, rise: 1.1 + k * 0.45, k }); }
+  toast('Mall police! They are coming out of the fountain'); alarmSound();
+}
+function canSee(x0, y0, z0, x1, y1, z1) { const d = Math.hypot(x1 - x0, y1 - y0, z1 - z0), n = Math.min(60, Math.ceil(d / 1.5)); for (let i = 1; i < n; i++) { const f = i / n; if (worldHit(x0 + (x1 - x0) * f, y0 + (y1 - y0) * f, z0 + (z1 - z0) * f)) return false; } return true; }
+function copDoor(toMall) { return toMall ? [MALLI.x, MALLI.z + 60, MALLI.y] : [MALLDOOR.x, MALLDOOR.z + 4.5, MALLDOOR.y]; }
+function copShot(a, t, hitIt, dmg, pellets) {
+  const fx = -Math.sin(a.yaw), fz = -Math.cos(a.yaw), mx = a.x + fx * 0.95 + Math.cos(a.yaw) * 0.27, my = a.y + 1.42, mz = a.z + fz * 0.95 - Math.sin(a.yaw) * 0.27;
+  for (let p = 0; p < pellets; p++) { const tr = tracers[tracerI = (tracerI + 1) % tracers.length], q = tr.geometry.attributes.position.array, mis = hitIt ? 0.25 : 1.6; q[0] = mx; q[1] = my; q[2] = mz; q[3] = t.x + (Math.random() - 0.5) * mis * 2; q[4] = t.y + 1.1 + (Math.random() - 0.5) * mis; q[5] = t.z + (Math.random() - 0.5) * mis * 2; tr.geometry.attributes.position.needsUpdate = true; tr.userData.life = 0.07; tr.visible = true; }
+  personSound(a.x, a.z, pellets > 1 ? 0.5 : 0.35, pellets > 1 ? 500 : 1500); if (hitIt) hurtTarget(t, dmg);
+}
+function copStep(a, t, dt) {                         // returns [move x, move z, speed, facing]
+  if (!t) { a.st = 3; a.t = 0; return [0, 0, 0, null]; }
+  if (inMall(a.x) !== inMall(t.x)) {                   // you went through the doors: they follow a moment later
+    a.fol += dt; if (a.fol > 2.2 + a.k * 0.6) { a.fol = 0; const o = copDoor(inMall(t.x)); a.x = o[0] + (Math.random() - 0.5) * 3; a.z = o[1] + (Math.random() - 0.5) * 2; a.y = groundAt(a.x, a.z, o[2] + 2); a.vx = a.vz = 0; }
+    return [0, 0, 0, null];
+  }
+  a.fol = 0; const dx = t.x - a.x, dz = t.z - a.z, d = Math.hypot(dx, dz) || 1, face = Math.atan2(-dx, -dz);
+  a.lag = d > 90 ? a.lag + dt : 0;
+  if (a.lag > 6 && !inMall(t.x)) { a.lag = 0; const ang = Math.random() * 6.28; for (let k = 0; k < 8; k++) { const x = t.x + Math.cos(ang + k * 0.8) * 45, z = t.z + Math.sin(ang + k * 0.8) * 45, y = groundAt(x, z, t.y + 4); if (y > -0.5 && !worldHit(x, y + 1, z)) { a.x = x; a.z = z; a.y = y; break; } } }   // left far behind: they turn up again close by
+  const sees = canSee(a.x, a.y + 1.5, a.z, t.x, t.y + 1.2, t.z), want = a.wpn === 'sg' ? 7 : 14; let wx = 0, wz = 0, run = 0;
+  if (!sees || d > want + 3) { wx = dx / d; wz = dz / d; run = 6; } else if (d < want - 4) { wx = -dx / d; wz = -dz / d; run = 2.5; }
+  a.cool -= dt;
+  if (sees && a.stag <= 0 && a.cool <= 0 && d < (a.wpn === 'sg' ? 22 : 70)) {
+    if (a.wpn === 'ar') { if (a.burst <= 0) a.burst = 3; a.burst--; a.cool = a.burst > 0 ? 0.11 : 0.9 + Math.random() * 0.6; copShot(a, t, Math.random() < clamp(0.5 - d * 0.006 - t.sp * 0.02, 0.1, 0.5), 11, 1); }
+    else { a.cool = 1.0 + Math.random() * 0.4; copShot(a, t, Math.random() < clamp(0.85 - d * 0.025 - t.sp * 0.02, 0.15, 0.85), Math.round(38 * (1 - d / 24)), 5); }
+  }
+  return [wx, wz, run, face];
+}
+function wantedHud() { const n = ACT.filter(a => a.cop && a.st === 0 && a.tgtId === 'me').length, w = $('wanted'); w.hidden = !n || !started; if (n) w.textContent = 'Mall police · ' + n; }
+
+/* ───────────── rockets ───────────── */
+const ROCKETS = [], BOOMS = [], boomSeen = new Map(); let rockSeq = 0;
+const rockGeo = (() => { const b = new GB(); b.box(-0.07, 0.07, -0.07, 0.07, -0.45, 0.25, C('#4f5a3a')); b.box(-0.05, 0.05, -0.05, 0.05, -0.62, -0.45, C('#c8463a')); return b.geo(); })();
+const flameMat2 = new T.MeshBasicMaterial({ color: 0xffb040, transparent: true, opacity: 0.9, blending: T.AdditiveBlending, depthWrite: false }), boomMat = new T.MeshBasicMaterial({ color: 0xffa040, transparent: true, opacity: 0.9, blending: T.AdditiveBlending, depthWrite: false });
+const rockMesh = () => { const g = new T.Group(); g.add(new T.Mesh(rockGeo, carMat)); const f = new T.Mesh(new T.OctahedronGeometry(0.18), flameMat2); f.position.z = 0.35; g.add(f); scene.add(g); return g; };
+function launchRocket(x, y, z, dx, dy, dz) { const sp = 62; ROCKETS.push({ id: ++rockSeq, x, y, z, vx: dx * sp, vy: dy * sp, vz: dz * sp, t: 0, m: rockMesh(), puff: 0 }); }
+function worldHit(x, y, z) {                          // is this point inside the ground or anything solid?
+  if (y <= groundAt(x, z, y + 0.5) + 0.05) return true;
+  for (const q of BOXES) if (x > q[0] && x < q[1] && z > q[2] && z < q[3] && y < q[4]) return true;
+  if (inCity(x, z, 12)) { const bi = Math.floor((x + CITY.E) / CITY.P), bj = Math.floor((z + CITY.E) / CITY.P); const arr = bi >= 0 && bj >= 0 && bi < 20 && bj < 20 ? CITY.boxes[bi * 20 + bj] : null; if (arr) for (const q of arr) if (x > q[0] && x < q[1] && z > q[2] && z < q[3] && y < q[4]) return true; }
+  for (const q of SOLIDS) if (y < q[3] && (x - q[0]) * (x - q[0]) + (z - q[1]) * (z - q[1]) < q[2] * q[2]) return true;
+  return false;
+}
+function stepRockets(dt) {
+  for (let i = ROCKETS.length - 1; i >= 0; i--) { const r = ROCKETS[i]; r.t += dt; let hit = r.t > 5;
+    const n = Math.max(1, Math.ceil(Math.hypot(r.vx, r.vy, r.vz) * dt / 0.8));
+    for (let k = 0; k < n && !hit; k++) { r.x += r.vx * dt / n; r.y += r.vy * dt / n; r.z += r.vz * dt / n; r.vy -= 2.5 * dt / n;
+      if (r.t > 0.05 && worldHit(r.x, r.y, r.z)) hit = true;
+      for (const c of npcs) if (!hit && c.live && Math.hypot(c.x - r.x, c.wz - r.z) < c.halfLen * 0.7 + 0.4 && r.y - c.y < 2.2 && r.y > c.y - 0.3) hit = true;
+      if (!hit) { const tg = []; peopleTargets(tg, 0.5); for (const q of NET.rem.values()) if (q.init && q.pres.w !== 1) tg.push({ x: q.pred.x, y: q.pred.y + 1, z: q.pred.z, R: q.car.foot ? 0.6 : 1.7 }); for (const t of tg) if (Math.hypot(t.x - r.x, t.y - r.y, t.z - r.z) < t.R + 0.3) { hit = true; break; } } }
+    r.m.position.set(r.x, r.y, r.z); r.m.lookAt(r.x - r.vx, r.y - r.vy, r.z - r.vz);
+    r.puff -= dt; if (r.puff <= 0) { r.puff = 0.035; puffAt(r.x - r.vx * 0.01, r.y, r.z - r.vz * 0.01); }
+    if (hit) { scene.remove(r.m); ROCKETS.splice(i, 1); explode(r.x, r.y, r.z, true); } }
+  for (let i = BOOMS.length - 1; i >= 0; i--) { const b = BOOMS[i]; b.t += dt; const k = b.t / 0.55; b.m.scale.setScalar(0.5 + 7.5 * Math.sqrt(Math.min(1, k))); b.m.material.opacity = Math.max(0, 0.95 * (1 - k)); if (k >= 1) { scene.remove(b.m); BOOMS.splice(i, 1); } }
+}
+function boomFx(x, y, z) {                            // the flash, the smoke, the noise
+  const m = new T.Mesh(new T.SphereGeometry(1, 14, 10), boomMat.clone()); m.position.set(x, y, z); scene.add(m); BOOMS.push({ m, t: 0 });
+  for (let k = 0; k < 10; k++) puffAt(x + (Math.random() - 0.5) * 4, y + Math.random() * 2.5, z + (Math.random() - 0.5) * 4);
+  const d = Math.hypot(x - P.x, z - P.z); shake = Math.min(1, shake + Math.max(0, 0.9 - d / 60)); personSound(x, z, 1.2, 120); personSound(x, z, 0.6, 600);
+}
+const BOOMR = 7;
+function explode(x, y, z, mine) {
+  boomFx(x, y, z); if (!mine) return; NET.bx.push([++NET.bxSeq, Math.round(x * 10) / 10, Math.round(y * 10) / 10, Math.round(z * 10) / 10, NET.now()]); if (NET.bx.length > 4) NET.bx.shift();
+  const fall = d => Math.max(0, 1 - d / BOOMR);
+  { const d = Math.hypot(P.x - x, P.y + 1 - y, P.z - z), f = fall(d); if (f > 0) { damage(110 * f); if (CAR.foot) { P.vy += 7 * f; P.vx += (P.x - x) / (d || 1) * 9 * f; P.vz += (P.z - z) / (d || 1) * 9 * f; } } }   // too close and it gets you too
+  for (const c of npcs) { if (!c.live || c.mode === 6) continue; const f = fall(Math.hypot(c.x - x, c.y + 0.8 - y, c.wz - z) - 1); if (f > 0) dmgNpc(c, 260 * f); }
+  for (const a of [...ACT]) { const f = fall(Math.hypot(a.x - x, a.y + 1 - y, a.z - z)); if (f > 0) { hurtActor(a, 140 * f, x, z); if (a.st === 2) { a.vy = 5 + 6 * f; a.air = true; } } }
+  for (const v of [...PEOPLE.vis.values()]) { const f = fall(Math.hypot(v.x - x, v.y + 1 - y, v.z - z)); if (f > 0) { const a = spawnActor(v.key, v.x, v.y, v.z, v.yaw, v.seed, { st: 1, hp: 50 }); if (a) { hurtActor(a, 140 * f, x, z); a.vy = 5 + 6 * f; a.air = true; } } }
+  for (const e of REMA.values()) { const f = fall(Math.hypot(e.x - x, e.y + 1 - y, e.z - z)); if (f > 0) { const k = e.owner + '|' + e.src; NET.adm.set(k, (NET.adm.get(k) || 0) + Math.round(140 * f)); } }
+  for (const r of NET.rem.values()) { if (!r.init || r.pres.w === 1) continue; const f = fall(Math.hypot(r.pred.x - x, r.pred.y + 1 - y, r.pred.z - z)); if (f > 0) NET.dm.set(r.id, (NET.dm.get(r.id) || 0) + Math.round(110 * f)); }
+  peoplePanic(x, z, 45);
+}
+function remoteBooms() {                             // explosions other players set off: show them once
+  const now = NET.now();
+  for (const r of NET.rem.values()) { if (!r.bx) continue; for (const q of r.bx) { if (!Array.isArray(q) || q.length < 5 || !num(q[0]) || !num(q[1]) || !num(q[2]) || !num(q[3]) || !num(q[4])) continue; const k = r.id + '|' + q[0]; if (boomSeen.has(k)) continue; boomSeen.set(k, now); if (now - q[4] < 3000) boomFx(q[1], q[2], q[3]); } }
+  if (boomSeen.size > 200) for (const [k, t] of boomSeen) if (now - t > 60000) boomSeen.delete(k);
+}
+
 /* ───────────── input (actions, not keys) ───────────── */
 /* touch: sx/sy = analog stick (-1..1, sy positive = pushed up), g gas, b brake, e e-brake, j jump/climb/plane brake,
    s boost/descend/full throttle, ql/qr = roll, rudder or slide left/right (same as Q/E) */
@@ -2377,12 +3016,14 @@ let started = false, auto = true, camMode = 0, soundOn = true, todSkip = 0;
 const DRIVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'KeyE', 'KeyQ', 'ShiftLeft', 'ShiftRight'];
 addEventListener('keydown', e => {
   if (e.target && e.target.tagName === 'INPUT') return;
+  if (SHOP.on) { e.preventDefault(); if (e.repeat) return; if (e.code === 'ArrowUp' || e.code === 'KeyW') shopMove(-1); else if (e.code === 'ArrowDown' || e.code === 'KeyS') shopMove(1); else if (e.code === 'Enter' || e.code === 'Space' || e.code === 'NumpadEnter') shopPick(); else if (e.code === 'Backspace' || e.code === 'Escape' || e.code === 'KeyF') shopBack(); return; }   // the shop menu has the keyboard while it is open
+  if (HACK.on) { e.preventDefault(); if (e.repeat) return; const m = /^(?:Digit|Numpad)(\d)$/.exec(e.code); if (m) hackKey(m[1]); else if (e.code === 'Backspace') hackKey('del'); else if (e.code === 'Enter' || e.code === 'NumpadEnter') hackKey('ok'); else if (e.code === 'Escape') closeHack('You walked away from the ATM'); return; }   // the keypad has the keyboard while it is open
   if (e.repeat) return;
   keys[e.code] = true;
   if (DRIVE_KEYS.includes(e.code) || e.code === 'Enter') e.preventDefault();
   if (!started) { if (e.code === 'Enter' || DRIVE_KEYS.includes(e.code)) begin(); return; }
   if (DRIVE_KEYS.includes(e.code) && auto) setAuto(false);
-  if (e.code === 'KeyF') setAuto(!auto);
+  if (e.code === 'KeyF') { if (CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (CAR.foot && ATMNEAR) tryRob(); else setAuto(!auto); }
   if (e.code === 'KeyC') nextCam();
   if (e.code === 'KeyT') skipTime();
   if (e.code === 'KeyR') { if (CAR.foot) reloadGun(); else respawn(); }
@@ -2391,7 +3032,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyG') toggleTravel();
   if (e.code === 'KeyX' && (CAR.heli || CAR.blick)) fireMissile();
   if (e.code === 'KeyZ') toggleFoot();
-  if (CAR.foot && /^Digit[1-4]$/.test(e.code)) setGun(+e.code.slice(5) - 1);
+  if (CAR.foot && /^Digit\d$/.test(e.code)) { const d = +e.code.slice(5), i = GUNSLOT[(d + 9) % 10]; if (OWN.has(i)) setGun(i); else toast(GUNS[i].name + ': buy it at Iron Works in the mall'); }
   if (e.code === 'KeyB' && CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); }
 });
 addEventListener('keyup', e => { if (e.target && e.target.tagName === 'INPUT') return; keys[e.code] = false; });
@@ -2424,11 +3065,11 @@ for (const [id, k] of [['tG', 'g'], ['tB', 'b'], ['tE', 'e'], ['tJ', 'j'], ['tS'
 $('tHF').addEventListener('pointerdown', e => { e.preventDefault(); fireMissile(); });
 let runOn = false;                                   // on foot, Run and Aim stay on until tapped again, so a thumb is free for steering and shooting
 bindTouch('tFF', 'f'); bindTouch('tFJ', 'j'); $('tFS').addEventListener('pointerdown', e => { e.preventDefault(); runOn = !runOn; touch.s = runOn ? 1 : 0; e.currentTarget.setAttribute('aria-pressed', runOn); });
-$('tFA').addEventListener('pointerdown', e => { e.preventDefault(); GUN.ads = !GUN.ads; e.currentTarget.setAttribute('aria-pressed', GUN.ads); }); $('tFW').addEventListener('pointerdown', e => { e.preventDefault(); setGun(GUN.i + 1); });
+$('tFA').addEventListener('pointerdown', e => { e.preventDefault(); GUN.ads = !GUN.ads; e.currentTarget.setAttribute('aria-pressed', GUN.ads); }); $('tFW').addEventListener('pointerdown', e => { e.preventDefault(); cycleGun(1); });
 $('bExit').addEventListener('click', e => { toggleFoot(); e.currentTarget.blur(); });
 $('c').addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && e.button === 0) mfire = true; });
 { const cvs = $('c'); let lookId = null, lx = 0, ly = 0;                                         // look around: captured mouse where the browser allows it, otherwise drag (mouse or finger)
-  const lookBy = (mx, my) => { AIM.yaw -= mx * 0.0026; AIM.pitch = clamp(AIM.pitch - my * 0.0022, -0.95, 1.05); };
+  const lookBy = (mx, my) => { const k = GUN.scoped ? 0.22 : GUN.ads ? 0.7 : 1; AIM.yaw -= mx * 0.0026 * k; AIM.pitch = clamp(AIM.pitch - my * 0.0022 * k, -0.95, 1.05); };
   cvs.addEventListener('pointerdown', e => { if (!CAR.foot || !started) return; if (e.pointerType === 'mouse' && document.pointerLockElement !== cvs && cvs.requestPointerLock) { try { const pr = cvs.requestPointerLock(); if (pr && pr.catch) pr.catch(() => {}); } catch (er) { /* drag still works */ } } lookId = e.pointerId; lx = e.clientX; ly = e.clientY; });
   addEventListener('pointermove', e => { if (!CAR.foot || !started) return; if (document.pointerLockElement === cvs) lookBy(e.movementX || 0, e.movementY || 0); else if (e.pointerId === lookId) { lookBy((e.clientX - lx) * 1.7, (e.clientY - ly) * 1.7); lx = e.clientX; ly = e.clientY; } });
   for (const ev of ['pointerup', 'pointercancel']) addEventListener(ev, e => { if (e.pointerId === lookId) lookId = null; }); } addEventListener('pointerup', e => { if (e.button === 2) GUN.ads = false; else mfire = false; });
@@ -2496,6 +3137,10 @@ function readInput(dt) {
   let steer = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + touch.sx;
   let thr = keys.KeyW || keys.ArrowUp || touch.g ? 1 : 0, brk = keys.KeyS || keys.ArrowDown || touch.b ? 1 : 0, hb = (keys.KeyE || touch.e || (keys.Space && !CAR.jet && !CAR.plane)) && !CAR.ufo && !CAR.heli && !CAR.foot ? 1 : 0;
   const gp = GP.pad = gpPick();
+  if (gp && SHOP.on) { const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > 0.5)), ed = i => B(i) && !gpPrev[i]; if (ed(12)) shopMove(-1); if (ed(13)) shopMove(1); if (ed(0)) shopPick(); if (ed(1)) shopBack(); gpPrev = gp.buttons.map((q, i) => B(i)); }
+  if (SHOP.on) { inp.steer = inp.thr = inp.brk = inp.hb = inp.boost = inp.jump = inp.roll = 0; return; }
+  if (gp && HACK.on) { const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > 0.5)); hackPad(i => B(i) && !gpPrev[i]); gpPrev = gp.buttons.map((q, i) => B(i)); }
+  if (HACK.on) { inp.steer = inp.thr = inp.brk = inp.hb = inp.boost = inp.jump = inp.roll = 0; return; }   // you stand still at the keypad
   if (gp) {
     const dz = v => { v = v || 0; const a = Math.abs(v); return a < 0.14 ? 0 : Math.sign(v) * Math.pow((a - 0.14) / 0.86, 1.4); };   // dead zone, then a gentle curve so small stick moves steer finely
     const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > 0.5)), V = i => gp.buttons[i] ? gp.buttons[i].value : 0, edge = i => B(i) && !gpPrev[i];
@@ -2514,11 +3159,12 @@ function readInput(dt) {
       if (edge(2)) { if (CAR.heli || CAR.blick) fireMissile(); else if (CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); } }
       gpFire = CAR.foot && (B(2) || rt > 0.5); if (CAR.foot && rt > 0.5) thr = keys.KeyW || touch.g ? 1 : Math.max(0, -ly);          // on foot the right trigger shoots instead of walking
       if (CAR.foot && lt > 0.3) brk = Math.max(0, ly);
+      if (CAR.foot) { if (lt > 0.3) { GUN.ads = true; GP.ads = true; } else if (GP.ads) { GUN.ads = false; GP.ads = false; } }   // left trigger aims (the rifle scopes in)
       gpBoost = B(10) || (B(2) && !armed && !CAR.ufo);                // click the left stick to sprint or boost; X boosts anything unarmed
-      if (CAR.foot) { if (edge(4) || edge(14)) setGun((GUN.i + GUNS.length - 1) % GUNS.length); if (edge(5) || edge(15)) setGun((GUN.i + 1) % GUNS.length); if (edge(11)) reloadGun(); }
+      if (CAR.foot) { if (edge(4) || edge(14)) cycleGun(-1); if (edge(5) || edge(15)) cycleGun(1); if (edge(11)) reloadGun(); }
       else gpRoll = (B(4) ? 1 : 0) - (B(5) ? 1 : 0);
-      if (edge(8)) toggleMap(); if (edge(9)) toggleTravel(); if (edge(12) && !CAR.plane) setAuto(!auto); if (edge(13) && !CAR.plane && !CAR.foot) respawn();
-      if (rx || ry) { AIM.yaw -= rx * 2.9 * dt; AIM.pitch = clamp(AIM.pitch - ry * 2.0 * dt, -0.95, 1.05); }
+      if (edge(8)) toggleMap(); if (edge(9)) toggleTravel(); if (edge(12) && CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (edge(12) && CAR.foot && ATMNEAR) tryRob(); else if (edge(12) && !CAR.plane) setAuto(!auto); if (edge(13) && !CAR.plane && !CAR.foot) respawn();
+      if (rx || ry) { const k = GUN.scoped ? 0.22 : GUN.ads ? 0.65 : 1; AIM.yaw -= rx * 2.9 * dt * k; AIM.pitch = clamp(AIM.pitch - ry * 2.0 * dt * k, -0.95, 1.05); }
     }
     gpPrev = gp.buttons.map((q, i) => B(i));
     if (!gpOn) { gpOn = true; document.body.classList.add('pad'); }
@@ -2654,6 +3300,30 @@ function staticHits() {
       for (let k = 0; k < tr.length; k += 3) { const dx = P.x - tr[k], dz = P.z - tr[k + 1], rr = tr[k + 2] + R; if (dx > rr || dx < -rr || dz > rr || dz < -rr) continue; _c[0] = tr[k]; _c[1] = tr[k + 1]; _c[2] = tr[k + 2]; hullEach(testCirc, 0, 0, 0.75); } } }
 }
 const RW_TOP = 12;
+/* Open space. Both bodies pull with inverse-square gravity. "Down" is whichever body you are nearer to (it swaps over around the halfway
+   point), and the ship and camera roll to match: leaving the Earth it is under you and the Moon hangs overhead; on the way in the Moon
+   swings round to sit beneath you, so the hand-off to its surface needs no turn at all. */
+const SP = { U: new T.Vector3(0, 1, 0), F: new T.Vector3(0, 0, -1), R: new T.Vector3(1, 0, 0), dE: 0, dM: 0, dest: 1, tilt: 7 }, _s1 = new T.Vector3(), _s2 = new T.Vector3(), _s3 = new T.Vector3(), _sm = new T.Matrix4();
+function stepSpace(dt) {
+  const U = SP.U, F = SP.F, R = SP.R, pe = _s1.set(P.x - SPC.ex, P.y - SPC.ey, P.z - SPC.ez), rE = pe.length(), pm = _s2.set(P.x - SPC.mx, P.y - SPC.my, P.z - SPC.mz), rM = pm.length();
+  const dE = SP.dE = rE - SPC.RE, dM = SP.dM = rM - SPC.RM, t = sstep(0.42, 0.58, dE / (dE + dM));
+  _s3.copy(pe).multiplyScalar((1 - t) / rE).addScaledVector(pm, t / rM); if (_s3.lengthSq() > 1e-4) { _s3.normalize(); const ang = U.angleTo(_s3); if (ang > 1e-4) U.lerp(_s3, Math.min(1, 0.8 * dt / ang)).normalize(); }   // roll over toward the new "up", gently
+  F.applyAxisAngle(U, -inp.steer * 1.5 * dt);
+  { const dx = (SP.dest ? SPC.mx : SPC.ex) - P.x, dy = (SP.dest ? SPC.my : SPC.ey) - P.y, dz = (SP.dest ? SPC.mz : SPC.ez) - P.z, dl = Math.hypot(dx, dy, dz) || 1, up = (dx * U.x + dy * U.y + dz * U.z) / dl;
+    SP.tilt += (clamp(up * 13, -10, 9) - SP.tilt) * (1 - Math.exp(-2.5 * dt));                     // the camera keeps where you are going in view, overhead or below
+    if (!inp.steer) { _s3.set(dx - U.x * up * dl, dy - U.y * up * dl, dz - U.z * up * dl); if (_s3.lengthSq() > 1) { _s3.normalize(); const ang = F.angleTo(_s3); if (ang > 0.01) F.lerp(_s3, Math.min(1, 0.45 * dt / ang)); } } }   // hands off, the nose drifts round toward it
+  F.addScaledVector(U, -F.dot(U)); if (F.lengthSq() < 1e-6) F.set(U.y, -U.x, 0); F.normalize(); R.crossVectors(F, U);
+  const fly = CAR.space ? 1 : 0, ti = (inp.thr - inp.brk) * fly, si = -inp.roll * fly, vi = ((inp.jump ? 1 : 0) - (inp.boost ? 1 : 0)) * fly, A = 75;
+  const gE = GRAV * (SPC.RE / rE) * (SPC.RE / rE), gM = GRAV / 6 * (SPC.RM / rM) * (SPC.RM / rM);
+  P.vx += ((F.x * ti + R.x * si + U.x * vi) * A - pe.x / rE * gE - pm.x / rM * gM) * dt; P.vy += ((F.y * ti + R.y * si + U.y * vi) * A - pe.y / rE * gE - pm.y / rM * gM) * dt; P.vz += ((F.z * ti + R.z * si + U.z * vi) * A - pe.z / rE * gE - pm.z / rM * gM) * dt;
+  { const b = SP.dest ? pm : pe, rb = SP.dest ? rM : rE, d = SP.dest ? dM : dE; if (d < 2600) { const w = 1 - d / 2600, vr = (P.vx * b.x + P.vy * b.y + P.vz * b.z) / rb, k = 1 - Math.exp(-1.6 * w * dt);   // approach assist: close in, sideways drift bleeds off and you are drawn down
+      P.vx -= (P.vx - b.x / rb * vr) * k + b.x / rb * 34 * w * dt; P.vy -= (P.vy - b.y / rb * vr) * k + b.y / rb * 34 * w * dt; P.vz -= (P.vz - b.z / rb * vr) * k + b.z / rb * 34 * w * dt; } }
+  if (rE > 24000) { P.vx -= pe.x / rE * 60 * dt; P.vy -= pe.y / rE * 60 * dt; P.vz -= pe.z / rE * 60 * dt; }                 // nothing out there: you are drawn back
+  const sp = Math.hypot(P.vx, P.vy, P.vz), vmax = clamp(Math.min(dE, dM) * 0.17 + 70, 90, 480); if (sp > vmax) { const k = Math.max(vmax / sp, Math.exp(-2.5 * dt)); P.vx *= k; P.vy *= k; P.vz *= k; }   // slows itself on the way in
+  P.x += P.vx * dt; P.y += P.vy * dt; P.z += P.vz * dt; P.vf = P.vx * F.x + P.vy * F.y + P.vz * F.z; P.odo += sp * dt;
+  P.grounded = false; P.air = false; P.onHC = false; P.drift = P.slip = 0; P.surf = 1; P.waterT = 0; P.gy = P.y - Math.min(dE, dM); P.pitch = P.roll = 0;
+  if (dE < SPC.HOP) spaceHop('earth'); else if (dM < SPC.HOP) spaceHop('moon');
+}
 function stepUfo(dt) {                              // the saucer ignores roads and gravity: it hovers, slides and climbs
   netBeamPull(dt);
   P.heading -= inp.steer * 1.9 * dt;
@@ -2686,6 +3356,7 @@ function stepHeli(dt) {
   P.air = false; P.drift = P.slip = 0; P.surf = 1; P.waterT = 0;
 }
 function stepPlayer(dt) {
+  if (inSpace(P.x)) return stepSpace(dt);
   hcStep(dt);
   if (CAR.foot) return stepFoot(dt);
   if (CAR.heli) { netBeamPull(dt); return stepHeli(dt); }
@@ -2834,14 +3505,21 @@ function stepPlayer(dt) {
   if (inWater) { P.waterT += dt; if (P.waterT > 1.8) respawn(); } else P.waterT = 0;
 }
 let respawning = false;
-function spaceHop(toMoon) {                         // the sky has already faded to black on the way up; cut to the other world behind a blink
+function spaceHop(to) {                             // cut between a surface world and open space behind a blink; the sky is already black by then
   if (respawning) return; respawning = true; $('flash').style.opacity = 1;
-  setTimeout(() => { const vx = P.vx, vz = P.vz, hd = P.heading, ox = toMoon ? P.x : P.x - MOON.x, oz = toMoon ? P.z : P.z - MOON.z;
-    if (toMoon) { teleport(MOON.x + clamp(ox * 0.4, -1200, 1200), MOON.z + clamp(oz * 0.4, -1200, 1200), hd); P.y = MOON.base + MOON.EXIT - 190; }
-    else { teleport(clamp(ox * 1.4, -2600, 2600), clamp(oz * 1.4, -2600, 2600), hd); P.y = MOON.ALT - 110; }
-    P.vx = vx; P.vz = vz; P.vy = -8; P.grounded = false; camSnap = true; $('flash').style.opacity = 0; respawning = false; toast(toMoon ? 'The Moon. One sixth gravity' : 'Back over the island'); }, 420);
+  setTimeout(() => { const hd = P.heading;
+    if (to === 'moon') { teleport(MOON.x + 60, MOON.z + 60, hd); P.y = MOON.base + MOON.EXIT - 190; P.vx = P.vz = 0; P.vy = -10; toast('The Moon. One sixth gravity'); }
+    else if (to === 'earth') { teleport(40, -500, hd); P.y = MOON.ALT - 110; P.vx = P.vz = 0; P.vy = -10; toast('Back over the island'); }
+    else { const fromE = to === 'up', U = SP.U, F = SP.F; SP.dest = fromE ? 1 : 0; SP.tilt = 7;                                         // out into space, just above the body you left
+      if (fromE) U.set(0, 1, 0); else { U.set(SPC.ex - SPC.mx, SPC.ey - SPC.my, SPC.ez - SPC.mz).normalize(); F.set(0, U.z, -U.y).normalize(); U.multiplyScalar(0.82).addScaledVector(F, 0.57).normalize(); }   // off the Moon you leave from the side that faces the Earth, with the Earth ahead and above rather than dead overhead
+      const R = (fromE ? SPC.RE : SPC.RM) + SPC.HOP + 110; P.x = (fromE ? SPC.ex : SPC.mx) + U.x * R; P.y = (fromE ? SPC.ey : SPC.my) + U.y * R; P.z = (fromE ? SPC.ez : SPC.mz) + U.z * R;
+      F.set((fromE ? SPC.mx : SPC.ex) - P.x, (fromE ? SPC.my : SPC.ey) - P.y, (fromE ? SPC.mz : SPC.ez) - P.z); F.addScaledVector(U, -F.dot(U)).normalize();   // nose toward the other world
+      P.vx = U.x * 70; P.vy = U.y * 70; P.vz = U.z * 70; P.onHC = false; if (auto) setAuto(false);
+      toast(fromE ? 'Open space. The Moon is ahead and above you: W flies forward, Space climbs toward it' : 'Open space. The Earth is ahead and above you'); }
+    P.grounded = false; camSnap = true; $('flash').style.opacity = 0; respawning = false; }, 420);
 }
 function respawn(turnBack) {
+  if (inSpace(P.x)) { spaceHop('earth'); return; }
   removeParachute(); gpFireHeld = false;
   if (respawning) return; respawning = true; $('flash').style.opacity = 1;
   setTimeout(() => { if (onMoon(P.x)) teleport(MOON.x + 30, MOON.z + 30, P.heading); else if (turnBack) placeOnRoad(Math.sign(P.z) * (REND - 110), P.z < 0 ? -1 : 1); else placeOnRoad(P.z, Math.cos(P.heading) >= 0 ? 1 : -1); camSnap = true; $('flash').style.opacity = 0; respawning = false; }, 380);
@@ -2871,11 +3549,31 @@ const earth = (() => {                               // the Earth, hanging over 
   const pole = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 3.4, 5), grey); pole.position.set(9, 1.7, 5); g.add(pole); const flag = new T.Mesh(new T.BoxGeometry(1.7, 1, 0.04), new T.MeshLambertMaterial({ color: 0xffc44d })); flag.position.set(9.9, 2.85, 5); g.add(flag);
   g.position.set(lx, y, lz); g.traverse(o => { o.castShadow = true; }); scene.add(g); SOLIDS.push([lx, lz, 3.3, y + 6], [lx + 9, lz + 5, 0.25, y + 3.4]);
 }
+{                                                    // the two worlds as seen from open space
+  const cv = document.createElement('canvas'); cv.width = 256; cv.height = 128; const g = cv.getContext('2d'); g.fillStyle = '#9a9ca1'; g.fillRect(0, 0, 256, 128);
+  for (let k = 0; k < 9; k++) { g.fillStyle = 'rgba(96,98,104,.55)'; g.beginPath(); g.ellipse(rnd2(k, 71) * 256, 20 + rnd2(k, 72) * 88, 14 + rnd2(k, 73) * 26, 9 + rnd2(k, 74) * 16, 0, 0, 7); g.fill(); }
+  for (let k = 0; k < 150; k++) { const x = rnd2(k, 81) * 256, y = rnd2(k, 82) * 128, r = 0.8 + rnd2(k, 83) * rnd2(k, 84) * 6; g.fillStyle = '#7c7e84'; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.strokeStyle = '#c3c5ca'; g.lineWidth = 0.5; g.stroke(); }
+  const moonS = new T.Mesh(new T.SphereGeometry(SPC.RM, 48, 30), new T.MeshLambertMaterial({ map: new T.CanvasTexture(cv), fog: false, emissive: 0x16171a })); moonS.position.set(SPC.mx, SPC.my, SPC.mz); moonS.frustumCulled = false; scene.add(moonS);
+  const earthS = new T.Mesh(new T.SphereGeometry(SPC.RE, 64, 40), new T.MeshLambertMaterial({ map: earth.material.map, fog: false, emissive: 0x15263c })); earthS.position.set(SPC.ex, SPC.ey, SPC.ez); earthS.frustumCulled = false; scene.add(earthS);
+  const halo = new T.Mesh(new T.SphereGeometry(SPC.RE * 1.025, 48, 30), new T.MeshBasicMaterial({ color: 0x6fb4ff, transparent: true, opacity: 0.16, fog: false, side: T.BackSide, depthWrite: false })); halo.position.copy(earthS.position); scene.add(halo);   // a thin line of atmosphere
+}
+function drawSpaceMap(g, labels) {                   // the space map: the Earth, the Moon and you, seen side on
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); const W = g.canvas.width, H = g.canvas.height, k = Math.min(W, H) / 14500, ox = W * 0.5 + 3600 * k, oy = H * 0.5 + 3400 * k, X = z => ox + z * k, Y = y => oy - y * k;
+  g.fillStyle = '#03050a'; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 70; i++) { g.fillStyle = 'rgba(255,255,255,' + (0.25 + 0.5 * rnd2(i, 5)) + ')'; g.fillRect(rnd2(i, 1) * W, rnd2(i, 2) * H, 1.5, 1.5); }
+  g.strokeStyle = 'rgba(246,242,228,.25)'; g.setLineDash([4, 6]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(SPC.ez), Y(SPC.ey)); g.lineTo(X(SPC.mz), Y(SPC.my)); g.stroke(); g.setLineDash([]);
+  g.beginPath(); g.arc(X(SPC.ez), Y(SPC.ey), SPC.RE * k, 0, TAU); g.fillStyle = '#2a6fb0'; g.fill(); g.lineWidth = 2; g.strokeStyle = '#8fc7ff'; g.stroke();
+  g.beginPath(); g.arc(X(SPC.mz), Y(SPC.my), SPC.RM * k, 0, TAU); g.fillStyle = '#9a9ca1'; g.fill(); g.strokeStyle = '#d5d7dc'; g.stroke();
+  if (labels) { g.font = '600 ' + Math.round(H / 34) + 'px ' + getComputedStyle(document.body).getPropertyValue('--display'); g.textBaseline = 'middle'; g.fillStyle = '#f6f2e4'; g.fillText('EARTH', X(SPC.ez) - SPC.RE * k * 0.4, Y(SPC.ey)); g.fillText('THE MOON', X(SPC.mz) + SPC.RM * k + 8, Y(SPC.my)); }
+  for (const r of NET.rem.values()) { if (!r.init || !inSpace(r.pos.x)) continue; g.beginPath(); g.arc(X(r.pos.z), Y(r.pos.y), 4.5, 0, TAU); g.fillStyle = r.color; g.fill(); if (labels) g.fillText(r.name, X(r.pos.z) + 8, Y(r.pos.y)); }
+  g.beginPath(); g.arc(X(P.z), Y(P.y), 5.5, 0, TAU); g.fillStyle = NET.room ? NET.color : '#e2483a'; g.fill(); g.lineWidth = 1.5; g.strokeStyle = '#fff'; g.stroke();
+  g.beginPath(); g.moveTo(X(P.z), Y(P.y)); g.lineTo(X(P.z) + P.vz * 0.09, Y(P.y) - P.vy * 0.09); g.stroke(); g.restore();   // where you are heading
+}
 function updateSky(dt, brake) {
   todOff += Math.min(Math.max(NET.ts - todOff, 0), 0.09 * dt);                                     // time skips are shared: everyone moves to the furthest skip in the room
   const u = (NET.clk() / 1000) % 540; clockT += dt;                                                 // 400 s of daylight, 140 s of night, on the shared clock
   tod = todFix >= 0 ? todFix : ((u < 400 ? 0.25 + u / 800 : 0.75 + (u - 400) / 280) + todOff) % 1;
-  const moonW = onMoon(P.x), spaceF = moonW ? 1 : sstep(250, MOON.ALT - 15, P.y), a = ((moonW ? 0.4 : tod) - 0.25) * 2 * Math.PI;   // the Moon sits in permanent hard daylight
+  const moonW = P.x > 12000, spaceF = moonW ? 1 : sstep(250, MOON.ALT - 15, P.y), a = ((moonW ? 0.4 : inMall(P.x) ? 0.5 : tod) - 0.25) * 2 * Math.PI;   // the Moon sits in permanent hard daylight
   sunDir.set(Math.cos(a), Math.sin(a) * 0.9, -0.45).normalize();
   const e = sunDir.y, day = sstep(-0.08, 0.28, e), dusk = Math.exp(-(e * e) / 0.026);
   night = 1 - sstep(-0.12, 0.1, e);
@@ -2890,13 +3588,14 @@ function updateSky(dt, brake) {
   skyU.uCover.value = 0.5 + 0.1 * Math.sin(clockT * 0.011);
   scene.fog.color.copy(skyU.uHor.value).lerp(skyU.uZen.value, 0.22);
   if (spaceF > 0) { skyU.uZen.value.lerp(SPACE_BLK, spaceF); skyU.uHor.value.lerp(SPACE_BLK, spaceF); skyU.uNight.value = Math.max(night, spaceF); skyU.uCover.value += spaceF * 2; skyU.uLit.value.lerp(SPACE_BLK, spaceF); skyU.uShade.value.lerp(SPACE_BLK, spaceF); scene.fog.color.lerp(SPACE_BLK, spaceF); if (moonW) skyU.uMoon.value.set(0, -1, 0); }   // blue thins to black and the stars come out
-  water.visible = !moonW; earth.visible = moonW; if (moonW) { earth.position.set(camera.position.x + 1500, camera.position.y + 2100, camera.position.z - 2300); earth.rotation.y += dt * 0.01; }
+  water.visible = !moonW; earth.visible = onMoon(P.x); if (earth.visible) { earth.position.set(camera.position.x + 1500, camera.position.y + 2100, camera.position.z - 2300); earth.rotation.y += dt * 0.01; }
   renderer.setClearColor(scene.fog.color);
   const sunI = sstep(-0.04, 0.12, e), moonI = sstep(0.04, -0.12, e);
   if (e > 0) { sun.color.copy(skyU.uSunCol.value); sun.intensity = 0.95 * sunI; sun.position.copy(sunDir); }
   else { sun.color.copy(K.moon); sun.intensity = 0.24 * moonI; sun.position.copy(moonDir); }
+  if (inMall(P.x)) sun.intensity = 0.12;                                                              // indoors: soft, even light
   sun.position.multiplyScalar(260).add(playerMesh.position); sun.target.position.copy(playerMesh.position);
-  hemi.intensity = moonW ? 0.36 : mix(0.26, 0.6, day); hemi.color.copy(skyU.uZen.value).lerp(K.white, moonW ? 0.75 : 0.45);
+  hemi.intensity = moonW ? 0.36 : inMall(P.x) ? 0.95 : mix(0.26, 0.6, day); hemi.color.copy(skyU.uZen.value).lerp(K.white, moonW ? 0.75 : inMall(P.x) ? 0.9 : 0.45);
   water.material.color.copy(K.wN).lerp(K.wD, day).lerp(skyU.uHor.value, 0.25 + 0.2 * dusk);
   glowMat.color.copy(K.lampOff).lerp(K.lampOn, night); headMat.color.copy(K.hOff).lerp(K.hOn, night); tailMat.color.copy(K.tOff).lerp(K.tOn, night * 0.7);
   brakeMat.color.copy(K.tOff).lerp(K.tOn, Math.max(night * 0.7, brake ? 1 : 0));
@@ -2975,10 +3674,15 @@ function updateCamera(dt, time) {
   const ty = P.air && Math.hypot(P.vx, P.vz) > 6 ? Math.atan2(-P.vx, -P.vz) : P.heading;
   camYaw = camSnap ? ty : camYaw + wrapPi(ty - camYaw) * (1 - Math.exp(-dt * (P.air ? 4 : 30)));
   const fx = -Math.sin(camYaw), fz = -Math.cos(camYaw), sp = Math.abs(P.vf);
-  if (CAR.foot && started) {                        // on foot: over-the-shoulder camera that follows the mouse, like a third-person shooter
+  const spc = inSpace(P.x) && started; if (spc) camera.up.copy(SP.U); else camera.up.set(0, 1, 0);
+  { const far = spc ? 60000 : 6000; if (camera.far !== far) { camera.far = far; camera.updateProjectionMatrix(); } }
+  if (spc) {                                         // in space the camera rides behind the ship in the ship's own frame, tipped up toward what is overhead
+    const U = SP.U, F = SP.F, d = camMode === 2 ? -0.6 : camMode ? 26 : 12, h = camMode === 2 ? 1.3 : camMode ? 10 : 4.4;
+    want.set(P.x - F.x * d + U.x * h, P.y - F.y * d + U.y * h, P.z - F.z * d + U.z * h); const c = SP.tilt, h2 = h + Math.max(0, -c) * 0.9; want.set(P.x - F.x * d + U.x * h2, P.y - F.y * d + U.y * h2, P.z - F.z * d + U.z * h2); look.set(P.x + F.x * 12 + U.x * c, P.y + F.y * 12 + U.y * c, P.z + F.z * 12 + U.z * c); camSnap = true;
+  } else if (CAR.foot && started) {                        // on foot: over-the-shoulder camera that follows the mouse, like a third-person shooter
     const cp = Math.cos(AIM.pitch), dx = -Math.sin(AIM.yaw) * cp, dy = Math.sin(AIM.pitch), dz = -Math.cos(AIM.yaw) * cp, sx = Math.cos(AIM.yaw), sz = -Math.sin(AIM.yaw);
     if (camMode === 2 && RIDE) want.set(RIDE.pos.x - RIDE.fz * 0.42 - RIDE.fx * 0.3, RIDE.pos.y + 1.27, RIDE.pos.z + RIDE.fx * 0.42 - RIDE.fz * 0.3);   // the passenger seat of their car
-    else if (camMode === 2) want.set(P.x + dx * 0.12, P.y + 1.7, P.z + dz * 0.12);
+    else if (camMode === 2 || GUN.scoped) want.set(P.x + dx * 0.12, P.y + 1.7, P.z + dz * 0.12);
     else { const d = RIDE ? 8.5 : CHUTE ? 15 : camMode ? 6.5 : 3.4, sh = RIDE || CHUTE ? 0 : 0.62; want.set(P.x - dx * d + sx * sh, P.y + (RIDE ? 2.3 : CHUTE ? 4.6 : 1.72) - dy * d, P.z - dz * d + sz * sh); }
     look.set(want.x + dx * 30, want.y + dy * 30, want.z + dz * 30);
   } else if (!started) {                            // attract mode: slow orbit
@@ -2995,7 +3699,7 @@ function updateCamera(dt, time) {
   camera.position.copy(camPos);
   if (shake > 0.001) { camera.position.x += (Math.random() - 0.5) * shake * 0.7; camera.position.y += (Math.random() - 0.5) * shake * 0.5; shake *= Math.exp(-dt * 6); }
   camera.lookAt(look);
-  const fov = CAR.foot && GUN.ads && started ? (GUN.i === 3 ? 24 : 44) : 62 + Math.min(sp, 55) * 0.26, nr = camMode === 2 && started ? 0.12 : 0.5; if (Math.abs(fov - camera.fov) > 0.05 || camera.near !== nr) { camera.fov = fov; camera.near = nr; camera.updateProjectionMatrix(); }
+  const fov = CAR.foot && GUN.ads && started ? (GUN.scoped ? 11 : 44) : 62 + Math.min(sp, 55) * 0.26, nr = camMode === 2 && started ? 0.12 : 0.5; if (Math.abs(fov - camera.fov) > 0.05 || camera.near !== nr) { camera.fov = fov; camera.near = nr; camera.updateProjectionMatrix(); }
   sky.position.copy(camera.position); water.position.set(camera.position.x, 0, camera.position.z);
 }
 
@@ -3025,7 +3729,7 @@ function updateSmoke(dt) {
    drawn by easing toward "last state + velocity x age" (age capped at 0.3 s). Nothing a peer sends is trusted:
    every field is validated and clamped, names are only ever drawn as text. Without a room the game is single-player. */
 const PCOLS = ['#ff5a5f', '#ffb020', '#ffe14d', '#7ee04b', '#2fd6a3', '#35c9ff', '#5b8cff', '#a77bff', '#ff6fd0', '#ff8a3d', '#c8f03c', '#f2f2f2'];
-const NET = { ts: 0, dm: new Map(), color: PCOLS[Math.floor(Math.random() * PCOLS.length)], now: () => Date.now(), clk: () => NET.room && NET.room.clock ? NET.room.clock() : Date.now(), pre: null, preSeq: 0, frz: null, frzSeen: new Map(), room: null, me: null, name: '', rem: new Map(), seq: 0, sendT: 0, cool: new Map(), beam: null, pulledBy: null, lastHit: null, hits: 0, listT: 0 };
+const NET = { bx: [], bxSeq: 0, cg: [], ts: 0, adm: new Map(), admSeen: new Map(), dm: new Map(), color: PCOLS[Math.floor(Math.random() * PCOLS.length)], now: () => Date.now(), clk: () => NET.room && NET.room.clock ? NET.room.clock() : Date.now(), pre: null, preSeq: 0, frz: null, frzSeen: new Map(), room: null, me: null, name: '', rem: new Map(), seq: 0, sendT: 0, cool: new Map(), beam: null, pulledBy: null, lastHit: null, hits: 0, listT: 0 };
 try { NET.name = (localStorage.getItem('dd-name') || '').slice(0, 16); } catch (e) { /* storage unavailable */ }
 if (!NET.name) NET.name = 'Driver ' + (100 + Math.floor(Math.random() * 900));
 const num = v => typeof v === 'number' && isFinite(v), vec = (a, n) => Array.isArray(a) && a.length === n && a.every(num);
@@ -3035,13 +3739,15 @@ function netSend() {
   const now = NET.now(); if (!NET.room || now - NET.sendT < 55) return; NET.sendT = now;
   const q = playerMesh.quaternion, v = netVel();
   NET.room.presence({ v: 1, n: NET.name, col: NET.color, rd: RIDE ? 1 : 0, w: HP.dead > 0 ? 1 : 0, hp: Math.round((CAR.foot ? PH.v / PH.max : HP.v / HP.max) * 100), dm: [...NET.dm].slice(-6), g: GUN.i, bl: LB.mine.length ? LB.mine[0].t : 0, c: CAR.id, m: CAR.mass, p: [r2(P.x), r2(P.y), r2(P.z)], q: [r4(q.x), r4(q.y), r4(q.z), r4(q.w)], vel: [r2(v[0]), r2(v[1]), r2(v[2])],
-    bo: beamOn && CAR.ufo ? 1 : 0, beam: NET.beam, frz: NET.frz, oil: NET.oil || null, pre: NET.pre, ice: P.frozenT > 0 ? 1 : 0, ts: NET.ts, nq: netNq() }).catch(() => {});
+    bo: beamOn && CAR.ufo ? 1 : 0, beam: NET.beam, frz: NET.frz, oil: NET.oil || null, pre: NET.pre, ice: P.frozenT > 0 ? 1 : 0, ts: NET.ts, nq: netNq(), ac: netAc(), adm: netAdm(), cd: netCd(), bx: NET.bx.length ? NET.bx : null, ar: Math.round(ARM.v), cg: NET.cg.length ? NET.cg.slice(-20) : null, at: netAt(), pu: GUN.punch > 0.1 ? 1 : 0 }).catch(() => {});
 }
 function netTag(r) {                                // name tag: text drawn to a canvas, never markup
   const cv = r.tagCv, g = cv.getContext('2d'); g.clearRect(0, 0, 256, 64);
   g.font = '600 30px "Barlow Condensed","Arial Narrow",Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
   const w = Math.min(248, g.measureText(r.name).width + 28); g.fillStyle = 'rgba(14,22,30,.72)'; g.fillRect(128 - w / 2, 12, w, 40);
-  g.fillStyle = r.color; g.fillRect(128 - w / 2, 48, w, 4); g.fillText(r.name, 128, 31, 240); r.tag.material.map.needsUpdate = true;   // each player's own colour
+  const hp = clamp(r.hpv == null ? 100 : r.hpv, 0, 100) / 100;                                     // their health, where their colour line used to be
+  g.fillStyle = 'rgba(0,0,0,.75)'; g.fillRect(128 - w / 2, 45, w, 8); g.fillStyle = hp > 0.6 ? '#7ee04b' : hp > 0.3 ? '#ffc44d' : '#e2483a'; g.fillRect(128 - w / 2 + 1, 46, Math.max(0, (w - 2) * hp), 6);
+  g.fillStyle = r.color; g.fillText(r.name, 128, 28, 240); r.tag.material.map.needsUpdate = true;   // the name stays in the player's own colour
 }
 function netBuild(r, carId) {                       // (re)build the remote vehicle model when its owner changes car
   if (r.mesh) { scene.remove(r.mesh); r.mesh.traverse(o => { if (o.geometry && o.geometry !== flameGeo) o.geometry.dispose(); }); }
@@ -3068,9 +3774,10 @@ function netUpdate(dt) {
     if (r.pres !== s) {                             // a fresh state from that player
       r.pres = s; r.t = pr.updatedAt; r.sp.set(s.p[0], s.p[1], s.p[2]); r.sv.set(clamp(s.vel[0], -90, 90), clamp(s.vel[1], -90, 90), clamp(s.vel[2], -90, 90)); r.sq.set(s.q[0], s.q[1], s.q[2], s.q[3]).normalize();
       r.mass = clamp(num(s.m) ? s.m : 1, 0.3, 3);
-      if (Array.isArray(s.dm)) for (const q of s.dm) if (Array.isArray(q) && q[0] === NET.me && num(q[1])) { if (r.dmSeen !== undefined && q[1] > r.dmSeen) damage(Math.min(250, q[1] - r.dmSeen)); r.dmSeen = q[1]; } if (r.dmSeen === undefined) r.dmSeen = 0;   // gunfire from that player: apply only the new damage (a total already there when we first see them is not ours to take)
+      { const q = Array.isArray(s.dm) ? s.dm.find(q => Array.isArray(q) && q[0] === NET.me && num(q[1])) : null;   // gunfire from that player: apply only the new damage
+        if (q) { if (r.dmSeen !== undefined && q[1] > r.dmSeen) damage(Math.min(250, q[1] - r.dmSeen)); r.dmSeen = q[1]; } else if (r.dmSeen === undefined) r.dmSeen = 0; }   // they had not hit us yet, so their first hit counts in full   // gunfire from that player: apply only the new damage
       const pq = s.pre; if (pq && pq.w === NET.me && vec(pq.v, 2) && num(pq.seq) && pq.seq !== r.preSeq) { r.preSeq = pq.seq; r.preV = [clamp(pq.v[0], -90, 90), clamp(pq.v[1], -90, 90)]; r.preT = now; r.preNew = true; } const cid = typeof s.c === 'string' ? s.c : 'coupe'; if (cid !== r.carId || !r.mesh) netBuild(r, cid);
-      const nm = (typeof s.n === 'string' ? s.n : '').replace(/[^\w .\-]/g, '').slice(0, 16) || 'Driver'; const cl = typeof s.col === 'string' && /^#[0-9a-fA-F]{6}$/.test(s.col) ? s.col : '#6fd3ff'; if (nm !== r.name || cl !== r.color) { r.name = nm; r.color = cl; netTag(r); } if (r.car && r.car.foot && r.hat !== r.color) netBuild(r, 'foot');
+      const nm = (typeof s.n === 'string' ? s.n : '').replace(/[^\w .\-]/g, '').slice(0, 16) || 'Driver'; const cl = typeof s.col === 'string' && /^#[0-9a-fA-F]{6}$/.test(s.col) ? s.col : '#6fd3ff'; const hpv = s.w === 1 ? 0 : num(s.hp) ? clamp(Math.round(s.hp), 0, 100) : 100; if (nm !== r.name || cl !== r.color || hpv !== r.hpv) { r.name = nm; r.color = cl; r.hpv = hpv; netTag(r); } if (r.car && r.car.foot && r.hat !== r.color) netBuild(r, 'foot');
     }
     const age = clamp((now - r.t) / 1000 + 0.07, 0, 0.35);                                       // time since their last update, plus a typical network delay                                              // short velocity prediction
     r.pred.copy(r.sp).addScaledVector(r.sv, age);
@@ -3078,11 +3785,15 @@ function netUpdate(dt) {
     else { r.pos.lerp(r.pred, 1 - Math.exp(-18 * dt)); r.quat.slerp(r.sq, 1 - Math.exp(-12 * dt)); }
     tmpV.set(0, 0, -1).applyQuaternion(r.sq); const fl = Math.hypot(tmpV.x, tmpV.z) || 1; r.fx = tmpV.x / fl; r.fz = tmpV.z / fl;
     r.mesh.position.copy(r.pos); r.mesh.quaternion.copy(r.quat); if (r.car.ufo) r.mesh.userData.chassis.rotation.y += dt * 1.6;
-    if (r.car.foot) { showGun(r.mesh, s.g === 1 || s.g === 2 || s.g === 3 ? s.g : 0); const sp2 = Math.hypot(r.sv.x, r.sv.z); r.walkT = (r.walkT || 0) + sp2 * dt * 1.9; walkPose(r.mesh, r.walkT, sp2 <= 5.4 ? sp2 / 5.4 * 0.55 : 0.55 + Math.min(1, (sp2 - 5.4) / 4.2) * 0.45, true, Math.abs(r.sv.y) > 2.5, 0, now / 1000); }
+    if (r.car.foot) { showGun(r.mesh, num(s.g) && s.g >= 0 && s.g < GM.length && s.g === Math.floor(s.g) ? s.g : 0); const sp2 = Math.hypot(r.sv.x, r.sv.z); r.walkT = (r.walkT || 0) + sp2 * dt * 1.9; walkPose(r.mesh, r.walkT, sp2 <= 5.4 ? sp2 / 5.4 * 0.55 : 0.55 + Math.min(1, (sp2 - 5.4) / 4.2) * 0.45, s.g !== 4, Math.abs(r.sv.y) > 2.5, 0, now / 1000); if (s.g === 4) fistPose(r.mesh, s.pu ? 1 : 0); }
     if (s.w === 1 && Math.random() < dt * 9) puffAt(r.pos.x, r.pos.y + 1.2, r.pos.z);
     r.tag.position.set(r.pos.x, r.pos.y + (r.car.foot ? 2.45 : r.car.ufo ? 4.2 : r.car.plane ? 4.6 : r.car.heli ? 5 : 3.1), r.pos.z);
     if (s.ice === 1 && !r.ice) { r.ice = new T.Mesh(new T.BoxGeometry(2.6, 2, r.halfLen * 2 + 0.7), iceMat); r.ice.position.y = 1; r.mesh.add(r.ice); } if (r.ice) r.ice.visible = s.ice === 1;
     const ol = s.oil; if (ol && ol.targetId === NET.me && num(ol.seq) && NET.oilSeen !== pr.peer + ':' + ol.seq) { NET.oilSeen = pr.peer + ':' + ol.seq; if (num(ol.at) && now - ol.at < 4000) { P.oilT = 2.6; P.oilDir = Math.random() < 0.5 ? 1 : -1; toast('Oiled by ' + r.name); oilPuddle(P.x, P.gy, P.z); } }   // their oil gun hit us
+    r.ac = Array.isArray(s.ac) && s.ac.length <= 14 ? s.ac : null; r.bx = Array.isArray(s.bx) && s.bx.length <= 6 ? s.bx : null;
+    r.cd = Array.isArray(s.cd) && s.cd.length <= 16 ? s.cd : null; r.cg = Array.isArray(s.cg) && s.cg.length <= 24 ? s.cg.filter(q => typeof q === 'string' && q.length < 80) : null;
+    if (Array.isArray(s.at)) for (const q of s.at.slice(0, 30)) if (Array.isArray(q) && num(q[0]) && num(q[1]) && ATMS[q[0]]) ATMS[q[0]].until = Math.max(ATMS[q[0]].until, Math.min(q[1], NET.clk() / 1000 + 600));   // ATMs other players emptied
+    if (Array.isArray(s.adm)) for (const q of s.adm) if (Array.isArray(q) && q[0] === NET.me && typeof q[1] === 'string' && num(q[2])) { const k = pr.peer + '|' + q[1], was = NET.admSeen.get(k) || 0; if (q[2] > was) { NET.admSeen.set(k, q[2]); const a = ACT.find(x => x.src === q[1]); if (a) { hurtActor(a, Math.min(200, q[2] - was), r.pos.x, r.pos.z); if (a.st !== 2 && a.st !== 1) { a.st = 0; a.tgtId = pr.peer; } } } }   // other players hitting the people this game runs
     if (num(s.ts) && s.ts > NET.ts && s.ts < 1e4) NET.ts = s.ts; r.nq = Array.isArray(s.nq) && s.nq.length <= 8 ? s.nq : null;
     const fz = s.frz; if (fz && fz.targetId === NET.me && num(fz.seq) && NET.frzSeen.get(pr.peer) !== fz.seq) { NET.frzSeen.set(pr.peer, fz.seq); if (num(fz.at) && now - fz.at < 4000) { P.frozenT = FREEZE_T; toast('Frozen by ' + r.name); crashSound(0.5); } }   // a freeze missile from that player hit us
     const far = r.pos.distanceToSquared(playerMesh.position) > 1400 * 1400; r.mesh.visible = r.tag.visible = !far; if (s.rd === 1) r.mesh.visible = r.tag.visible = false; if (RIDE === r && camMode === 2) r.mesh.visible = false;
@@ -3167,14 +3878,30 @@ function netBeamPull(dt) {
 
 /* ───────────── on foot, guns, vehicle health, first person ───────────── */
 const GUNS = [{ name: 'Pistol', dmg: 14, rate: 0.2, spread: 0.012, range: 130, n: 1, mag: 12, rl: 1.2, kick: 0.016, len: 0.62 }, { name: 'SMG', dmg: 7, rate: 0.075, spread: 0.028, range: 95, n: 1, mag: 30, rl: 1.8, kick: 0.009, len: 0.74, auto: true },
-  { name: 'Shotgun', dmg: 13, rate: 0.85, spread: 0.085, range: 48, n: 8, mag: 6, rl: 2.4, kick: 0.07, len: 0.97 }, { name: 'Rifle', dmg: 40, rate: 1.0, spread: 0.002, range: 330, n: 1, mag: 5, rl: 2.2, kick: 0.085, len: 1.07 }];
+  { name: 'Shotgun', dmg: 13, rate: 0.85, spread: 0.085, range: 48, n: 8, mag: 6, rl: 2.4, kick: 0.07, len: 0.97 }, { name: 'Rifle', dmg: 40, rate: 1.0, spread: 0.002, range: 1500, n: 1, mag: 5, rl: 2.2, kick: 0.085, len: 1.07 },
+  { name: 'Fists', dmg: 22, rate: 0.42, spread: 0, range: 1.7, n: 1, mag: 1, rl: 0, kick: 0, len: 0, melee: true },
+  { name: 'Revolver', dmg: 34, rate: 0.55, spread: 0.008, range: 160, n: 1, mag: 6, rl: 2.0, kick: 0.06, len: 0.68, price: 600, cat: 'Pistols', blurb: 'Six heavy rounds. Slow, but two body shots put most people down.' },
+  { name: 'Micro SMG', dmg: 6, rate: 0.055, spread: 0.04, range: 70, n: 1, mag: 25, rl: 1.5, kick: 0.008, len: 0.58, auto: true, price: 1100, cat: 'SMGs', blurb: 'Tiny, loud and very fast. Sprays wide past close range.' },
+  { name: 'Sawed-off', dmg: 15, rate: 0.5, spread: 0.13, range: 26, n: 9, mag: 2, rl: 2.0, kick: 0.1, len: 0.7, price: 900, cat: 'Shotguns', blurb: 'Two barrels, nine pellets each. Devastating up close, useless at range.' },
+  { name: 'Assault Rifle', dmg: 13, rate: 0.11, spread: 0.014, range: 220, n: 1, mag: 30, rl: 2.0, kick: 0.014, len: 0.92, auto: true, price: 2400, cat: 'Rifles', blurb: 'Fully automatic and accurate. Thirty rounds a magazine.' },
+  { name: 'Bazooka', dmg: 0, rate: 1.2, spread: 0.004, range: 300, n: 1, mag: 1, rl: 2.4, kick: 0.12, len: 1.15, rocket: true, price: 5000, cat: 'Heavy', blurb: 'Fires rockets that explode on contact. Comes with three rockets.' }];
+const GUNSLOT = [4, 0, 1, 2, 3, 5, 6, 7, 8, 9];             // number keys 1-0 -> weapon
+const OWN = new Set([0, 1, 2, 3, 4]); try { for (const i of JSON.parse(localStorage.getItem('dd-guns') || '[]')) if (GUNS[i]) OWN.add(i); } catch (e) { /* storage unavailable */ }
+const ROCK = { v: 0 }, ARM = { v: 0 }; try { ROCK.v = Math.max(0, parseInt(localStorage.getItem('dd-rockets') || '0', 10) || 0); ARM.v = clamp(parseInt(localStorage.getItem('dd-armour') || '0', 10) || 0, 0, 100); } catch (e) { /* storage unavailable */ }
+function saveKit() { try { localStorage.setItem('dd-guns', JSON.stringify([...OWN])); localStorage.setItem('dd-rockets', String(ROCK.v)); localStorage.setItem('dd-armour', String(Math.round(ARM.v))); } catch (e) { /* storage unavailable */ } }   // fists are slot 4, and what you start with
 /* gun shapes as boxes in "hand space": the barrel runs along -y and the top of the gun faces -z. The same list builds the model in the hand and the one in first person */
 const GM = (() => { const d = '#16171a', d2 = '#2a2d31', st = '#8a9098', wd = '#7a5433', gl = '#3f6f8f'; return [
   [[-0.02, 0.02, -0.6, -0.34, -0.108, -0.06, d], [-0.021, 0.021, -0.42, -0.33, -0.06, 0.035, d2], [-0.012, 0.012, -0.61, -0.6, -0.118, -0.108, st], [-0.016, 0.016, -0.36, -0.34, -0.12, -0.108, st]],
   [[-0.024, 0.024, -0.6, -0.3, -0.125, -0.055, d], [-0.012, 0.012, -0.73, -0.6, -0.105, -0.08, d2], [-0.016, 0.016, -0.5, -0.44, -0.055, 0.11, d2], [-0.02, 0.02, -0.36, -0.3, -0.055, 0.03, d2], [-0.014, 0.014, -0.3, -0.16, -0.115, -0.09, st], [-0.012, 0.012, -0.5, -0.4, -0.14, -0.125, st]],
   [[-0.018, 0.018, -0.96, -0.3, -0.115, -0.08, st], [-0.016, 0.016, -0.9, -0.5, -0.078, -0.05, d2], [-0.03, 0.03, -0.72, -0.54, -0.085, -0.035, wd], [-0.024, 0.024, -0.34, -0.26, -0.12, -0.03, d], [-0.022, 0.022, -0.26, -0.04, -0.105, -0.025, wd]],
-  [[-0.013, 0.013, -1.06, -0.52, -0.103, -0.077, d2], [-0.024, 0.024, -0.56, -0.28, -0.122, -0.05, d], [-0.017, 0.017, -0.52, -0.3, -0.165, -0.128, d2], [-0.02, 0.02, -0.535, -0.52, -0.168, -0.125, gl], [-0.016, 0.016, -0.46, -0.4, -0.05, 0.06, d2], [-0.022, 0.022, -0.28, -0.03, -0.11, -0.03, wd], [-0.026, 0.026, -0.7, -0.56, -0.095, -0.06, wd]]]; })();
-const gunMesh = (i, view) => { const gb = new GB(); for (const q of GM[i]) { const c = C(q[6]); if (view) gb.box(q[0], q[1], -q[5], -q[4], q[2], q[3], c); else gb.box(q[0], q[1], q[2], q[3], q[4], q[5], c); } const m = new T.Mesh(gb.geo(), carMat); m.castShadow = !view; return m; };
+  [[-0.013, 0.013, -1.06, -0.52, -0.103, -0.077, d2], [-0.024, 0.024, -0.56, -0.28, -0.122, -0.05, d], [-0.017, 0.017, -0.52, -0.3, -0.165, -0.128, d2], [-0.02, 0.02, -0.535, -0.52, -0.168, -0.125, gl], [-0.016, 0.016, -0.46, -0.4, -0.05, 0.06, d2], [-0.022, 0.022, -0.28, -0.03, -0.11, -0.03, wd], [-0.026, 0.026, -0.7, -0.56, -0.095, -0.06, wd]],
+  [],                                                                                                       // fists
+  [[-0.022, 0.022, -0.68, -0.4, -0.1, -0.066, st], [-0.032, 0.032, -0.43, -0.32, -0.125, -0.05, d2], [-0.02, 0.02, -0.36, -0.3, -0.1, -0.04, d], [-0.021, 0.021, -0.36, -0.29, -0.04, 0.07, wd]],
+  [[-0.025, 0.025, -0.5, -0.27, -0.12, -0.05, d], [-0.011, 0.011, -0.58, -0.5, -0.1, -0.078, d2], [-0.016, 0.016, -0.36, -0.3, -0.05, 0.14, d2], [-0.012, 0.012, -0.28, -0.16, -0.11, -0.09, st]],
+  [[-0.032, 0.032, -0.7, -0.3, -0.112, -0.06, st], [-0.022, 0.022, -0.36, -0.1, -0.1, -0.03, wd], [-0.022, 0.022, -0.36, -0.3, -0.03, 0.06, wd]],
+  [[-0.024, 0.024, -0.6, -0.25, -0.12, -0.05, d], [-0.012, 0.012, -0.92, -0.6, -0.1, -0.08, d2], [-0.02, 0.02, -0.8, -0.6, -0.112, -0.062, d2], [-0.016, 0.016, -0.52, -0.44, -0.05, 0.11, d2], [-0.02, 0.02, -0.25, -0.02, -0.11, -0.04, d], [-0.01, 0.01, -0.5, -0.4, -0.142, -0.12, d], [-0.018, 0.018, -0.38, -0.32, -0.05, 0.05, d]],
+  [[-0.07, 0.07, -1.05, 0.35, -0.29, -0.15, '#4f5a3a'], [-0.08, 0.08, -1.12, -1.03, -0.3, -0.14, d], [-0.08, 0.08, 0.3, 0.38, -0.3, -0.14, d], [-0.02, 0.02, -0.4, -0.32, -0.15, -0.02, d], [-0.02, 0.02, -0.62, -0.55, -0.15, -0.05, d], [-0.015, 0.015, -0.72, -0.6, -0.33, -0.29, d]]]; })();
+const gunMesh = (i, view) => { if (!GM[i] || !GM[i].length) return new T.Group(); const gb = new GB(); for (const q of GM[i]) { const c = C(q[6]); if (view) gb.box(q[0], q[1], -q[5], -q[4], q[2], q[3], c); else gb.box(q[0], q[1], q[2], q[3], q[4], q[5], c); } const m = new T.Mesh(gb.geo(), carMat); m.castShadow = !view; return m; };
 function showGun(model, i) { const G = model.userData.guns; if (G) for (let k = 0; k < G.length; k++) G[k].visible = k === i; }
 const cockpitFor = c => !c.heli && !c.plane && !c.ufo && !c.foot && c.id !== 'hound';
 const eyeOf = () => RIDE ? [0.42, 1.22, 0.28] : CAR.foot ? [0, 1.68, -0.16] : CAR.heli ? [0, 1.5, -2.8] : CAR.plane ? [0, 2.12, -2.6] : CAR.ufo ? [0, 2.05, 0] : CAR.type === 'suv' || CAR.type === 'pickup' ? [-0.42, 1.44, 0.2] : [-0.42, 1.27, 0.3];
@@ -3204,10 +3931,13 @@ function buildWalker(g, ch, hat) {
       gb.hex([[-0.062, -0.47, -0.2], [0.062, -0.47, -0.2], [0.062, -0.47, 0.085], [-0.062, -0.47, 0.085], [-0.052, -0.42, -0.19], [0.052, -0.42, -0.19], [0.058, -0.385, 0.08], [-0.058, -0.385, 0.08]], shoe);
       gb.box(-0.066, 0.066, -0.49, -0.47, -0.21, 0.09, sole); gb.box(-0.064, 0.064, -0.455, -0.435, -0.2, 0.086, C('#d23b2e')); }); return [hip, kn]; };
   const [shL, elL] = arm(-1), [shR, elR] = arm(1), [hipL, knL] = leg(-1), [hipR, knR] = leg(1);
-  const gun = new T.Group(), guns = [0, 1, 2, 3].map(i => { const m = gunMesh(i, false); m.visible = i === 0; gun.add(m); return m; }); elR.add(gun); g.userData.guns = guns;
+  const gun = new T.Group(), guns = GM.map((q, i) => { const m = gunMesh(i, false); m.visible = i === 0; gun.add(m); return m; }); elR.add(gun); g.userData.guns = guns;
   g.userData.rig = { torso, head, shL, elL, shR, elR, hipL, knL, hipR, knR }; g.userData.limbs = [hipL, hipR, shL, shR]; g.userData.gun = gun;
 }
 /* ph: stride phase, amt: 0 standing, about 0.55 walking, 1 sprinting */
+function fistPose(model, p) {                         // fists up; p = how far the right is thrown, 0 to 1
+  const R = model.userData.rig; if (!R) return; R.shR.rotation.set(0.95 + 0.62 * p, -0.32 + 0.3 * p, 0); R.elR.rotation.x = 1.75 * (1 - p) + 0.05; R.shL.rotation.set(1.05, 0.34, 0); R.elL.rotation.x = 1.7; model.userData.gun.visible = false;
+}
 function walkPose(model, ph, amt, armed, air, pitch, t) {
   const R = model.userData.rig; if (!R) return; const run = clamp((amt - 0.55) / 0.45, 0, 1), a = Math.min(1, amt * 1.8), s = Math.sin(ph), c = Math.cos(ph), br = Math.sin((t || 0) * 1.7) * 0.012; pitch = pitch || 0;
   if (air) { R.hipL.rotation.x = 0.75; R.knL.rotation.x = -1.2; R.hipR.rotation.x = -0.2; R.knR.rotation.x = -0.7; }
@@ -3252,6 +3982,7 @@ function openChute() { if (CHUTE) return; const g = buildChute(NET.color); g.rot
 function removeParachute() { if (CHUTE) { scene.remove(CHUTE.g); CHUTE = null; } chuteArm = 0; }
 function getOut() {
   if (CAR.foot || HP.dead > 0 || !started) return;
+  if (inSpace(P.x)) { toast('Not out here'); return; }
   const airborneExit = !P.onHC && P.y - Math.max(groundAt(P.x, P.z, P.y + 0.5), -1) > 3.5;              // high enough to bail out under a canopy
   if (!airborneExit && Math.hypot(P.vx, P.vz) > 4) { toast('Slow down first, or bail out higher up'); return; }
   if (!walker) { walker = makeCar('walker', NET.color, false); scene.remove(walker); walker.rotation.set(0, 0, 0); }
@@ -3297,6 +4028,7 @@ function stepFoot(dt) {
   else { P.vx += ((fx * mv + rx * st) * sp - P.vx) * k; P.vz += ((fz * mv + rz * st) * sp - P.vz) * k; }
   P.x += P.vx * dt; P.z += P.vz * dt; P.vf = P.vx * fx + P.vz * fz; P.odo += Math.hypot(P.vx, P.vz) * dt;
   staticHits();
+  pushFromPeople();
   for (const n of npcs) { if (!n.live) continue; const dx = P.x - n.x, dz = P.z - n.wz, rr = n.halfLen * 0.7 + 0.6, d2 = dx * dx + dz * dz; if (d2 < rr * rr && d2 > 1e-4 && Math.abs(P.y - n.y) < 2) { const d = Math.sqrt(d2); P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } }
   let g = groundAt(P.x, P.z, P.y + 0.5); if (g < -1.0) g = -1.0;                                  // wades and swims, never drowns
   P.vy -= gravAt(P.x) * dt;
@@ -3315,42 +4047,52 @@ function stepFoot(dt) {
 /* vehicle health */
 function damage(d) {
   if (HP.dead > 0 || !started || !(d > 0) || RIDE) return;
-  if (CAR.foot) { PH.v -= d; PH.hurtT = 0; shake = Math.min(1, shake + 0.25); if (PH.v <= 0) { PH.v = 0; HP.dead = 10; HP.foot = true; crashSound(0.6); toast('You are down'); } return; }   // on foot it is your own health
+  if (CAR.foot) { if (ARM.v > 0) { const a = Math.min(ARM.v, d * 0.7); ARM.v -= a; d -= a; saveKit(); } PH.v -= d; PH.hurtT = 0; shake = Math.min(1, shake + 0.25); if (PH.v <= 0) { const lose = Math.floor(MONEY.v * 0.25); if (lose > 0) { addCash(-lose); dropCash(P.x, P.y, P.z, lose, Math.min(5, 1 + Math.floor(lose / 80))); toast('You dropped $' + lose); } PH.v = 0; HP.dead = 10; HP.foot = true; crashSound(0.6); toast('You are down'); } return; }   // on foot it is your own health
   HP.v -= d;
   if (HP.v <= 0) { HP.v = 0; HP.dead = 10; HP.foot = false; setBeam(false); if (auto) setAuto(false); crashSound(1); toast('Wrecked'); }
 }
-function puffAt(x, y, z) { const m = puffs[puffI = (puffI + 1) % puffs.length]; m.position.set(x + (Math.random() - 0.5), y, z + (Math.random() - 0.5)); m.userData.life = 1.5; m.userData.big = 2; m.material.color.setHex(0x2b2b2b); m.visible = true; m.rotation.set(Math.random() * 3, Math.random() * 3, 0); }
-function wreckNpc(n) { n.hp = null; n.mode = 6; n.t = 8; n.speed = 0; n.wreck = true; n.spinOut = 0; n.marker.visible = false; if (held === n) held = null; crashSound(0.8); toast('Wrecked'); }
+function puffAt(x, y, z, col) { const m = puffs[puffI = (puffI + 1) % puffs.length]; m.position.set(x + (Math.random() - 0.5), y, z + (Math.random() - 0.5)); m.userData.life = 1.5; m.userData.big = 2; m.material.color.setHex(col || 0x2b2b2b); m.visible = true; m.rotation.set(Math.random() * 3, Math.random() * 3, 0); }
+function wreckNpc(n) { if (!n.driverOut && n.rc) exitDriver(n, true); n.hp = null; n.mode = 6; n.t = n.driverOut ? 30 : 8; n.speed = 0; n.wreck = true; n.spinOut = 0; n.marker.visible = false; if (held === n) held = null; crashSound(0.8); toast('Wrecked'); }
 function dmgNpc(n, d) {
   if (n.mode === 6) return; if (n.hp == null) n.hp = n.type === 'truck' ? 180 : 100; n.hp -= d;
-  if (n.hp <= 0) wreckNpc(n); else if (n.mode === 0 || n.mode === 2 || n.mode === 3) aggro(n);
+  if (n.hp <= 0) wreckNpc(n); else if (CAR.foot && !n.driverOut && n.rc && n.mode !== 8 && Math.hypot(n.x - P.x, n.wz - P.z) < 70) exitDriver(n, false); else if (n.mode === 0 || n.mode === 2 || n.mode === 3) aggro(n);
 }
 /* guns: hitscan with a little aim help, usable on foot or riding as a passenger */
 const tracers = []; for (let i = 0; i < 12; i++) { const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(new Float32Array(6), 3)); const l = new T.Line(g, new T.LineBasicMaterial({ color: 0xffe9a0, transparent: true, opacity: 0 })); l.frustumCulled = false; l.visible = false; l.userData.life = 0; scene.add(l); tracers.push(l); }
 let tracerI = 0, mfire = false;
-function setGun(i) { if (!CAR.foot) return; GUN.i = (i + GUNS.length) % GUNS.length; GUN.cool = Math.max(GUN.cool, 0.25); GUN.rl = 0; GUN.bloom = 0; toast(GUNS[GUN.i].name); }
+function cycleGun(dir) { let k = GUNSLOT.indexOf(GUN.i); for (let n = 0; n < 10; n++) { k = (k + dir + 10) % 10; if (OWN.has(GUNSLOT[k])) return setGun(GUNSLOT[k]); } }
+function setGun(i) { if (!CAR.foot) return; i = (i + GUNS.length) % GUNS.length; if (!OWN.has(i)) return; GUN.i = i; GUN.cool = Math.max(GUN.cool, 0.25); GUN.rl = 0; GUN.bloom = 0; toast(GUNS[GUN.i].name); }
 function fireGun() {
   if (!CAR.foot || GUN.cool > 0 || GUN.rl > 0 || !started || HP.dead > 0) return; const gn = GUNS[GUN.i];
-  if (GUN.ammo[GUN.i] <= 0) { reloadGun(); return; }
+  if (gn.melee) { if (!RIDE) punch(gn); return; }
+  if (GUN.ammo[GUN.i] <= 0) { if (gn.rocket && ROCK.v <= 0) { toast('Out of rockets. Iron Works sells more'); GUN.cool = 0.5; return; } reloadGun(); return; }
   GUN.cool = gn.rate; GUN.shots++; GUN.ammo[GUN.i]--;
-  const mvF = Math.min(1, Math.hypot(P.vx, P.vz) / 9.6), spread = (gn.spread * (1 + 1.3 * mvF + (P.grounded || RIDE ? 0 : 1.5)) + GUN.bloom) * (GUN.ads ? 0.45 : 1);   // moving, jumping and spraying open the pattern; aiming tightens it
+  const mvF = Math.min(1, Math.hypot(P.vx, P.vz) / 9.6), spread = GUN.scoped && P.grounded ? gn.spread * 0.2 * (1 + 2 * mvF) : (gn.spread * (1 + 1.3 * mvF + (P.grounded || RIDE ? 0 : 1.5)) + GUN.bloom) * (GUN.ads ? 0.45 : 1);   // moving, jumping and spraying open the pattern; aiming tightens it
   const cp = Math.cos(AIM.pitch), fx = -Math.sin(AIM.yaw) * cp, fy = Math.sin(AIM.pitch), fz = -Math.cos(AIM.yaw) * cp, cm = camera.position;
   const t0 = Math.max(0.3, (P.x - cm.x) * fx + (P.y + 1.4 - cm.y) * fy + (P.z - cm.z) * fz + 0.7), ox = cm.x + fx * t0, oy = cm.y + fy * t0, oz = cm.z + fz * t0;   // shots leave along the crosshair line, starting just past the character
   const ml = 0.35 + gn.len, mx = P.x + fx * ml + Math.cos(AIM.yaw) * 0.3, my = P.y + (RIDE ? 1.3 : 1.43) + fy * ml, mz = P.z + fz * ml - Math.sin(AIM.yaw) * 0.3;   // the muzzle
   const tg = []; for (const n of npcs) if (n.live && n.mode !== 6) tg.push({ n, x: n.x, y: n.y + 0.85, z: n.wz, R: n.type === 'truck' ? 2.3 : 1.55 });
-  for (const r of NET.rem.values()) if (r.init && r !== RIDE && r.pres.rd !== 1 && r.pres.w !== 1) tg.push(r.car.foot ? { r, x: r.pred.x, y: r.pred.y + 1.0, z: r.pred.z, R: 0.62 } : { r, x: r.pred.x, y: r.pred.y + 0.85, z: r.pred.z, R: r.car.ufo || r.car.heli ? 2.6 : 1.6 });   // other players, in a vehicle or on foot
+  peopleTargets(tg, 0.47);
+  for (const r of NET.rem.values()) if (r.init && r !== RIDE && r.pres.rd !== 1 && r.pres.w !== 1) { if (r.car.foot) tg.push({ r, head: true, x: r.pred.x, y: r.pred.y + 1.68, z: r.pred.z, R: 0.17 }); tg.push(r.car.foot ? { r, x: r.pred.x, y: r.pred.y + 1.0, z: r.pred.z, R: 0.46 } : { r, x: r.pred.x, y: r.pred.y + 0.85, z: r.pred.z, R: r.car.ufo || r.car.heli ? 2.6 : 1.6 }); }   // other players, in a vehicle or on foot
   /* aim assist: if the crosshair is within about 12 degrees of another player, the shot is pulled 10% of the way toward the nearest one */
   let ax = fx, ay = fy, az = fz, bd = 1e9, pull = null;
   for (const t of tg) { if (!t.r) continue; const dx = t.x - ox, dy = t.y - oy, dz = t.z - oz, d = Math.hypot(dx, dy, dz); if (d > gn.range || d < 0.5 || d >= bd) continue; if ((dx * fx + dy * fy + dz * fz) / d > 0.978) { bd = d; pull = [dx / d, dy / d, dz / d]; } }
   if (pull) { ax = fx + (pull[0] - fx) * 0.1; ay = fy + (pull[1] - fy) * 0.1; az = fz + (pull[2] - fz) * 0.1; const l = Math.hypot(ax, ay, az); ax /= l; ay /= l; az /= l; GUN.assist = (GUN.assist || 0) + 1; }
-  let anyHit = false;
+  if (inMall(P.x)) mallAlarm();                         // gunfire in the mall brings the mall police
+  if (gn.rocket) {                                     // a rocket instead of a bullet
+    launchRocket(mx, my, mz, ax, ay, az); AIM.pitch = Math.min(1.05, AIM.pitch + gn.kick); GUN.rec += gn.kick * 0.6; shake = Math.min(1, shake + 0.25); personSound(P.x, P.z, 0.55, 260);
+    if (GUN.ammo[GUN.i] <= 0) reloadGun(); return;
+  }
+  let anyHit = false, headHit = false;
   for (let k = 0; k < gn.n; k++) {
     const ya = (Math.random() - 0.5) * 2 * spread, c = Math.cos(ya), sn = Math.sin(ya); let dx = ax * c - az * sn, dz = ax * sn + az * c, dy = ay + (Math.random() - 0.5) * 2 * spread; const l = Math.hypot(dx, dy, dz); dx /= l; dy /= l; dz /= l;
     let ht = gn.range, hit = null; for (const t of tg) { const cx = t.x - ox, cy = t.y - oy, cz = t.z - oz, tt = cx * dx + cy * dy + cz * dz; if (tt <= 0 || tt > ht) continue; if (cx * cx + cy * cy + cz * cz - tt * tt < t.R * t.R) { ht = tt; hit = t; } }
-    if (hit) { GUN.hits++; anyHit = true; if (hit.n) dmgNpc(hit.n, gn.dmg); else { const was = NET.dm.get(hit.r.id) || 0; NET.dm.delete(hit.r.id); NET.dm.set(hit.r.id, was + gn.dmg); } puffAt(ox + dx * ht, oy + dy * ht, oz + dz * ht); }
+    if (hit) { GUN.hits++; anyHit = true; const dmg = gn.dmg * (hit.head ? (GUN.i === 3 ? 3 : 2) : 1); if (hit.head) { headHit = true; GUN.heads = (GUN.heads || 0) + 1; }   // a headshot: double, or triple with the rifle, which one-taps
+      if (hit.n) dmgNpc(hit.n, dmg); else if (hit.pp) hitPerson(hit, dmg, ox, oz); else { const was = NET.dm.get(hit.r.id) || 0; NET.dm.delete(hit.r.id); NET.dm.set(hit.r.id, was + dmg); } puffAt(ox + dx * ht, oy + dy * ht, oz + dz * ht); }
     const tr = tracers[tracerI = (tracerI + 1) % tracers.length], a = tr.geometry.attributes.position.array; a[0] = mx; a[1] = my; a[2] = mz; a[3] = ox + dx * ht; a[4] = oy + dy * ht; a[5] = oz + dz * ht; tr.geometry.attributes.position.needsUpdate = true; tr.userData.life = 0.07; tr.visible = true;
   }
-  if (anyHit) { const xh = $('xhair'); xh.classList.add('hit'); clearTimeout(fireGun.t); fireGun.t = setTimeout(() => xh.classList.remove('hit'), 110); }
+  peoplePanic(P.x, P.z, 30);
+  if (anyHit) { const xh = $('xhair'), sc = $('scope'); xh.classList.add('hit'); sc.classList.add('hit'); if (headHit) { xh.classList.add('head'); toast('Headshot'); } clearTimeout(fireGun.t); fireGun.t = setTimeout(() => { xh.classList.remove('hit', 'head'); sc.classList.remove('hit'); }, headHit ? 260 : 110); }
   const kick = gn.kick * (GUN.ads ? 0.7 : 1); AIM.pitch = Math.min(1.05, AIM.pitch + kick); AIM.yaw += (Math.random() - 0.5) * kick * 0.7; GUN.rec += kick * 0.75; GUN.bloom = Math.min(0.09, GUN.bloom + gn.spread * 0.55 + 0.004);   // recoil climbs and mostly settles back
   flash.position.set(mx, my, mz); flash.scale.setScalar(GUN.i === 2 ? 1.8 : GUN.i === 3 ? 1.5 : 1); flash.rotation.set(Math.random() * 3, Math.random() * 3, 0); flash.userData.life = 0.05; flash.visible = camMode !== 2; if (gunView.userData.fl) { gunView.userData.fl.visible = true; gunView.userData.fl.position.z = -gn.len - 0.05; }
   shake = Math.min(1, shake + 0.01 + gn.dmg * 0.0008);
@@ -3369,25 +4111,25 @@ const cockpit = new T.Group(); cockpit.visible = false; scene.add(cockpit);
 scene.add(camera);
 const gunView = new T.Group(); gunView.visible = false; camera.add(gunView);
 { const hand = new GB(); hand.box(-0.045, 0.045, -0.13, -0.02, 0.3, 0.42, C('#7a5238')); hand.box(-0.05, 0.05, -0.2, -0.06, 0.38, 0.75, C('#f4f4f0')); const hm = new T.Mesh(hand.geo(), carMat); gunView.add(hm);
-  gunView.userData.guns = [0, 1, 2, 3].map(i => { const m = gunMesh(i, true); m.position.set(0, 0, -0.02); m.visible = i === 0; gunView.add(m); return m; });   // barrel runs away from the eye
+  gunView.userData.guns = GM.map((q, i) => { const m = gunMesh(i, true); m.position.set(0, 0, -0.02); m.visible = i === 0; gunView.add(m); return m; });   // barrel runs away from the eye
   gunView.scale.setScalar(1); gunView.position.set(0.17, -0.2, -0.08); }
 const flash = new T.Mesh(new T.OctahedronGeometry(0.16), new T.MeshBasicMaterial({ color: 0xffd98a, transparent: true, opacity: 0.95, blending: T.AdditiveBlending, depthWrite: false })); flash.visible = false; flash.userData.life = 0; scene.add(flash);
-function reloadGun() { const gn = GUNS[GUN.i]; if (!CAR.foot || GUN.rl > 0 || GUN.ammo[GUN.i] >= gn.mag) return; GUN.rl = gn.rl; }
+function reloadGun() { const gn = GUNS[GUN.i]; if (gn.rocket && ROCK.v <= 0) return; if (gn.melee || !CAR.foot || GUN.rl > 0 || GUN.ammo[GUN.i] >= gn.mag) return; GUN.rl = gn.rl; }
 function footFrame(dt) {
-  if (GUN.cool > 0) GUN.cool -= dt;
+  if (GUN.cool > 0) GUN.cool -= dt; if (GUN.punch > 0) GUN.punch = Math.max(0, GUN.punch - dt);
   const trig = CAR.foot && started && (keys.KeyX || touch.f || mfire || gpFireHeld);
   if (trig && (GUNS[GUN.i].auto || !GUN.trig || GUN.i >= 2)) fireGun(); GUN.trig = !!trig;                    // the pistol fires once per press; the SMG sprays; shotgun and rifle cycle as fast as they can
-  if (GUN.rl > 0) { GUN.rl -= dt; if (GUN.rl <= 0) { GUN.rl = 0; GUN.ammo[GUN.i] = GUNS[GUN.i].mag; } }
+  if (GUN.rl > 0) { GUN.rl -= dt; if (GUN.rl <= 0) { GUN.rl = 0; if (GUNS[GUN.i].rocket) { if (ROCK.v > 0) { ROCK.v--; GUN.ammo[GUN.i] = 1; saveKit(); } } else GUN.ammo[GUN.i] = GUNS[GUN.i].mag; } }
   { const r = GUN.rec * (1 - Math.exp(-7 * dt)); AIM.pitch -= r; GUN.rec -= r; GUN.bloom *= Math.exp(-5 * dt); }
   if (flash.visible) { flash.userData.life -= dt; if (flash.userData.life <= 0) { flash.visible = false; if (gunView.userData.fl) gunView.userData.fl.visible = false; } }
-  if (CAR.foot) { showGun(playerModel, GUN.i); showGun(gunView, GUN.i); gunView.position.y = -0.2 - (GUN.rl > 0 ? Math.sin(Math.min(1, GUN.rl / GUNS[GUN.i].rl) * Math.PI) * 0.25 : 0) + GUN.rec * 0.3; gunView.position.x = GUN.ads ? 0.0 : 0.17; gunView.position.z = -0.08 + GUN.rec * 0.5;
+  if (CAR.foot) { showGun(playerModel, GUN.i); showGun(gunView, GUN.i); gunView.position.y = -0.2 - (GUN.rl > 0 ? Math.sin(Math.min(1, GUN.rl / GUNS[GUN.i].rl) * Math.PI) * 0.25 : 0) + GUN.rec * 0.3; gunView.position.x = GUN.ads ? 0.0 : 0.17; gunView.position.z = -0.08 + GUN.rec * 0.5 - (GUN.punch > 0 ? Math.sin((1 - GUN.punch / 0.3) * Math.PI) * 0.32 : 0); if (GUNS[GUN.i].melee) gunView.position.x = 0.15;
     const xs = 1 + ((GUNS[GUN.i].spread * (1 + 1.3 * Math.min(1, Math.hypot(P.vx, P.vz) / 9.6)) + GUN.bloom) * (GUN.ads ? 0.45 : 1)) * 22; $('xhair').style.transform = 'scale(' + xs.toFixed(2) + ')'; }
   for (const t of tracers) { if (!t.visible) continue; t.userData.life -= dt; if (t.userData.life <= 0) t.visible = false; else t.material.opacity = t.userData.life / 0.07; }
   const fp = camMode === 2 && started, ck = fp && ((!CAR.foot && cockpitFor(CAR)) || (!!RIDE && cockpitFor(RIDE.car)));
-  playerModel.visible = CAR.foot ? !(fp || RIDE) : !(fp && cockpitFor(CAR));
+  playerModel.visible = CAR.foot ? !(fp || RIDE || GUN.scoped) : !(fp && cockpitFor(CAR));
   if (playerModel.userData.driver) playerModel.userData.driver.visible = !fp;
   cockpit.visible = !!ck; if (ck && RIDE) { cockpit.position.copy(RIDE.pos); cockpit.quaternion.copy(RIDE.quat); hoodMat.color.set(RIDE.car.color); } else if (ck) { cockpit.position.copy(playerMesh.position); cockpit.quaternion.copy(playerMesh.quaternion); hoodMat.color.set((RIDE ? RIDE.car : CAR).color); }
-  gunView.visible = fp && !!CAR.foot;
+  gunView.visible = fp && !!CAR.foot && !GUN.scoped;
   if (PARK && PARK.fall) { const f = PARK.fall, m = PARK.model, dr = Math.exp(-0.35 * dt); f.vy -= gravAt(m.position.x) * dt; f.vx *= dr; f.vz *= dr; if (f.vy < -60) f.vy = -60;
     m.position.x += f.vx * dt; m.position.y += f.vy * dt; m.position.z += f.vz * dt; m.rotation.x = clamp(m.rotation.x - 0.5 * dt, -1.1, 1.1); m.rotation.z += f.sp * dt;
     const g = Math.max(groundAt(m.position.x, m.position.z, m.position.y + 0.5), -0.5);
@@ -3400,9 +4142,10 @@ function footFrame(dt) {
       if (HP.foot) { HP.foot = false; PH.v = PH.max; if (PARK) { const m = PARK.model; P.x = m.position.x - Math.cos(m.rotation.y) * 2.2; P.z = m.position.z + Math.sin(m.rotation.y) * 2.2; P.y = m.position.y + 0.2; P.vx = P.vy = P.vz = 0; AIM.yaw = m.rotation.y; AIM.pitch = 0; camSnap = true; } toast('Back on your feet'); }   // you come round beside your car
       else { HP.v = HP.max; respawn(); } } }
   else if (!w.hidden) w.hidden = true;
-  $('xhair').hidden = !(CAR.foot && started);
-  if (CAR.foot) $('ammo').textContent = GUNS[GUN.i].name + ' ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/' + GUNS[GUN.i].mag);
+  GUN.scoped = CAR.foot && started && GUN.ads && GUN.i === 3 && !RIDE && HP.dead <= 0; $('scope').hidden = !GUN.scoped; $('xhair').hidden = !(CAR.foot && started) || GUN.scoped;
+  if (CAR.foot) $('ammo').textContent = GUNS[GUN.i].rocket ? 'Bazooka ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/1') + ' \u00B7 ' + ROCK.v + ' rockets' : GUNS[GUN.i].melee ? 'Fists' : GUNS[GUN.i].name + ' ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/' + GUNS[GUN.i].mag);
   PH.hurtT += dt; if (CAR.foot && HP.dead <= 0 && PH.hurtT > 6 && PH.v < PH.max) PH.v = Math.min(PH.max, PH.v + 9 * dt);   // health comes back after six seconds without being hit
+  $('arm').hidden = !(CAR.foot && ARM.v > 0.5); $('armFill').style.width = Math.round(ARM.v) + '%';
   const hf = $('hpFill'), pc = CAR.foot ? PH.v / PH.max : HP.v / HP.max; hf.style.width = Math.round(pc * 100) + '%'; hf.style.background = pc < 0.3 ? '#e2483a' : pc < 0.6 ? '#ffc44d' : '#7ee04b';
 }
 const DTMAX = { v: 0.05 };
@@ -3430,7 +4173,7 @@ function runFrame(now, dt, last0, draw) {
 
   if (CAR.foot) {
     const down = HP.dead > 0 && HP.foot; playerMesh.position.set(P.x, P.y + (down ? 0.22 : 0), P.z); playerMesh.rotation.set(down ? -1.5 : 0, P.heading, 0);   // knocked down: flat on his back
-    const sp = RIDE || down ? 0 : Math.hypot(P.vx, P.vz); P.walkT = (P.walkT || 0) + sp * dt * 1.9; walkPose(playerModel, P.walkT, sp <= 5.4 ? sp / 5.4 * 0.55 : 0.55 + Math.min(1, (sp - 5.4) / 4.2) * 0.45, true, !P.grounded && !RIDE, AIM.pitch, time);
+    const sp = RIDE || down ? 0 : Math.hypot(P.vx, P.vz); P.walkT = (P.walkT || 0) + sp * dt * 1.9; walkPose(playerModel, P.walkT, sp <= 5.4 ? sp / 5.4 * 0.55 : 0.55 + Math.min(1, (sp - 5.4) / 4.2) * 0.45, !GUNS[GUN.i].melee, !P.grounded && !RIDE, AIM.pitch, time); if (GUNS[GUN.i].melee && !down) fistPose(playerModel, GUN.punch > 0 ? Math.sin((1 - GUN.punch / 0.3) * Math.PI) : 0);
   } else if (CAR.heli) {
     const kk = 1 - Math.exp(-dt * 4), fl = P.grounded ? 0 : 1, sl = P.vx * Math.cos(P.heading) - P.vz * Math.sin(P.heading);
     P.pitch += (clamp(-P.vf * 0.008, -0.34, 0.34) * fl - P.pitch) * kk; P.roll += (clamp(-sl * 0.012 - inp.steer * 0.2, -0.4, 0.4) * fl - P.roll) * kk;
@@ -3485,20 +4228,23 @@ function runFrame(now, dt, last0, draw) {
     fl(flames[4], P.boosting ? 2.6 : 0);
   }
 
-  planChunks(P.x, P.z, false); pumpChunks(5); updateRoads(P.z, false);
-  footFrame(dt); updateSmoke(dt); updatePlaces(dt); updateBeam(); updateMissiles(dt); netUpdate(dt); netSend();
+  if (!inSpace(P.x)) { planChunks(P.x, P.z, false); pumpChunks(5); } updateRoads(P.z, false);
+  footFrame(dt); peopleFrame(dt); moneyFrame(dt); shopFrame(dt); stepRockets(dt); remoteBooms(); wantedHud(); updateSmoke(dt); updatePlaces(dt); updateBeam(); updateMissiles(dt); netUpdate(dt); netSend();
   if (playerModel.userData.ice) playerModel.userData.ice.visible = P.frozenT > 0; else if (P.frozenT > 0) { const im = new T.Mesh(new T.BoxGeometry(2.6, 2, 5.2), iceMat); im.position.y = 1; playerModel.add(im); playerModel.userData.ice = im; }
   if (!respawning) {
     if (auto && Math.abs(P.z) > REND - 45) respawn(true);                                   // auto-drive turns round at the harbours
     else if (onMoon(P.x)) {
       const ex = P.x - MOON.x, ez = P.z - MOON.z; if (Math.abs(ex) > MOON.R) { P.x = MOON.x + Math.sign(ex) * MOON.R; P.vx *= -0.2; } if (Math.abs(ez) > MOON.R) { P.z = MOON.z + Math.sign(ez) * MOON.R; P.vz *= -0.2; }
       if (auto) setAuto(false);
-      if (CAR.space && P.y - MOON.base > MOON.EXIT) spaceHop(false);                          // climb away from the Moon to head home
+      if (CAR.space && P.y - MOON.base > MOON.EXIT) spaceHop('upMoon');                          // climb away from the Moon to head home
     }
-    else if (CAR.space && P.y > MOON.ALT) spaceHop(true);                                     // any vehicle flagged for space leaves the sky behind up here
+    else if (inSpace(P.x)) { if (auto) setAuto(false); }
+    else if (inMall(P.x)) { /* indoors: the walls are the edge */ }
+    else if (CAR.space && P.y > MOON.ALT) spaceHop('up');                                     // any vehicle flagged for space leaves the sky behind up here
     else if (Math.abs(P.z) > ZLIM + 900 || Math.abs(P.x) > XLIM + 900) { toast('Edge of the map'); respawn(); }
   }
   updateSky(dt, (inp.brk > 0.1 && P.vf > 0.5) || inp.hb);
+  if (inSpace(P.x)) { _s3.copy(SP.F).negate(); _sm.makeBasis(SP.R, SP.U, _s3); playerMesh.position.set(P.x, P.y, P.z); playerMesh.quaternion.setFromRotationMatrix(_sm); }
   updateCamera(dt, time);
   if (draw) renderer.render(scene, camera);
   updateAudio();
@@ -3512,12 +4258,12 @@ function runFrame(now, dt, last0, draw) {
     if (touchMode) { if (!CAR.foot && (runOn || GUN.ads)) { if (runOn) touch.s = 0; runOn = false; GUN.ads = false; }   // Run and Aim only exist on foot
       $('tFS').setAttribute('aria-pressed', runOn); $('tFA').setAttribute('aria-pressed', GUN.ads); $('tUB').setAttribute('aria-pressed', beamOn); $('stick').classList.toggle('x-only', !(CAR.plane || CAR.ufo || CAR.heli || CAR.foot || (CAR.jet && P.air))); }
     if (CAR.plane) { $('thrLine').style.top = ((1 - P.throttle) * 50).toFixed(1) + '%'; $('thrPct').textContent = P.fwd > 0 ? 'Fwd ' + Math.round(P.fwd * 100) + '%' : P.rev > 0 ? 'Rev ' + Math.round(P.rev * 100) + '%' : 'Neutral'; $('gearTxt').textContent = P.gear > 0.95 ? 'Gear down' : P.gear < 0.05 ? 'Gear up' : 'Gear moving'; }
-    $('roadLabel').textContent = onMoon(P.x) ? (CAR.foot ? 'Moonwalk' : 'The Moon') : CAR.foot ? (RIDE ? 'Riding' : 'On foot') : P.onHC ? 'Flight deck' : CAR.heli ? (P.grounded ? 'Landed' : 'Flying') : CAR.ufo ? 'Hovering' : CAR.plane && !P.air && P.gy <= FLOAT_Y + 0.01 ? 'On the water' : P.air && P.y > P.gy + 1.5 ? 'Airborne' : lat > halfOf(hw) + 1.5 ? (P.surf === 0 ? (inCity(P.x, P.z, 8) ? 'City street' : lap.near ? 'Speedway' : 'Paved') : P.surf < 1 ? 'Dirt trail' : 'Off road') : bridgeAt(P.z) > 0.5 ? 'Bridge' : hw > 0.5 ? 'Highway' : inCity(P.x, P.z, 8) ? 'Central Avenue' : 'Country road';
+    $('roadLabel').textContent = inMall(P.x) ? 'Driftless Mall' : inSpace(P.x) ? (SP.dM < SP.dE ? 'Moon ' + (SP.dM / 1000).toFixed(1) + ' km' : 'Space · Moon ' + (SP.dM / 1000).toFixed(1) + ' km') : onMoon(P.x) ? (CAR.foot ? 'Moonwalk' : 'The Moon') : CAR.foot ? (RIDE ? 'Riding' : 'On foot') : P.onHC ? 'Flight deck' : CAR.heli ? (P.grounded ? 'Landed' : 'Flying') : CAR.ufo ? 'Hovering' : CAR.plane && !P.air && P.gy <= FLOAT_Y + 0.01 ? 'On the water' : P.air && P.y > P.gy + 1.5 ? 'Airborne' : lat > halfOf(hw) + 1.5 ? (P.surf === 0 ? (inCity(P.x, P.z, 8) ? 'City street' : lap.near ? 'Speedway' : 'Paved') : P.surf < 1 ? 'Dirt trail' : 'Off road') : bridgeAt(P.z) > 0.5 ? 'Bridge' : hw > 0.5 ? 'Highway' : inCity(P.x, P.z, 8) ? 'Central Avenue' : 'Country road';
     const m = Math.floor(tod * 1440); $('clock').textContent = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
     $('odo').textContent = (P.odo / 1000).toFixed(1) + ' km';
   }
 }
-window.__drive = { TR, trSample, HULL, PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { todFix = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
+window.__drive = { mallAlarm, cops: () => ACT.filter(a => a.cop), OWN, ROCK, ARM, ROCKETS: () => ROCKETS, BOOMS: () => BOOMS, shopPick, shopMove, SHOPS, SHOP, openShop, shopNear: () => SHOPNEAR, REMCASHN: () => REMCASH.size, MONEY, CASH, ATMS, HACK, tryRob, hackKey, dropCash, addCash, atmNear: () => ATMNEAR, cam: () => camera, fovNow: () => camera.fov, ACT, PEOPLE, REMA, exitDriver, spawnActor, pedAt, MALLI, door: () => MALLDOOR, SP, SPC, MOON, TR, trSample, HULL, PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { todFix = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
 requestAnimationFrame(frame);
 })();
 </script>
