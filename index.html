@@ -1832,7 +1832,7 @@ function gasShop(b, gl, x, y, z) {
   for (const [a0, a1] of [[-8.4, -1.8], [1.8, 8.4]]) b.box(x + a0, x + a1, y + 1.0, y + 2.6, z + 7.95, z + 8.3, glass);                                       // shop windows
   b.box(x - 1.15, x - 1.05, y, y + 2.5, z + 8, z + 8.3, st); b.box(x + 1.05, x + 1.15, y, y + 2.5, z + 8, z + 8.3, st);
   W(-9, 9, 15.75, 16); W(-9, -8.75, 8, 16); W(8.75, 9, 8, 16);
-  for (const zz of [7.85, 16.0]) b.box(x - 9.2, x + 9.2, y + 0.7, y + 1.0, z + zz, z + zz + 0.15, red); for (const xx of [-9.15, 9.0]) b.box(x + xx, x + xx + 0.15, y + 0.7, y + 1.0, z + 7.85, z + 16.15, red);   // the red band, outside only
+  b.box(x - 9.2, x - 1.2, y + 0.7, y + 1.0, z + 7.85, z + 8.0, red); b.box(x + 1.2, x + 9.2, y + 0.7, y + 1.0, z + 7.85, z + 8.0, red); b.box(x - 9.2, x + 9.2, y + 0.7, y + 1.0, z + 16.0, z + 16.15, red); for (const xx of [-9.15, 9.0]) b.box(x + xx, x + xx + 0.15, y + 0.7, y + 1.0, z + 7.85, z + 16.15, red);   // the red band, outside only, and it stops at the doorway
   for (let i = 0; i < 9; i++) for (let k = 0; k < 4; k++) flatQ(b, x - 8.75 + i * 1.944, x - 8.75 + (i + 1) * 1.944, z + 8.25 + k * 1.875, z + 8.25 + (k + 1) * 1.875, y + 0.1, (i + k) & 1 ? t1 : t2);   // tiled floor
   b.box(x - 8.75, x + 8.75, y + 3.6, y + 3.8, z + 8.25, z + 15.75, C('#efece4')); for (const xx of [-5, 0, 5]) gl.box(x + xx - 1.2, x + xx + 1.2, y + 3.55, y + 3.6, z + 11.5, z + 12.5, C('#fff6dc'));   // ceiling and lights
   W(2, 8.75, 11.0, 11.8, 0, 1.05, wood); b.box(x + 2, x + 8.75, y + 1.05, y + 1.12, z + 10.9, z + 11.9, t2);                                                // counter
@@ -1840,7 +1840,7 @@ function gasShop(b, gl, x, y, z) {
   for (let i = 0; i < 4; i++) for (let r2 = 0; r2 < 3; r2++) b.box(x + 2.3 + i * 1.6, x + 3.6 + i * 1.6, y + 1.6 + r2 * 0.55, y + 1.75 + r2 * 0.55, z + 15.3, z + 15.75, wood);   // cigarettes and lottery behind the till
   for (const zz of [9.7, 11.6]) { W(-7, -1.5, zz, zz + 0.6, 0, 1.6, st); for (let r2 = 0; r2 < 3; r2++) for (let i = 0; i < 11; i++) { const cc = C(['#c8463a', '#e9b93a', '#3d6fb8', '#4f9a6a', '#f2f2ee', '#d9783a'][(i + r2 + Math.round(zz)) % 6]); b.box(x - 6.9 + i * 0.49, x - 6.55 + i * 0.49, y + 0.35 + r2 * 0.45, y + 0.68 + r2 * 0.45, z + zz - 0.04, z + zz + 0.64, cc); } }   // aisles
   W(-8.75, -8.2, 8.6, 12.6, 0, 2.3, C('#d8dde2')); gl.box(x - 8.21, x - 8.19, y + 0.3, y + 2.1, z + 8.8, z + 12.4, C('#bfe9ff'));                              // drinks fridge
-  W(-8.75, -4.2, 13.2, 13.45); W(-2.8, 1.6, 13.2, 13.45); b.box(x - 4.2, x - 2.8, y + 2.3, top, z + 13.2, z + 13.45, cream);                                  // back room, with a doorway
+  W(-8.75, -4.2, 13.2, 13.45); W(-2.8, 1.6, 13.2, 13.45); b.box(x - 4.2, x - 2.8, y + 2.3, top, z + 13.2, z + 13.45, cream); W(1.6, 1.85, 13.2, 15.75);                                  // back room, with a doorway and its fourth wall (the east one was missing)
   b.box(x - 8.4, x - 7.1, y, y + 1.15, z + 14.7, z + 15.6, dk); b.box(x - 7.95, x - 7.55, y + 0.5, y + 0.9, z + 14.66, z + 14.7, st); BOXES.push([x - 8.4, x - 7.1, z + 14.7, z + 15.6, y + 1.15]); GS.safe = [x - 7.75, z + 14.0];   // the safe
   b.box(x - 1.2, x + 1.4, y, y + 0.8, z + 14.3, z + 15.5, wood);                                                                                              // a desk
   GS.x = x + 5.4; GS.z = z + 12.6; GS.y = y + 0.1; GS.box = [x - 8.75, x + 8.75, z + 8.25, z + 15.75];
