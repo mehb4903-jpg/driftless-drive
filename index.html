@@ -156,6 +156,17 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
   .is-touch #thr{left:auto;bottom:auto;right:max(16px,env(safe-area-inset-right,0px));top:calc(72px + env(safe-area-inset-top,0px))}
   .is-touch #thr .trk{height:130px}
 }
+/* the control cluster is pinned to the bottom edge, so tall panels at the top (players, best laps) can never push it off the screen */
+.is-touch .bottom{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+@media (orientation:landscape) and (max-height:520px){
+  .is-touch .lcol{max-height:calc(100vh - 175px);max-height:calc(100dvh - 175px);max-width:calc(100% - 250px);overflow:hidden}   /* keep the top-left panels above the stick and clear of the Fullscreen / Menu buttons */
+  .is-touch #pl{max-height:56px;overflow:hidden}   /* compact players panel: names only, a few rows */
+  .is-touch #pl li span{display:none}
+  .is-touch #lb{display:none}   /* on a short landscape screen the best-laps panel gives way, so the players panel and its invite button stay reachable */
+}
+@media (orientation:landscape) and (max-height:340px){
+  .is-touch .lcol{max-height:calc(100vh - 160px);max-height:calc(100dvh - 160px)}
+}
 #start{position:fixed;inset:0;display:flex;align-items:flex-end;
   background:linear-gradient(to top,rgba(10,16,24,.9) 0%,rgba(10,16,24,.55) 45%,rgba(10,16,24,0) 78%);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
@@ -348,6 +359,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <button id="tFJ" type="button" data-v="foot" style="--c:2;--r:3;--pc:1;--pr:4">Jump</button>
       <button id="tFS" type="button" data-v="foot" style="--c:3;--r:2;--pc:2;--pr:3">Run</button>
       <button id="tFW" type="button" data-v="foot" aria-label="Next gun" style="--c:2;--r:2;--pc:1;--pr:3">Gun</button>
+      <button id="tFA" type="button" data-v="foot" aria-pressed="false" aria-label="Aim" style="--c:3;--r:1;--pc:2;--pr:2">Aim</button>
       <button id="tHF" type="button" data-v="heli" aria-label="Fire freeze missile" style="--c:2;--r:2;--pc:1;--pr:3">Fire</button>
       <button id="tUL" type="button" data-v="ufo heli" aria-label="Slide left" style="--c:1;--r:3;--pc:1;--pr:4">Slide L</button>
       <button id="tUR" type="button" data-v="ufo heli" aria-label="Slide right" style="--c:2;--r:3;--pc:2;--pr:4">Slide R</button>
@@ -429,7 +441,28 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
     const peerCbs = new Set(), connCbs = new Set(), deadCbs = new Set(), topics = new Map();
     let main = null, intro = null, introBy = null, claiming = false, joining = null, closed = false, dead = false, up = false;
     let local = Object.freeze({}), localAt = 0, selfView = null, pseq = 0, lastSent = 0, gossipT = 0, nextJoin = 0, nextRecon = 0, reconDelay = 1000, timer = null, lastTick = now();
-
+    /* Shared room clock. Device clocks differ, so the world (traffic, lights, day and night, the carrier) runs on room time =
+       this device's clock + clk.off. Everyone follows the player who has been in the room the longest (clk.since is when this
+       tab joined; ties go to the smaller id): ping/pong measures that player's room time, the lowest round trip wins, and a
+       newcomer adopts it at once. After that a player slews towards it by at most 200 ms a second, so the clock never visibly
+       jumps. The oldest player keeps their own clock, so the reference does not move when someone joins or leaves. */
+    const clk = { off: 0, cal: false, adopted: false, since: now() }, roomTime = () => now() + clk.off;
+    function clockTick() {
+      const t = now(), mine = t - clk.since; let ref = null;
+      for (const m of members.values()) {
+        if (!relOpen(m)) continue;
+        if (t - (m.cpT || 0) > (clk.cal ? 4000 : 1000)) { m.cpT = t; sendRel(m, { t: 'cp', a: t }); }
+        let b = null; for (const s of (m.cs || [])) if (t - s.at < 15000 && (!b || s.r < b.r)) b = s;      // the least-delayed recent sample
+        if (!b) continue;
+        const age = b.g + (t - b.at), older = age - mine > 500 || (Math.abs(age - mine) <= 500 && m.id < myId);
+        if (older && (!ref || age > ref.age)) ref = { age, o: b.o };
+      }
+      if (ref) {
+        const err = ref.o - clk.off;
+        if (!clk.adopted) { clk.off = ref.o; clk.adopted = clk.cal = true; }          // the first time we meet an older player: take their time at once
+        else if (Math.abs(err) > 15) clk.off += Math.max(-200, Math.min(200, err * 0.3));
+      } else if (!clk.cal && t - clk.since > 6000) clk.cal = true;   // nobody older: this device is the reference
+    }
     const safe = f => { try { f(); } catch (e) { /* a closed channel throws; it is dropped by the sweep */ } };
     const relOpen = m => !!(m && m.rel && m.rel.open);
     const openIds = () => [...members.values()].filter(relOpen).map(m => m.id);
@@ -488,6 +521,11 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       } else if (d.t === 'peers') {                  // gossip: link up with anyone we have not met (the smaller id dials)
         if (Array.isArray(d.ids)) for (const id of d.ids.slice(0, 32)) if (validId(id) && !members.has(id) && myId < id) connectTo(id);
         if (!intro && validId(d.by) && relOpen(members.get(d.by))) introBy = d.by;
+      } else if (d.t === 'cp') { if (typeof d.a === 'number') sendRel(m, { t: 'cq', a: d.a, b: Math.round(roomTime()), g: Math.round(now() - clk.since) }); }   // clock ping: answer at once with room time
+      else if (d.t === 'cq') {
+        if (typeof d.a !== 'number' || typeof d.b !== 'number' || typeof d.g !== 'number' || !isFinite(d.b) || !isFinite(d.g)) return;
+        const t2 = now(), rtt = t2 - d.a; if (rtt < 0 || rtt > 1500) return;        // a slow round trip makes a poor sample
+        m.cs = (m.cs || []).concat({ o: d.b + rtt / 2 - t2, r: rtt, g: d.g, at: t2 }).slice(-8);   // o: the peer's room clock minus this device's clock
       } else if (d.t === 'intro') { if (!intro && validId(d.by)) introBy = d.by; }
       else if (d.t === 'ev') { const set = topics.get(d.topic); if (set && typeof d.topic === 'string') for (const cb of set) safe(() => cb(d.data, { peer: m.id })); }
       else if (d.t === 'bye') drop(m.id);
@@ -548,6 +586,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
         if (relOpen(m)) { if (t - m.seen > stale) drop(m.id); }
         else if (t - m.born > 20000) drop(m.id);              // still negotiating after 20 s: give up
       }
+      clockTick();
       if (t - lastSent > 900) broadcast({ t: 'k' });
       if (t - gossipT > 3000) { gossipT = t; broadcast({ t: 'peers', ids: openIds(), by: introBy }); }
       if (main && !up && !main.destroyed && main.disconnected && t >= nextRecon) { nextRecon = t + reconDelay; reconDelay = Math.min(reconDelay * 2, 30000); safe(() => main.reconnect()); }
@@ -603,6 +642,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       onPeers(cb, onDead) { if (typeof cb === 'function') peerCbs.add(cb); if (typeof onDead === 'function') deadCbs.add(onDead); return () => { peerCbs.delete(cb); deadCbs.delete(onDead); }; },
       onConnection(cb, onDead) { if (typeof cb === 'function') connCbs.add(cb); if (typeof onDead === 'function') deadCbs.add(onDead); return () => { connCbs.delete(cb); deadCbs.delete(onDead); }; },
       connected: () => up && !closed,
+      clockOffset: () => clk.off, clockCalibrated: () => clk.cal, clock: () => roomTime(),
       emit(topic, data) { if (!closed && typeof topic === 'string') broadcast({ t: 'ev', topic, data }); return Promise.resolve(); },
       on(topic, cb) { if (!topics.has(topic)) topics.set(topic, new Set()); topics.get(topic).add(cb); return () => topics.get(topic).delete(cb); },
       close: () => shut(),
@@ -1814,7 +1854,7 @@ function updateBeam() {
 }
 const sigAt = t => { t %= 16; return t < 6 ? 2 : t < 8 ? 1 : 0; }, sigNS = () => sigAt(sigT), sigEW = () => sigAt(sigT + 8);
 function updateSignals(dt) {
-  sigT = (NET.now() / 1000) % 1600; const a = sigNS(), b = sigEW();   // the lights run off the shared clock, so every player sees the same phase
+  sigT = (NET.clk() / 1000) % 1600; const a = sigNS(), b = sigEW();   // the lights run off the shared clock, so every player sees the same phase
   for (let k = 0; k < 3; k++) { SIGMAT[k].color.setHex(2 - k === a ? SIGON[k] : SIGOFF[k]); SIGMAT[3 + k].color.setHex(2 - k === b ? SIGON[k] : SIGOFF[k]); }
 }
 /* how fast a car may go given the light at the junction ahead: d = metres to the stop line */
@@ -2249,7 +2289,7 @@ function trStep(pose) {
   TR.n++;
 }
 function trAdvance() {
-  const now = NET.now() / 1000, e = Math.floor(now / TR.LEN), rel = now - e * TR.LEN, want = Math.floor(rel / TR.STEP);
+  const now = NET.clk() / 1000, e = Math.floor(now / TR.LEN), rel = now - e * TR.LEN, want = Math.floor(rel / TR.STEP);
   if (e !== TR.epoch || want < TR.n) { for (const n of npcs) if (n.live) trUnbind(n); trInit(e); }   // a new epoch reshuffles the island's traffic for everyone at the same moment
   while (TR.n < want) { trStep(want - TR.n <= TR.H); if (TR.n === TR.snapAt) TR.snap = TR.cars.map(c => c.kind ? [c.axis, c.fi, c.cd, c.s, c.speed] : [c.z, c.speed]); }
   TR.rel = rel; TR.abs = now;
@@ -2382,7 +2422,9 @@ for (const [id, k] of [['tG', 'g'], ['tB', 'b'], ['tE', 'e'], ['tJ', 'j'], ['tS'
   ['tPU', 'g'], ['tPD', 'b'], ['tPF', 's'], ['tPB', 'j'], ['tRL', 'ql'], ['tRR', 'qr'],                                          // aircraft
   ['tUC', 'j'], ['tUD', 's'], ['tUL', 'ql'], ['tUR', 'qr']]) bindTouch(id, k);                                                   // saucer
 $('tHF').addEventListener('pointerdown', e => { e.preventDefault(); fireMissile(); });
-bindTouch('tFF', 'f'); bindTouch('tFJ', 'j'); bindTouch('tFS', 's'); $('tFW').addEventListener('pointerdown', e => { e.preventDefault(); setGun(GUN.i + 1); });
+let runOn = false;                                   // on foot, Run and Aim stay on until tapped again, so a thumb is free for steering and shooting
+bindTouch('tFF', 'f'); bindTouch('tFJ', 'j'); $('tFS').addEventListener('pointerdown', e => { e.preventDefault(); runOn = !runOn; touch.s = runOn ? 1 : 0; e.currentTarget.setAttribute('aria-pressed', runOn); });
+$('tFA').addEventListener('pointerdown', e => { e.preventDefault(); GUN.ads = !GUN.ads; e.currentTarget.setAttribute('aria-pressed', GUN.ads); }); $('tFW').addEventListener('pointerdown', e => { e.preventDefault(); setGun(GUN.i + 1); });
 $('bExit').addEventListener('click', e => { toggleFoot(); e.currentTarget.blur(); });
 $('c').addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && e.button === 0) mfire = true; });
 { const cvs = $('c'); let lookId = null, lx = 0, ly = 0;                                         // look around: captured mouse where the browser allows it, otherwise drag (mouse or finger)
@@ -2537,7 +2579,7 @@ function hit(strength) {
   const now = performance.now(); if (now - lastHit > 180 && strength > 1.5) { lastHit = now; crashSound(Math.min(1, strength / 16)); }
 }
 function hcStep(dt) {                               // move the carrier; anything standing on its deck moves and turns with it
-  const ox = HC.x, oz = HC.z, oy = HC.yaw; if (NET.room) HC.a = (Date.now() / 1000 * HC.w) % (Math.PI * 2); else HC.a += HC.w * dt;   // online, everyone derives the carrier's position from the clock
+  const ox = HC.x, oz = HC.z, oy = HC.yaw; if (NET.room) HC.a = (NET.clk() / 1000 * HC.w) % (Math.PI * 2); else HC.a += HC.w * dt;   // online, everyone derives the carrier's position from the clock
   hcPose();
   if (P.onHC) {
     const dy = HC.yaw - oy, c = Math.cos(dy), sn = Math.sin(dy), dx = P.x - ox, dz = P.z - oz, vx = P.vx, vz = P.vz;
@@ -2831,7 +2873,7 @@ const earth = (() => {                               // the Earth, hanging over 
 }
 function updateSky(dt, brake) {
   todOff += Math.min(Math.max(NET.ts - todOff, 0), 0.09 * dt);                                     // time skips are shared: everyone moves to the furthest skip in the room
-  const u = (NET.now() / 1000) % 540; clockT += dt;                                                 // 400 s of daylight, 140 s of night, on the shared clock
+  const u = (NET.clk() / 1000) % 540; clockT += dt;                                                 // 400 s of daylight, 140 s of night, on the shared clock
   tod = todFix >= 0 ? todFix : ((u < 400 ? 0.25 + u / 800 : 0.75 + (u - 400) / 280) + todOff) % 1;
   const moonW = onMoon(P.x), spaceF = moonW ? 1 : sstep(250, MOON.ALT - 15, P.y), a = ((moonW ? 0.4 : tod) - 0.25) * 2 * Math.PI;   // the Moon sits in permanent hard daylight
   sunDir.set(Math.cos(a), Math.sin(a) * 0.9, -0.45).normalize();
@@ -2983,7 +3025,7 @@ function updateSmoke(dt) {
    drawn by easing toward "last state + velocity x age" (age capped at 0.3 s). Nothing a peer sends is trusted:
    every field is validated and clamped, names are only ever drawn as text. Without a room the game is single-player. */
 const PCOLS = ['#ff5a5f', '#ffb020', '#ffe14d', '#7ee04b', '#2fd6a3', '#35c9ff', '#5b8cff', '#a77bff', '#ff6fd0', '#ff8a3d', '#c8f03c', '#f2f2f2'];
-const NET = { ts: 0, dm: new Map(), color: PCOLS[Math.floor(Math.random() * PCOLS.length)], now: () => Date.now(), pre: null, preSeq: 0, frz: null, frzSeen: new Map(), room: null, me: null, name: '', rem: new Map(), seq: 0, sendT: 0, cool: new Map(), beam: null, pulledBy: null, lastHit: null, hits: 0, listT: 0 };
+const NET = { ts: 0, dm: new Map(), color: PCOLS[Math.floor(Math.random() * PCOLS.length)], now: () => Date.now(), clk: () => NET.room && NET.room.clock ? NET.room.clock() : Date.now(), pre: null, preSeq: 0, frz: null, frzSeen: new Map(), room: null, me: null, name: '', rem: new Map(), seq: 0, sendT: 0, cool: new Map(), beam: null, pulledBy: null, lastHit: null, hits: 0, listT: 0 };
 try { NET.name = (localStorage.getItem('dd-name') || '').slice(0, 16); } catch (e) { /* storage unavailable */ }
 if (!NET.name) NET.name = 'Driver ' + (100 + Math.floor(Math.random() * 900));
 const num = v => typeof v === 'number' && isFinite(v), vec = (a, n) => Array.isArray(a) && a.length === n && a.every(num);
@@ -3467,7 +3509,8 @@ function runFrame(now, dt, last0, draw) {
     $('spd').textContent = Math.round(Math.abs(P.vf) * 3.6);
     const hw = hwAt(P.z), d1 = roadDX(P.z), lat = Math.abs(P.x - roadX(P.z)) / Math.sqrt(1 + d1 * d1);
     $('boostFill').style.width = P.fuel + '%';
-    if (touchMode) { $('tUB').setAttribute('aria-pressed', beamOn); $('stick').classList.toggle('x-only', !(CAR.plane || CAR.ufo || CAR.heli || CAR.foot || (CAR.jet && P.air))); }
+    if (touchMode) { if (!CAR.foot && (runOn || GUN.ads)) { if (runOn) touch.s = 0; runOn = false; GUN.ads = false; }   // Run and Aim only exist on foot
+      $('tFS').setAttribute('aria-pressed', runOn); $('tFA').setAttribute('aria-pressed', GUN.ads); $('tUB').setAttribute('aria-pressed', beamOn); $('stick').classList.toggle('x-only', !(CAR.plane || CAR.ufo || CAR.heli || CAR.foot || (CAR.jet && P.air))); }
     if (CAR.plane) { $('thrLine').style.top = ((1 - P.throttle) * 50).toFixed(1) + '%'; $('thrPct').textContent = P.fwd > 0 ? 'Fwd ' + Math.round(P.fwd * 100) + '%' : P.rev > 0 ? 'Rev ' + Math.round(P.rev * 100) + '%' : 'Neutral'; $('gearTxt').textContent = P.gear > 0.95 ? 'Gear down' : P.gear < 0.05 ? 'Gear up' : 'Gear moving'; }
     $('roadLabel').textContent = onMoon(P.x) ? (CAR.foot ? 'Moonwalk' : 'The Moon') : CAR.foot ? (RIDE ? 'Riding' : 'On foot') : P.onHC ? 'Flight deck' : CAR.heli ? (P.grounded ? 'Landed' : 'Flying') : CAR.ufo ? 'Hovering' : CAR.plane && !P.air && P.gy <= FLOAT_Y + 0.01 ? 'On the water' : P.air && P.y > P.gy + 1.5 ? 'Airborne' : lat > halfOf(hw) + 1.5 ? (P.surf === 0 ? (inCity(P.x, P.z, 8) ? 'City street' : lap.near ? 'Speedway' : 'Paved') : P.surf < 1 ? 'Dirt trail' : 'Off road') : bridgeAt(P.z) > 0.5 ? 'Bridge' : hw > 0.5 ? 'Highway' : inCity(P.x, P.z, 8) ? 'Central Avenue' : 'Country road';
     const m = Math.floor(tod * 1440); $('clock').textContent = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
