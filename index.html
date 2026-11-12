@@ -180,12 +180,13 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 #svList button:disabled{opacity:.5;cursor:not-allowed}
 #svRef{margin-top:12px;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 14px}
 .srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-#srvBtn{font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:.1em;text-transform:uppercase;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:12px 22px;
+#srvBtn,#acctBtn{font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:.1em;text-transform:uppercase;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:12px 22px;
   -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .12s,border-color .15s}
-#srvBtn:hover{transform:translateY(-2px);border-color:var(--amber)}
-#roomNow{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim)}
+#srvBtn:hover,#acctBtn:hover{transform:translateY(-2px);border-color:var(--amber)}
+#acctBtn:disabled{opacity:.6;cursor:wait;transform:none}
+#roomNow,#acctNow{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim)}
 #roomNow b{color:var(--amber)}
-.is-touch #srvBtn{font-size:19px;padding:9px 18px}
+.is-touch #srvBtn,.is-touch #acctBtn{font-size:19px;padding:9px 18px}
 #start{position:fixed;inset:0;display:flex;align-items:flex-end;
   background:linear-gradient(to top,rgba(10,16,24,.9) 0%,rgba(10,16,24,.55) 45%,rgba(10,16,24,0) 78%);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
@@ -445,8 +446,9 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
     <h1>Driftless <em>Drive</em></h1>
     <p>One square island to explore: a harbour-to-harbour road, dirt trails, one big city of 400 blocks with every landmark inside it or on its edge, a harbour at each end of the avenue, and mountains beyond the city limits. Pick a car.</p>
     <div class="cars" id="cars" role="radiogroup" aria-label="Choose a car"></div>
-    <div class="srow"><button id="go" type="button">Start driving</button><button id="srvBtn" type="button">Servers</button></div>
+    <div class="srow"><button id="go" type="button">Start driving</button><button id="srvBtn" type="button">Servers</button><button id="acctBtn" type="button" hidden>Sign in with Google</button></div>
     <div id="roomNow"></div>
+    <div id="acctNow"></div>
   </div>
 </div>
 <div id="travel" hidden><div class="tvin"><button id="tvClose" type="button" class="touch-only">Close</button><h2>Fast travel</h2><div id="tvList"></div><p>Debug menu. G or Esc closes it.</p></div></div>
@@ -4344,6 +4346,100 @@ function runFrame(now, dt, last0, draw) {
 }
 window.__drive = { mallAlarm, cops: () => ACT.filter(a => a.cop), OWN, ROCK, ARM, ROCKETS: () => ROCKETS, BOOMS: () => BOOMS, shopPick, shopMove, SHOPS, SHOP, openShop, shopNear: () => SHOPNEAR, REMCASHN: () => REMCASH.size, MONEY, CASH, ATMS, HACK, tryRob, hackKey, dropCash, addCash, atmNear: () => ATMNEAR, cam: () => camera, fovNow: () => camera.fov, ACT, PEOPLE, REMA, exitDriver, spawnActor, pedAt, MALLI, door: () => MALLDOOR, SP, SPC, MOON, TR, trSample, HULL, PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { todFix = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
 requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+/* Google accounts (Firebase). Leave this null and the game stays exactly as it is, with progress saved on this device only.
+   Paste your Firebase web config here to turn the Sign in button on:
+   window.DD_FIREBASE = { apiKey: "...", authDomain: "...", projectId: "...", appId: "..." };
+   (This config is meant to be public. Who can read or write what is decided by the Firestore rules.) */
+window.DD_FIREBASE = null;
+</script>
+<script>
+/* ───────────── accounts: sign in with Google, and keep the save on every device ─────────────
+   What is saved: unlocked cars, owned guns, armour, rockets, cash, places found, best laps, last car and name. All of it already lives in
+   localStorage; this copies it to one Firestore document per player (users/<uid>) and merges it back on the next device.
+   Merge: unlocks, guns and places found are added together; laps are merged (best ten); on a device's first sign-in the larger cash,
+   armour and rocket count wins so nothing is lost; after that the newest save wins, so spent money does not come back. */
+(() => {
+  'use strict';
+  const cfg = window.DD_FIREBASE, $ = id => document.getElementById(id), btn = $('acctBtn'), note = $('acctNow');
+  if (!btn || !cfg || !cfg.apiKey) return;
+  btn.hidden = false;
+  const V = '10.12.2', SDK = ['app', 'auth', 'firestore'].map(n => 'https://www.gstatic.com/firebasejs/' + V + '/firebase-' + n + '-compat.js');
+  const SETS = ['dd-poi', 'dd-guns'], NUM = ['dd-cash', 'dd-armour', 'dd-rockets'], KEYS = [...SETS, 'dd-unlock', ...NUM, 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
+  const rd = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const wr = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } };
+  const jp = (t, d) => { try { const v = JSON.parse(t); return v === null || v === undefined ? d : v; } catch (e) { return d; } };
+  const arr = v => Array.isArray(v) ? v : [], obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+  const snap = () => { const o = {}; for (const k of KEYS) { const v = rd(k); if (v !== null) o[k] = v; } return o; };
+  const say = t => { if (note) note.textContent = t; };
+  function merge(L, C, first, cloudNewer) {
+    const out = {};
+    for (const k of SETS) if (k in L || k in C) out[k] = JSON.stringify([...new Set([...arr(jp(L[k], [])), ...arr(jp(C[k], []))])]);
+    if ('dd-unlock' in L || 'dd-unlock' in C) out['dd-unlock'] = JSON.stringify(Object.assign({}, obj(jp(C['dd-unlock'], {})), obj(jp(L['dd-unlock'], {}))));
+    for (const k of NUM) {
+      const a = parseInt(L[k], 10), b = parseInt(C[k], 10), ha = Number.isFinite(a), hb = Number.isFinite(b);
+      const v = !hb ? a : !ha ? b : first ? Math.max(a, b) : cloudNewer ? b : a; if (Number.isFinite(v)) out[k] = String(v);
+    }
+    { const seen = new Set(), all = [...arr(jp(L['dd-laps'], [])), ...arr(jp(C['dd-laps'], []))].filter(q => q && typeof q.t === 'number' && q.t > 0 && !seen.has(q.t + ':' + q.at) && seen.add(q.t + ':' + q.at)).sort((x, y) => x.t - y.t).slice(0, 10);
+      if (all.length) out['dd-laps'] = JSON.stringify(all); }
+    { const a = parseFloat(L['dd-lap']), b = parseFloat(C['dd-lap']), v = [a, b].filter(n => n > 0).sort((x, y) => x - y)[0]; if (v) out['dd-lap'] = v.toFixed(3); }
+    if (cloudNewer && C['dd-car']) out['dd-car'] = C['dd-car']; else if (L['dd-car'] || C['dd-car']) out['dd-car'] = L['dd-car'] || C['dd-car'];
+    if (cloudNewer && C['dd-name']) out['dd-name'] = C['dd-name']; else if (L['dd-name'] || C['dd-name']) out['dd-name'] = L['dd-name'] || C['dd-name'];
+    return out;
+  }
+  let fb = null, auth = null, db = null, user = null, ref = null, lastRev = 0, lastSaved = '', saving = false, loading = null;
+  const load = () => loading || (loading = new Promise(res => {
+    let i = 0; const next = () => {
+      if (i >= SDK.length) { try { window.firebase.initializeApp(cfg); fb = window.firebase; auth = fb.auth(); db = fb.firestore(); res(true); } catch (e) { res(false); } return; }
+      const sc = document.createElement('script'); sc.src = SDK[i++]; sc.async = false; sc.onload = next; sc.onerror = () => res(false); document.head.appendChild(sc);
+    }; next();
+  }));
+  async function save(force) {
+    if (!user || !ref || saving) return; const d = snap(), s = JSON.stringify(d); if (!force && s === lastSaved) return; saving = true;
+    try { const rev = lastRev + 1; await ref.set({ data: s, rev, savedAt: Date.now() }); lastRev = rev; wr('dd-acct-rev-' + user.uid, String(rev)); lastSaved = s; say('Saved to your Google account'); }
+    catch (e) { say('Could not save to your account just now. It will try again.'); }
+    saving = false;
+  }
+  async function sync(u) {
+    ref = db.collection('users').doc(u.uid); let doc;
+    try { doc = await ref.get(); } catch (e) { say('Could not reach your saved data. Playing with the save on this device.'); return; }
+    const cloud = doc.exists ? doc.data() : null, C = cloud ? jp(cloud.data, {}) : {}, rev = cloud && Number.isFinite(cloud.rev) ? cloud.rev : 0;
+    const known = parseInt(rd('dd-acct-rev-' + u.uid), 10), first = !Number.isFinite(known), cloudNewer = !first && rev > known;
+    const L = snap(), M = cloud ? merge(L, C, first, cloudNewer) : L; let changed = false;
+    for (const k of KEYS) { const nv = k in M ? M[k] : null, ov = k in L ? L[k] : null; if (nv !== ov) { wr(k, nv); changed = true; } }
+    lastRev = rev; wr('dd-acct-rev-' + u.uid, String(rev));
+    await save(true);
+    let again = false; try { again = sessionStorage.getItem('dd-acct-reloaded') === '1'; } catch (e) { again = true; }
+    if (changed && !again) { try { sessionStorage.setItem('dd-acct-reloaded', '1'); } catch (e) { /* storage unavailable */ } location.reload(); return; }   // the game reads its save at start, so start it again on the merged save
+    try { sessionStorage.removeItem('dd-acct-reloaded'); } catch (e) { /* storage unavailable */ }
+  }
+  function onUser(u) {
+    user = u; btn.disabled = false;
+    if (!u) { ref = null; btn.textContent = 'Sign in with Google'; say('Not signed in. Your progress saves on this device only.'); return; }
+    const first = String(u.displayName || '').trim().split(/\s+/)[0] || 'Account';
+    btn.textContent = first + ' · Sign out'; say('Syncing your account...'); wr('dd-acct', '1'); sync(u);
+  }
+  btn.addEventListener('click', async e => {
+    e.stopPropagation(); if (btn.disabled) return;
+    if (!fb) { btn.disabled = true; say('Loading sign in...'); const ok = await load(); btn.disabled = false; if (!ok) { say('Could not load Google sign in. Check your connection and try again.'); return; } startAuth(); say('Click Sign in again.'); return; }
+    if (user) { if (confirm('Sign out? Your progress stays saved to your account.')) { wr('dd-acct', '0'); try { await auth.signOut(); } catch (err) { /* ignore */ } } return; }
+    btn.disabled = true; say('Opening Google sign in...');
+    try { await auth.signInWithPopup(new fb.auth.GoogleAuthProvider()); }
+    catch (err) {
+      const c = err && err.code;
+      if (c === 'auth/popup-blocked') { try { await auth.signInWithRedirect(new fb.auth.GoogleAuthProvider()); return; } catch (e2) { /* fall through */ } }
+      say(c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request' ? 'Sign in cancelled.' : c === 'auth/unauthorized-domain' ? 'This website is not on your Firebase list of authorized domains yet.' : 'Sign in did not work' + (c ? ' (' + c + ')' : '') + '.');
+    }
+    btn.disabled = false;
+  });
+  let started = false; function startAuth() { if (started) return; started = true; auth.onAuthStateChanged(onUser, () => say('Could not check your sign in.')); }
+  say('Not signed in. Your progress saves on this device only.');
+  setTimeout(() => load().then(ok => { if (ok) startAuth(); }), 1200);                    // preload, so the sign in popup opens straight from the click
+  setInterval(() => save(false), 6000);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) save(false); }); addEventListener('pagehide', () => save(false));
 })();
 </script>
 
