@@ -192,6 +192,12 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   first when `CRN` > 0; `inWater` ignores it. The shader patch `nukeMat(m)` (uniform `NZ` vec4[8] = x, z, r, gy) discards every fragment
   inside a zone for propMat, glowMat, fireMat, terrainMat, roadMat, lineMat, the sea, SIGMAT, parked cars and `nzDepth` (shadow depth,
   assigned as customDepthMaterial by a 2 s sweep). Chunk trees inside a zone stop colliding (`nzIn`).
+- V57 fixes: sea-level clamps in car physics, on foot, traffic and the bail-out check go through `lowG(g, x, z, floor)`, which skips the
+  clamp inside a crater (the floor is about -20 m, below the sea). `nzNear(s)` gives every landmark mesh near a strike (POI groups, and
+  static scene meshes whose bounds fall in the zone) a cloned material run through `nukeMat`, so buildings with their own materials (the
+  police station) vanish too; `nukeMat` marks materials with `userData.nz` and the shadow sweep covers any marked material. Police cars
+  wrecked by a strike drop to the crater floor; desk officers inside a zone are hidden and never dispatched.
+- Satellite save: `store()` only returns objects, so it is saved as `dd-sat = {own: 1}`; the old plain `1` is still read.
 - Tests: scratchpad `bunk.js` (buy, walk in, holo, sat, console, fire, expiry), `bunk2.js` (views), `crat.js` (crater shape, drive in),
   `mpos.js` (strike reaches player 2 and kills them), `want.js` (run-overs, response time, bubbles).
 
