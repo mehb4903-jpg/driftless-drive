@@ -151,6 +151,20 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   - Shop items apply to `tgtCar()` = parked car or `LASTCAR`.
 - Saved in localStorage: dd-cash, dd-guns, dd-rockets, dd-armour, dd-fit, dd-ward, dd-att, dd-attown, dd-upg, dd-dec.
 
+## Homes and furniture (V54)
+- `HDEF` (prices, style, w×d), `HSTY` (colours per style), `HOUSES` (runtime records). Built during the POI pass:
+  - Hill plots use POI kind `'hill'` (`a = [x, z]`, height = terrain, levelled by PADS like 'road'/'abs'): hN1 Pine Cabin 250k, hN2 Harbour Lookout 310k (north harbour), hS1 Ridge Lodge 520k, hS2 Cliffside Modern 780k (south harbour).
+  - City plots are 'blk' entries in `CITY_RES`: hC1 Brick Townhouse 275k [6,6], hC2 Corner Loft 420k [14,11], hC3 Garden Villa 1.15M [12,14] (pool), pent Skyline Penthouse 2.5M [9,6].
+- `houseShell(p, b, gl, id, x, y, z, H, noDoor)`: walls in BOXES, doorway on the +z wall with a door mesh and `doorBox` (in BOXES until owned), floor, roof (gable or flat), ceiling lights, storage crate at the back-left (`h.bin`, a SOLIDS circle). Record: `{id, def, x, z, y, door, bin, in:{x0,x1,z0,z1,y}, doorBox, doorM, grp, pieces, built, noDoor}`. NB: never name a local `T` (it shadows three.js); the wall thickness is `TK`.
+- `homeRing` puts the green buy ring + price sign at `h.ring` (`h.ringY`). `bPent`: a 60 m glass tower (BOXES, its top is walkable) with the penthouse shell on the roof (`noDoor`: door never opens). Owned: walking into the lobby doors (`h.lobby`) lifts you up to `h.up`; the lift spot inside (`h.elev`) takes you down (`homeGo`, flash fade).
+- State `HOME = { own: Set (dd-homes), inv: {furnId: count} (dd-inv), furn: {houseId: [[t, x, y, z, yaw]]} (dd-furn, relative to h.x/h.z/h.in.y) }`, `saveHome()`. Local to the device, not synced in multiplayer (other players see doors closed).
+- `homeFrame(dt)` (in runFrame after policeFrame): builds owned homes within 500 m (`buildHome`: removes doorBox, hides door, rebuilds pieces, greys the ring); sets `HOMEACT` = buy / mine / bin / move (aimed piece within 4.5 m of the player) and the `#homeP` prompt; lobby/lift checks.
+- `homeKey()` is first in the F chain (and gamepad D-pad up): place / buy / open storage / pick up. `homeStore()` = B key / gamepad Y: store the aimed piece or the one being moved.
+- Furniture: `FURN` catalogue (21 pieces, `{id, name, cat, price, w, d, h, build(b), solid}`, GB boxes centred, front -z), `fgeo(id)` caches geometry. Placed pieces: mesh in `h.grp` with `userData.pc`, plus a SOLIDS circle (not rugs). `addPiece` / `dropPiece` / `saveFurn`.
+- Furniture shop = `SHOPDEF[7]` Home & Co ('furn'), stock from `furnStock(cat)` (adds to HOME.inv). Showroom pieces drawn in shopBuild. Storage menu: `binShop(h)` opens a fake shop `{bin:true, h, def:{id:'bin'}}`; shopFrame does not auto-close `bin` shops; `binStock` rows start placing.
+- Placement (3008-style, yaw only): `PLACE = {on, t, yaw, h, ghost, from, ok, x, y, z}`; `placeFrame` raycasts from the camera along the aim (`aimRay`, far 16) against `h.grp`: a hit face with normal.y > 0.6 stacks on top, else the floor plane. Position clamped inside `h.in` with the rotated half extents; ok only if near the aim point, < 8 m from the player, under the ceiling. Ghost translucent, red when not ok. Rotate: Q/E (Shift fine), wheel / ⟲⟳ buttons / LB RB 15°. Place: click, F, gamepad A, Place button. Cancel: Esc, gamepad B (puts a moved piece back). While placing, firing and Q/E roll are suppressed.
+- Test: scratchpad `home.js` (buy, walk in, shop, storage, place, stack, lift, reload) and `home2.js` (stack, B store, screenshots). Seed localStorage dd-homes/dd-inv/dd-furn then reload to skip buying.
+
 ## Multiplayer (room presence)
 
 - `netSend()` builds one presence object ~18 Hz; `netUpdate()` reads peers. Fields: v n col rd w hp dm g c m p q vel bo beam frz oil pre
