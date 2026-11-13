@@ -308,6 +308,35 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .orbBtns button{font:700 16px var(--display);letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:6px;padding:10px 18px;cursor:pointer;background:#2b3038;color:#e9e6dc}
 .orbBtns #orbFire{background:#e2483a;color:#fff}
 .orbHint{font:13px var(--body,sans-serif);color:#b9b5aa;text-align:center}
+#moonP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#7fe0ff;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
+#drillB{position:fixed;right:16px;top:46%;pointer-events:auto;font:700 15px var(--display);letter-spacing:.06em;text-transform:uppercase;color:#0e161e;background:#e2b33c;border:0;border-radius:6px;padding:8px 12px;cursor:pointer}
+#drillB.on{background:#7fe0ff}
+#mineUI{position:fixed;left:50%;bottom:20%;transform:translateX(-50%);width:min(420px,calc(100vw - 32px));background:rgba(14,22,30,.9);border:1px solid #7fe0ff;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:auto;z-index:31}
+#mineUI[hidden]{display:none}
+.mnT{font:600 16px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#bff4ff}
+.mnBar{position:relative;width:100%;height:26px;background:#22303c;border-radius:5px;overflow:hidden}
+#mnZone{position:absolute;top:0;bottom:0;background:#3fbf6a}
+#mnNeedle{position:absolute;top:-2px;bottom:-2px;width:4px;margin-left:-2px;background:#fff}
+.mnPips{display:flex;gap:8px}
+.mnPips i{width:16px;height:16px;border-radius:50%;background:#2b3a46;border:1px solid #7fe0ff}
+.mnPips i.on{background:#7fe0ff}
+.mnTime{width:100%;height:5px;background:#22303c;border-radius:3px}
+#mnTimeF{height:100%;background:#e2b33c;border-radius:3px}
+#mnHit{font:700 16px var(--display);letter-spacing:.08em;text-transform:uppercase;background:#7fe0ff;color:#0e161e;border:0;border-radius:6px;padding:9px 26px;cursor:pointer}
+.mnHint{font:13px sans-serif;color:#b9b5aa;text-align:center}
+#tvFrame{position:fixed;left:0;top:0;width:960px;height:540px;border:0;transform-origin:0 0;pointer-events:none;z-index:0;background:#000}
+#tvRemote{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(360px,calc(100vw - 32px));background:rgba(14,22,30,.94);border:1px solid #3a4a58;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;pointer-events:auto;z-index:31}
+#tvRemote[hidden]{display:none}
+.tvTop{display:flex;justify-content:space-between;gap:8px;font:600 14px var(--display);color:#e9e6dc;letter-spacing:.04em}
+.tvTop b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tvTop span{color:#9fb0bf;white-space:nowrap}
+#tvSeek,#tvVol{width:100%;accent-color:#e2483a}
+#tvVol{flex:1;min-width:70px}
+.tvRow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tvRow button{font:700 14px var(--display);letter-spacing:.04em;border:1px solid #3a4a58;background:#1d2833;color:#e9e6dc;border-radius:6px;padding:7px 10px;cursor:pointer;min-width:44px}
+#tvPlay{background:#e2483a;border-color:#e2483a;color:#fff}
+#tvGo{width:78px;font:14px sans-serif;padding:6px;border-radius:6px;border:1px solid #3a4a58;background:#0e161e;color:#e9e6dc}
+.tvHint{font:12px sans-serif;color:#8a9aa8}
 #homeP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#58d27a;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
 #homeP.own{background:#e9e6dc}
 #plBar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 32px);background:rgba(14,22,30,.86);border:1px solid #58d27a;border-radius:8px;padding:8px 10px;pointer-events:auto;z-index:30}
@@ -383,6 +412,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 <body>
 
 <canvas id="c"></canvas>
+<iframe id="tvFrame" title="TV" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
 <div id="scope" hidden><i></i></div>
 <div id="rdot" hidden><i></i></div>
 
@@ -522,6 +552,10 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 <button id="safeP" type="button" hidden>Crack the safe</button>
 <button id="homeP" type="button" hidden>Home</button>
 <div id="nflash"></div>
+<button id="moonP" type="button" hidden>Moon</button>
+<button id="drillB" type="button" hidden>Drill</button>
+<div id="mineUI" hidden><div class="mnT">Drilling lunar ore</div><div class="mnBar"><div id="mnZone"></div><div id="mnNeedle"></div></div><div class="mnPips"><i></i><i></i><i></i></div><div class="mnTime"><div id="mnTimeF"></div></div><button id="mnHit" type="button">Strike</button><div class="mnHint">Strike when the needle is in the green. Land three before the drill stops.</div></div>
+<div id="tvRemote" hidden><div class="tvTop"><b id="tvTitle">Joe Bart VODs</b><span id="tvTime">0:00 / 0:00</span></div><input type="range" id="tvSeek" min="0" max="1000" value="0" aria-label="Position in the video"><div class="tvRow"><button type="button" id="tvRe" aria-label="Restart">&#8634;</button><button type="button" id="tvBack">&minus;30s</button><button type="button" id="tvPlay">Pause</button><button type="button" id="tvFwd">+30s</button><button type="button" id="tvNext">Next</button></div><div class="tvRow"><input id="tvGo" type="text" inputmode="numeric" placeholder="1:23:45" aria-label="Go to time"><button type="button" id="tvGoB">Go</button><button type="button" id="tvMute">Mute</button><input type="range" id="tvVol" min="0" max="100" value="70" aria-label="Volume"></div><div class="tvRow"><button type="button" id="tvUp">Stand up</button><span class="tvHint">Arrows seek and volume &middot; K pause &middot; N next</span></div></div>
 <div id="orb" hidden><div class="orbBox"><div class="orbHead"><b>Orbital strike</b><span id="orbInfo"></span></div><canvas id="orbCv"></canvas><div class="orbBtns"><button type="button" id="orbFire">Fire &middot; $200,000</button><button type="button" id="orbX">Close</button></div><div class="orbHint">Tap or click the map to aim. The stick, WASD or arrows move the target. Enter or A fires.</div></div></div>
 <div id="plBar" hidden><span id="plT">Placing</span><button type="button" id="plOk">Place</button><button type="button" id="plL" aria-label="Turn left">&#10226;</button><button type="button" id="plR" aria-label="Turn right">&#10227;</button><button type="button" id="plS">Store</button><button type="button" id="plX">Cancel</button></div>
 <button id="camP" type="button" hidden>Cover the camera</button>
@@ -1691,6 +1725,7 @@ const FURN = (() => { const L = [], add = (id, name, cat, price, w, d, h, build,
   add('rug', 'Rug', 'Decor', 300, 2.4, 1.6, 0.02, b => { b.box(-1.2, 1.2, 0, 0.02, -0.8, 0.8, C('#a8382f')); b.box(-1.0, 1.0, 0.005, 0.025, -0.6, 0.6, cream); b.box(-0.8, 0.8, 0.01, 0.03, -0.4, 0.4, C('#5b4a8a')); }, false);
   add('tv', 'TV and stand', 'Decor', 800, 1.4, 0.45, 1.3, b => { b.box(-0.7, 0.7, 0, 0.5, -0.22, 0.22, dk); b.box(-0.65, 0.65, 0.6, 1.3, -0.04, 0.04, C('#101114')); b.box(-0.6, 0.6, 0.64, 1.26, -0.05, -0.04, C('#1d3a5a')); b.box(-0.05, 0.05, 0.5, 0.6, -0.04, 0.04, dk); });
   add('arcade', 'Arcade cabinet', 'Decor', 1500, 0.7, 0.8, 1.8, b => { b.box(-0.35, 0.35, 0, 1.8, -0.1, 0.4, C('#5b4a8a')); b.box(-0.35, 0.35, 0.9, 1.0, -0.4, 0.4, C('#5b4a8a')); b.box(-0.3, 0.3, 1.1, 1.6, -0.12, -0.1, C('#7ee04b')); b.box(-0.2, 0.2, 1.0, 1.03, -0.35, -0.15, dk); });
+  add('bigtv', 'Big-screen TV', 'Decor', 3500, 2.4, 0.5, 1.95, b => { b.box(-1.0, 1.0, 0, 0.45, -0.25, 0.25, dk); b.box(-0.08, 0.08, 0.45, 0.62, -0.04, 0.04, dk); b.box(-1.2, 1.2, 0.6, 1.95, -0.05, 0.05, C('#101114')); b.box(-1.15, 1.15, 0.65, 1.9, -0.06, -0.05, C('#0d1620')); });
   add('piano', 'Piano', 'Decor', 2500, 1.5, 0.6, 1.25, b => { b.box(-0.75, 0.75, 0.6, 1.25, 0, 0.3, C('#101114')); b.box(-0.75, 0.75, 0.68, 0.74, -0.3, 0.3, C('#101114')); b.box(-0.7, 0.7, 0.74, 0.76, -0.3, -0.12, white); legs(b, 1.45, 0.55, 0.68, C('#101114')); });
   return L; })();
 const FBY = id => FURN.find(f => f.id === id), FGEO = {}; const fgeo = id => FGEO[id] || (FGEO[id] = (() => { const b = new GB(); FBY(id).build(b); return b.geo(); })());
@@ -2484,7 +2519,7 @@ function updateHeld(n, dt) {                        // mode 4 held in the beam, 
     if (!beamOn || !CAR.ufo || held !== n) { n.mode = 5; n.vyF = 0; if (held === n) held = null; }
     else { const k = 1 - Math.exp(-4 * dt); n.x += (P.x - n.x) * k; n.wz += (P.z - n.wz) * k; n.y += (P.y - 4.6 - n.halfLen * 0.2 - n.y) * k; n.yaw += dt * 0.7; n.speed = 0; }
   } else if (n.mode === 5) {
-    n.vyF -= gravAt(n.x) * dt; n.y += n.vyF * dt; const g = Math.max(groundAt(n.x, n.wz, n.y), -1);
+    n.vyF -= gravAt(n.x) * dt; n.y += n.vyF * dt; const g = lowG(groundAt(n.x, n.wz, n.y), n.x, n.wz, -1);
     if (n.y <= g) { n.y = g; if (g < -0.4) { n.mode = 6; n.t = 1.6; } else { n.mode = 2; n.speed = 0; n.stun = 0.9; n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = 0; } }
   } else { n.t -= dt; if (n.wreck && Math.random() < dt * 9) puffAt(n.x, n.y + 1.1, n.wz); if (n.t <= 0) { n.live = false; n.mode = 0; n.wreck = false; n.mesh.visible = false; return; } }
   n.z = n.wz; n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(n.mode === 4 ? Math.sin(sigT * 1.7) * 0.08 : 0, n.yaw, n.mode === 4 ? Math.cos(sigT * 1.3) * 0.08 : 0);
@@ -2876,7 +2911,7 @@ function aggro(n) {
 function updateFree(n, dt) {
   if (n.spinOut > 0) {                               // oiled: no grip at all, sliding along its old path while it pirouettes
     n.spinOut -= dt; n.yaw += n.spinDir * 7 * Math.min(1, n.spinOut + 0.3) * dt; n.x += n.svx * dt; n.wz += n.svz * dt; const dk = Math.exp(-1.1 * dt); n.svx *= dk; n.svz *= dk;
-    const g = groundAt(n.x, n.wz, n.y + 0.5); n.y += (Math.max(g, -0.8) - n.y) * (1 - Math.exp(-14 * dt)); n.z = n.wz; n.stun = Math.max(n.stun, 0.4);
+    const g = groundAt(n.x, n.wz, n.y + 0.5); n.y += (lowG(g, n.x, n.wz, -0.8) - n.y) * (1 - Math.exp(-14 * dt)); n.z = n.wz; n.stun = Math.max(n.stun, 0.4);
     n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(0, n.yaw, Math.sin(n.spinOut * 9) * 0.06); return;
   }
   if (n.stun > 0) { n.stun -= dt; n.speed *= Math.exp(-3 * dt); }
@@ -3600,7 +3635,7 @@ function stepPcar(c, dt) {
 }
 function dispatch() {                                  // send the next unit
   const crew = WANTED.lv >= 2 ? 2 : 1, dS = Math.hypot(P.x - PSTN.x, P.z - PSTN.z);
-  const car = dS < 320 ? PCARS.find(c => !c.patrol && c.st === 'parked') : null, offs = PSTN.offs.filter(o => !o.out).slice(0, crew);
+  const car = dS < 320 ? PCARS.find(c => !c.patrol && c.st === 'parked') : null, offs = PSTN.offs.filter(o => !o.out && !nzIn(o.x, o.z)).slice(0, crew);
   if (car && offs.length) { car.st = 'board'; for (const o of offs) { const a = activateOfficer(o); if (a) { a.task = 'board'; a.car = car; } } return; }
   if (PCARS.filter(c => c.patrol && c.st !== 'gone' && c.st !== 'wreck').length >= WANTED.lv + 2) return;
   for (let k = 0; k < 16; k++) { const ang = Math.random() * 6.283, r = 150 + Math.random() * 60; let x = P.x + Math.cos(ang) * r, z = P.z + Math.sin(ang) * r;   // a unit coming in off the roads, out of sight
@@ -3613,7 +3648,7 @@ function policeFrame(dt) {
   const now = NET.now(); wantedLink(now);
   if (!PCARS.length && PSTN.bays.length) PSTN.bays.forEach((q, k) => newPcar('pc' + k, q[0], q[1], q[2], false));
   if (Math.hypot(P.x - PSTN.x, P.z - PSTN.z) < 300) for (const o of PSTN.offs) if (!o.m) { o.m = makePerson(7950 + o.k, 2, COPLOOK); o.m.position.set(o.x, PSTN.y, o.z); o.m.rotation.y = o.yaw; scene.add(o.m); posePerson(o.m, 0, 0, 0, 0); }
-  for (const o of PSTN.offs) if (o.m) { o.m.visible = !o.out && !PEOPLE.HID.has('so' + o.k); if (o.m.visible && Math.hypot(P.x - o.x, P.z - o.z) < 10) o.m.rotation.y += wrapPi(Math.atan2(-(P.x - o.x), -(P.z - o.z)) - o.m.rotation.y) * (1 - Math.exp(-4 * dt)); }
+  for (const o of PSTN.offs) if (o.m) { o.m.visible = !o.out && !PEOPLE.HID.has('so' + o.k) && !nzIn(o.x, o.z); if (o.m.visible && Math.hypot(P.x - o.x, P.z - o.z) < 10) o.m.rotation.y += wrapPi(Math.atan2(-(P.x - o.x), -(P.z - o.z)) - o.m.rotation.y) * (1 - Math.exp(-4 * dt)); }
   /* stars: escalate, search, lose them */
   if (WANTED.lv > 0) {
     if (now - WANTED.dispT > 2500) { const live = PCARS.filter(c => c.st === 'board' || c.st === 'drive' || c.st === 'stop' && ACT.some(a => a.car === c && a.st !== 2)).length; if (live < WANTED.lv) { WANTED.dispT = now; dispatch(); } }
@@ -3706,7 +3741,7 @@ function homeStore() {                                 // back into the crate
 function homeKey() {                                   // F: place, buy, open storage, or pick up what you are looking at
   if (PLACE.on) { placeIt(); return true; }
   if (!HOMEACT) return false; const a = HOMEACT;
-  if (a.k === 'buy') buyHome(a.h); else if (a.k === 'sat') buySat(); else if (a.k === 'orb') orbOpen(); else if (a.k === 'bin') binShop(a.h); else if (a.k === 'move') { dropPiece(a.h, a.pc); startPlace(a.pc.t, a.pc, a.h); } else return false; return true;
+  if (a.k === 'buy') buyHome(a.h); else if (a.k === 'sit') sitDown(a.h, a.pc); else if (a.k === 'sat') buySat(); else if (a.k === 'orb') orbOpen(); else if (a.k === 'bin') binShop(a.h); else if (a.k === 'move') { dropPiece(a.h, a.pc); startPlace(a.pc.t, a.pc, a.h); } else return false; return true;
 }
 function aimRay() { const cp = Math.cos(AIM.pitch); _rd.set(-Math.sin(AIM.yaw) * cp, Math.sin(AIM.pitch), -Math.cos(AIM.yaw) * cp); _ro.copy(camera.position); ray.set(_ro, _rd); ray.far = 16; return ray; }
 function placeFrame(dt) {
@@ -3725,7 +3760,7 @@ function homeFrame(dt) {
   for (const h of HOUSES) if (HOME.own.has(h.id) && !h.built) buildHome(h);
   HOMEACT = null; FAIM = null; const bp = $('homeP');
   if (PLACE.on) { placeFrame(dt); bp.hidden = true; return; }
-  if (CAR.foot && !RIDE && HP.dead <= 0 && started && !SHOP.on && !HACK.on) {
+  if (CAR.foot && !RIDE && HP.dead <= 0 && started && !SHOP.on && !HACK.on && !SIT.on && !MINE.game) {
     for (const h of HOUSES) {
       if (Math.hypot(P.x - h.ring[0], P.z - h.ring[1]) < 2 && Math.abs(P.y - h.ringY) < 2.5) { HOMEACT = { k: HOME.own.has(h.id) ? 'mine' : 'buy', h }; break; }
       if (h.lobby && Math.hypot(P.x - h.lobby[0], P.z - h.lobby[1]) < 2 && Math.abs(P.y - h.ringY) < 3) { if (HOME.own.has(h.id)) homeGo(h, true); else if (!h.lobbyT || NET.now() - h.lobbyT > 4000) { h.lobbyT = NET.now(); toast('Private residence. Buy the penthouse at the green ring'); } }
@@ -3733,11 +3768,12 @@ function homeFrame(dt) {
     }
     if (!HOMEACT && HOME.own.has('bunk') && inBunk(P.x, P.z)) { if (!SAT.own && Math.hypot(P.x - BUNK.satRing[0], P.z - BUNK.satRing[1]) < 1.9) HOMEACT = { k: 'sat', h: BUNK.h }; else if (SAT.own && Math.hypot(P.x - BUNK.con[0], P.z - BUNK.con[1]) < 2.2) HOMEACT = { k: 'orb', h: BUNK.h }; }
     const mine = homeAt(P.x, P.y, P.z);
+    if (!HOMEACT && mine && mine.grp) { const seat = mine.pieces.find(q => SEATS[q.t] && Math.hypot(P.x - (mine.x + q.x), P.z - (mine.z + q.z)) < 0.9 + FBY(q.t).w * 0.35); if (seat) HOMEACT = { k: 'sit', h: mine, pc: seat }; }
     if (!HOMEACT && mine && Math.hypot(P.x - mine.bin[0], P.z - mine.bin[1]) < 1.6) HOMEACT = { k: 'bin', h: mine };
     if (!HOMEACT && mine && mine.grp) { const hit = aimRay().intersectObjects(mine.grp.children, false).find(q => q.object.userData.pc); if (hit && Math.hypot(hit.point.x - P.x, hit.point.z - P.z) < 4.5) { FAIM = { h: mine, pc: hit.object.userData.pc }; HOMEACT = { k: 'move', h: mine, pc: FAIM.pc }; } }
   }
   bp.hidden = !HOMEACT || HACK.on || SHOP.on; if (!HOMEACT) return; bp.classList.toggle('own', HOMEACT.k === 'mine'); const key = touchMode ? '' : '  (' + (GP.pad ? 'D-pad up' : 'F') + ')';
-  bp.textContent = HOMEACT.k === 'buy' ? 'Buy ' + HOMEACT.h.def.name + ' · $' + HOMEACT.h.def.price.toLocaleString('en-US') + key : HOMEACT.k === 'mine' ? 'Your home: ' + HOMEACT.h.def.name : HOMEACT.k === 'sat' ? 'Buy the orbital satellite \u00B7 $3,000,000' + key : HOMEACT.k === 'orb' ? 'Orbital strike console' + key : HOMEACT.k === 'bin' ? 'Storage' + key : 'Move ' + FBY(HOMEACT.pc.t).name + key + (touchMode ? '' : '  ·  B stores it');
+  bp.textContent = HOMEACT.k === 'buy' ? 'Buy ' + HOMEACT.h.def.name + ' · $' + HOMEACT.h.def.price.toLocaleString('en-US') + key : HOMEACT.k === 'mine' ? 'Your home: ' + HOMEACT.h.def.name : HOMEACT.k === 'sit' ? 'Sit down' + key : HOMEACT.k === 'sat' ? 'Buy the orbital satellite \u00B7 $3,000,000' + key : HOMEACT.k === 'orb' ? 'Orbital strike console' + key : HOMEACT.k === 'bin' ? 'Storage' + key : 'Move ' + FBY(HOMEACT.pc.t).name + key + (touchMode ? '' : '  ·  B stores it');
 }
 $('homeP').addEventListener('click', e => { e.stopPropagation(); homeKey(); e.currentTarget.blur(); });
 $('plOk').addEventListener('click', e => { e.stopPropagation(); placeIt(); }); $('plX').addEventListener('click', e => { e.stopPropagation(); cancelPlace(); }); $('plS').addEventListener('click', e => { e.stopPropagation(); homeStore(); });
@@ -3749,23 +3785,25 @@ addEventListener('wheel', e => { if (PLACE.on) PLACE.yaw -= Math.sign(e.deltaY) 
    The bunker (a home, id 'bunk') is entered by walking or driving into the tunnel behind the waterfall; the garage tunnel leads back out.
    Its satellite room is bought for $3M (dd-sat). The console opens a targeting map; each strike costs $200k, lands 5 s later, levels a
    240 m radius (about 4 by 4 city blocks) and stays levelled for 20 minutes. Strikes are shared through presence 'os' = [[x, z, t0]]. */
-const SAT = { own: !!store('dd-sat', 0) }, ORB = { on: false, x: 0, z: 0, sx: 0, sy: 0, prev: [], t: 0 };
+const SAT = { own: !!store('dd-sat', {}).own || (() => { try { return localStorage.getItem('dd-sat') === '1'; } catch (e) { return false; } })() }, ORB = { on: false, x: 0, z: 0, sx: 0, sy: 0, prev: [], t: 0 };
 const STRIKES = [], OSR = 240, OS_LIFE = 20 * 60 * 1000, OS_COST = 200000, OS_DELAY = 5000, strikeKeys = new Set(); let bunkBusy = false, nzSweep = 0, NZN = 0;
 const NZ = { value: Array.from({ length: 8 }, () => new T.Vector4(0, 0, 0, 0)) }, nzDepth = new T.MeshDepthMaterial({ depthPacking: T.RGBADepthPacking });
 function nukeMat(m, all) {                             // the shader leaves out anything standing inside a strike zone
+  m.userData.nz = true;
   m.customProgramCacheKey = () => 'nz' + (all ? 'a' : '') + m.type + m.uuid;
   m.onBeforeCompile = sh => { sh.uniforms.uNZ = NZ;
     sh.vertexShader = 'varying vec3 vNW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvec4 nzW = vec4(transformed, 1.0);\n#ifdef USE_INSTANCING\nnzW = instanceMatrix * nzW;\n#endif\nvNW = (modelMatrix * nzW).xyz;');
     sh.fragmentShader = 'uniform vec4 uNZ[8];\nvarying vec3 vNW;\n' + sh.fragmentShader.replace('void main() {', 'void main() {\nfor (int i = 0; i < 8; i++) { vec4 q = uNZ[i]; if (q.z > 0.0) { vec2 d = vNW.xz - q.xy; if (dot(d, d) < q.z * q.z) discard; } }'); };
 }
 [propMat, glowMat, fireMat, terrainMat, roadMat, lineMat, water.material, nzDepth, ...SIGMAT].forEach(m => nukeMat(m)); let CRN = 0;
+function lowG(g, x, z, f) { return g < f && !(CRN && craterAt(x, z) !== null) ? f : g; }   // the sea floor, unless you are in a crater
 function craterAt(x, z) {                             // the crater's surface: a bowl about 28 m deep, a raised lip, then back to the old ground
   for (const s of STRIKES) { if (!s.cr) continue; const dx = x - s.x, dz = z - s.z; if (dx > OSR + 2 || dx < -OSR - 2 || dz > OSR + 2 || dz < -OSR - 2) continue; const r = Math.hypot(dx, dz); if (r > OSR + 2) continue;
     const Rc = 200, bowl = r < Rc ? -28 * (1 - (r / Rc) * (r / Rc)) : 0, lip = 5 * Math.exp(-((r - 210) / 15) * ((r - 210) / 15)), t = sstep(OSR * 0.86, OSR, r);
     return mix(s.gy, inCity(x, z, 8) ? CITY.y : Math.max(terrainH(x, z, 5), s.gy - 2), t) + bowl + lip * (1 - t * 0.9); }
   return null; }
 const nzIn = (x, z) => { for (const s of STRIKES) if (s.st === 1 && (x - s.x) * (x - s.x) + (z - s.z) * (z - s.z) < OSR * OSR) return true; return false; };
-function buySat() { if (SAT.own) return; if (!pay(3000000, 'the orbital satellite')) return; SAT.own = true; keep('dd-sat', 1); satOpen(); personSound(P.x, P.z, 0.5, 2600); toast('Satellite online. The console is in the back of the room'); }
+function buySat() { if (SAT.own) return; if (!pay(3000000, 'the orbital satellite')) return; SAT.own = true; keep('dd-sat', { own: 1 }); satOpen(); personSound(P.x, P.z, 0.5, 2600); toast('Satellite online. The console is in the back of the room'); }
 function satOpen() { if (!BUNK.satDoor) return; BUNK.satDoor.visible = !SAT.own; BUNK.satRingM.visible = !SAT.own; const i = BOXES.indexOf(BUNK.satBox); if (SAT.own && i >= 0) BOXES.splice(i, 1); }
 function bunkGo(inside) {                              // through the waterfall, on foot or at the wheel
   bunkBusy = true; const sp = CAR.foot ? 0 : Math.min(Math.hypot(P.vx, P.vz), 22), fl = $('flash'); fl.style.transition = 'none'; fl.style.opacity = 0.85;
@@ -3851,7 +3889,7 @@ function addStrike(x, z, t0, mine) {
 function netOs() { const o = STRIKES.filter(s => s.mine && s.st < 2).map(s => [Math.round(s.x), Math.round(s.z), Math.round(s.t0)]); return o.length ? o : null; }
 function strikeHit(s, fresh) {
   s.gy = inCity(s.x, s.z, 0) ? CITY.y : Math.max(0, terrainH(s.x, s.z, 5)); s.cr = true; CRN++; const R2 = OSR * OSR, inR = (x, z) => (x - s.x) * (x - s.x) + (z - s.z) * (z - s.z) < R2, rub = [];
-  s.rem = { city: [], boxes: [], solids: [] };
+  s.rem = { city: [], boxes: [], solids: [] }; nzNear(s);
   if (Math.abs(s.x) < CITY.E + OSR && Math.abs(s.z) < CITY.E + OSR) CITY.boxes.forEach(arr => { if (!arr) return; for (let i = arr.length - 1; i >= 0; i--) { const q = arr[i]; if (inR(clamp(s.x, q[0], q[1]), clamp(s.z, q[2], q[3]))) { s.rem.city.push([arr, q]); arr.splice(i, 1); rub.push(q); } } });
   for (let i = BOXES.length - 1; i >= 0; i--) { const q = BOXES[i]; if (q[4] > s.gy - 30 && q[4] < s.gy + 400 && inR(clamp(s.x, q[0], q[1]), clamp(s.z, q[2], q[3])) && Math.abs((q[0] + q[1]) / 2) < 12000) { s.rem.boxes.push(q); BOXES.splice(i, 1); if ((q[1] - q[0]) * (q[3] - q[2]) > 4) rub.push(q); } }
   for (let i = SOLIDS.length - 1; i >= 0; i--) { const q = SOLIDS[i]; if (inR(q[0], q[1]) && Math.abs(q[0]) < 12000) { s.rem.solids.push(q); SOLIDS.splice(i, 1); } }
@@ -3881,8 +3919,13 @@ function strikeHit(s, fresh) {
   for (const c of npcs) if (c.live && c.mode !== 6 && inR(c.x, c.wz)) dmgNpc(c, 99999);
   for (const a of [...ACT]) if (inR(a.x, a.z)) { hurtActor(a, 99999, s.x, s.z); a.vy = 12; a.air = true; }
   for (const v of [...PEOPLE.vis.values()]) if (inR(v.x, v.z)) { const a = spawnActor(v.key, v.x, v.y, v.z, v.yaw, v.seed, { st: 1, hp: 50 }); if (a) { hurtActor(a, 99999, s.x, s.z); a.vy = 12; a.air = true; } }
-  for (const c of PCARS) if (inR(c.x, c.z)) dmgPoliceCar(c, 99999);
+  for (const c of PCARS) if (inR(c.x, c.z)) { dmgPoliceCar(c, 99999); c.y = groundAt(c.x, c.z, 1e4); c.m.position.y = c.y; }
   peoplePanic(s.x, s.z, OSR + 200);
+}
+function nzNear(s) {                                  // landmarks have their own materials: give each one near the blast a copy that knows about strike zones
+  const fix = o => { if (!(o.isMesh || o.isLine) || !o.material || Array.isArray(o.material) || o.material.userData.nz || o.material.isShaderMaterial || o.userData.pc) return; const m = o.material.clone(); nukeMat(m); o.material = m; };
+  for (const p of POI) if (p.grp && Math.hypot(p.x - s.x, p.z - s.z) < OSR + 300) p.grp.traverse(fix);
+  for (const o of scene.children) if (o.isMesh && o.geometry && !o.position.x && !o.position.z) { if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere(); const c = o.geometry.boundingSphere.center; if (Math.hypot(c.x - s.x, c.z - s.z) < OSR + 60) fix(o); }
 }
 function strikeEnd(s) {
   if (s.cr) { s.cr = false; CRN--; }
@@ -3909,8 +3952,145 @@ function strikeFrame(dt) {
       if (t > 32) fxEnd(s); }
   }
   for (let i = n; i < 8; i++) NZ.value[i].set(0, 0, 0, 0); NZN = n;
-  if (n && (nzSweep -= dt) <= 0) { nzSweep = 2; scene.traverse(o => { if (o.isMesh && o.castShadow && (o.material === propMat || o.material === glowMat) && !o.customDepthMaterial) o.customDepthMaterial = nzDepth; }); }
+  if (n && (nzSweep -= dt) <= 0) { nzSweep = 2; scene.traverse(o => { if (o.isMesh && o.castShadow && o.material && o.material.userData && o.material.userData.nz && !o.customDepthMaterial) o.customDepthMaterial = nzDepth; }); }
 }
+
+/* ───────────── the lunar station and ore mining ─────────────
+   A station near the landing site. Take the mining drill from its rack (free, saved), Y / D-pad down / the Drill button equips it.
+   40 ore nodes lie around the station; mining one is a 5-second timing game (three strikes in the green). Ore sells for $1,000 at the
+   station's exchange. Mined nodes come back after 4 minutes; which nodes are mined is shared through presence 'om' = [[i, t]]. */
+const MINE = Object.assign({ own: false, carry: 0 }, store('dd-mine', {}), { tool: false, game: null }), ORES = [], LSTN = { x: 0, z: 0, y: 0, sell: [0, 0], rack: [0, 0] }, ORE_BACK = 240000, ORE_MAX = 10;
+let MOONACT = null;
+const saveMine = () => keep('dd-mine', { own: MINE.own, carry: MINE.carry });
+const DRILLGEO = (() => { const b = new GB(), y = C('#e2b33c'), d = C('#2b2d33'), st = C('#b8bec6'); b.box(-0.06, 0.06, -0.08, 0.09, -0.3, 0.08, y); b.box(-0.045, 0.045, -0.24, -0.08, -0.06, 0.04, d); b.box(-0.07, 0.07, -0.26, -0.22, -0.08, 0.06, d); b.box(-0.03, 0.03, -0.03, 0.03, -0.42, -0.3, st); b.box(-0.015, 0.015, -0.015, 0.015, -0.62, -0.42, st); return b.geo(); })();
+function showDrill(model, on) { const G = model && model.userData.guns; if (!G || !G[0]) return; let d = model.userData.drill; if (!d && on) { d = new T.Mesh(DRILLGEO, carMat); d.position.copy(G[0].position); d.rotation.copy(G[0].rotation); G[0].parent.add(d); model.userData.drill = d; } if (d) d.visible = !!on; }
+(function buildLunar() {                              // pick the flattest spot near the landing site and build there
+  let best = null; for (const r of [90, 130, 170, 210]) for (let k = 0; k < 16; k++) { const a = k / 16 * TAU, cx = MOON.x + 26 + Math.cos(a) * r, cz = MOON.z - 22 + Math.sin(a) * r; let lo = 1e9, hi = -1e9;
+    for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) { const h = moonH(cx + i * 11, cz + j * 8); lo = Math.min(lo, h); hi = Math.max(hi, h); } if (!best || hi - lo < best.r) best = { x: cx, z: cz, r: hi - lo, lo, hi }; }
+  const x = best.x, z = best.z, y = best.hi + 0.25, b = new GB(), gl = new GB(), grp = new T.Group(), wh = C('#e9e6dc'), gr = C('#8a9098'), dk = C('#2b2d33'), gold = C('#c9a23a');
+  Object.assign(LSTN, { x, z, y, sell: [x - 8, z + 7.5], rack: [x + 3, z + 7.5] });
+  b.box(x - 22, x + 22, best.lo - 3, y, z - 15, z + 15, C('#6f7278')); BOXES.push([x - 22, x + 22, z - 15, z + 15, y]); for (let i = -2; i <= 2; i++) b.box(x + i * 9 - 0.05, x + i * 9 + 0.05, y, y + 0.02, z - 15, z + 15, C('#e2b33c'));
+  const lam = c => new T.MeshLambertMaterial({ color: c }), mod = new T.Mesh(new T.CylinderGeometry(4, 4, 18, 18).rotateZ(Math.PI / 2), lam(0xe9e6dc)); mod.position.set(x - 4, y + 4, z - 7); grp.add(mod); BOXES.push([x - 13, x + 5, z - 11, z - 3, y + 8]);
+  const dome = new T.Mesh(new T.SphereGeometry(6.5, 20, 10, 0, TAU, 0, Math.PI / 2), lam(0xd8dde2)); dome.position.set(x + 12, y, z - 6); grp.add(dome); SOLIDS.push([x + 12, z - 6, 6.6, y + 6.5]);
+  for (let i = 0; i < 6; i++) gl.box(x - 11 + i * 2.6, x - 10 + i * 2.6, y + 4.4, y + 5.2, z - 3.05, z - 3.0, C('#ffe6a0'));
+  b.box(x - 5.5, x - 2.5, y, y + 3.4, z - 3.4, z - 2.6, dk); gl.box(x - 4.9, x - 3.1, y + 2.6, y + 3.1, z - 2.62, z - 2.58, C('#7fe0ff'));                 // airlock
+  for (const sx of [x + 19, x + 19]) { b.box(sx - 0.15, sx + 0.15, y, y + 3, z - 12, z - 11.7, gr); } b.box(x + 15, x + 23, y + 3, y + 3.1, z - 14, z - 9.5, C('#1d3a6e')); b.box(x + 15, x + 23, y + 3, y + 3.1, z - 9, z - 4.5, C('#1d3a6e')); b.box(x + 18.9, x + 19.1, y, y + 3, z - 7, z - 6.8, gr);   // solar panels
+  b.box(x - 14.2, x - 13.8, y, y + 16, z - 13.2, z - 12.8, gr); const blink = new T.Mesh(new T.SphereGeometry(0.3, 8, 6), new T.MeshBasicMaterial({ color: 0xff3020 })); blink.position.set(x - 14, y + 16.3, z - 13); grp.add(blink); LSTN.blink = blink;
+  const sg = mallSign('LUNAR STATION', 7, 1.1, '#16181d', '#7fe0ff'); sg.position.set(x - 4, y + 9.2, z - 4.2); grp.add(sg);
+  b.box(x - 9.2, x - 6.8, y, y + 1.2, z + 4, z + 5, dk); gl.box(x - 9, x - 7, y + 1.25, y + 2.2, z + 4.45, z + 4.5, C('#2f9a52')); SOLIDS.push([x - 8, z + 4.5, 1.0, y + 1.3]);   // the ore exchange
+  const s2 = mallSign('ORE EXCHANGE  ·  $1,000 EACH', 5, 0.6, '#1d3a2a', '#e9f5ea'); s2.position.set(x - 8, y + 3, z + 4.4); grp.add(s2);
+  b.box(x + 1.6, x + 4.4, y, y + 2.2, z + 4.2, z + 4.6, gr); b.box(x + 1.6, x + 4.4, y + 0.9, y + 1.0, z + 4.2, z + 4.9, dk);                         // the tool rack
+  const rd = new T.Mesh(DRILLGEO, carMat); rd.scale.setScalar(2.2); rd.position.set(x + 3, y + 1.2, z + 4.7); rd.rotation.y = Math.PI / 2; grp.add(rd); LSTN.rackDrill = rd;
+  const s3 = mallSign('MINING DRILL  ·  FREE', 3.4, 0.5, '#16181d', '#e2b33c'); s3.position.set(x + 3, y + 2.7, z + 4.65); grp.add(s3);
+  for (const q of [LSTN.sell, LSTN.rack]) { const ring = new T.Mesh(new T.RingGeometry(1.4, 1.75, 32).rotateX(-Math.PI / 2), new T.MeshBasicMaterial({ color: 0x58d27a, transparent: true, opacity: 0.85, depthWrite: false, side: T.DoubleSide })); ring.position.set(q[0], y + 0.06, q[1]); grp.add(ring); }
+  grp.add(new T.Mesh(b.geo(), propMat)); grp.add(new T.Mesh(gl.geo(), new T.MeshBasicMaterial({ vertexColors: true }))); scene.add(grp);
+  const rockG = new T.DodecahedronGeometry(0.9, 0), crysG = new T.OctahedronGeometry(0.28, 0), rockM = new T.MeshLambertMaterial({ color: 0x77777c, flatShading: true }), crysM = new T.MeshBasicMaterial({ color: 0x6ff0ff });
+  for (let i = 0; i < 40; i++) { const a = rnd2(i, 7101) * TAU, r = 45 + Math.sqrt(rnd2(i, 7102)) * 380, ox = x + Math.cos(a) * r, oz = z + Math.sin(a) * r, oy = moonH(ox, oz), g = new T.Group();
+    const rk = new T.Mesh(rockG, rockM); rk.scale.set(1, 0.7, 1); rk.rotation.y = a; g.add(rk); for (let k = 0; k < 4; k++) { const c = new T.Mesh(crysG, crysM); c.scale.set(0.7, 1.8 + rnd2(i * 4 + k, 7103), 0.7); c.position.set(Math.cos(k * 1.7 + a) * 0.45, 0.6, Math.sin(k * 1.7 + a) * 0.45); c.rotation.z = (k - 1.5) * 0.3; g.add(c); }
+    g.position.set(ox, oy, oz); scene.add(g); const sol = [ox, oz, 1.0, oy + 1.4]; SOLIDS.push(sol); ORES.push({ i, x: ox, z: oz, y: oy, g, sol, minedT: -1e12, mine: false }); }
+})();
+function netOm() { const now = NET.now(), o = ORES.filter(q => q.mine && now - q.minedT < ORE_BACK).map(q => [q.i, Math.round(q.minedT)]); return o.length ? o : null; }
+function drillToggle() { if (!MINE.own) { if (onMoon(P.x)) toast('Take the mining drill from the rack at the lunar station'); return; } if (!CAR.foot || RIDE) return; MINE.tool = !MINE.tool; GUN.ads = false; toast(MINE.tool ? 'Mining drill' : GUNS[GUN.i].name); }
+function sellOre() { if (!MINE.carry) { toast('Bring lunar ore here. $1,000 each'); return; } const n = MINE.carry, v = n * 1000; MINE.carry = 0; saveMine(); addCash(v); personSound(P.x, P.z, 0.5, 2600); toast('Sold ' + n + ' lunar ore for ' + $$(v)); }
+function moonKey() {
+  if (!MOONACT) return false; const a = MOONACT;
+  if (a.k === 'drill') { MINE.own = true; MINE.tool = true; saveMine(); toast('Mining drill. Y, D-pad down or the Drill button puts it away'); }
+  else if (a.k === 'sell') sellOre(); else if (a.k === 'mine') mineStart(a.o); else if (a.k === 'hint') toast(a.msg); else return false; return true;
+}
+function mineStart(o) { if (MINE.carry >= ORE_MAX) { toast('Your pack is full. Sell the ore at the station'); return; } MINE.game = { o, t: 0, hits: 0, n: 0.1, dir: 1, sp: 0.55, z0: 0.4, zw: 0.36 }; mineZone(); $('mineUI').hidden = false; if (document.pointerLockElement) document.exitPointerLock(); }
+function mineZone() { const g = MINE.game; g.zw = 0.36 - g.hits * 0.02; g.z0 = 0.06 + Math.random() * (0.88 - g.zw); }
+function mineStrike() { const g = MINE.game; if (!g || g.done) return; const ok = g.n >= g.z0 - 0.04 && g.n <= g.z0 + g.zw + 0.04; personSound(P.x, P.z, 0.35, ok ? 900 : 220); if (ok && g.hits < 3) { g.hits++; g.sp += 0.12; mineZone(); for (let k = 0; k < 3; k++) puffAt(g.o.x, g.o.y + 0.8, g.o.z, 0xcfd2d8); } else { shake = Math.min(1, shake + 0.12); } }
+function mineCancel() { MINE.game = null; $('mineUI').hidden = true; }
+function minePad(gp) { const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > 0.5)), e = i => B(i) && !(MINE.prev || [])[i]; if (e(0) || e(2) || e(7)) mineStrike(); else if (e(1)) mineCancel(); MINE.prev = gp.buttons.map((q, i) => B(i)); }
+$('mnHit').addEventListener('click', e => { e.stopPropagation(); mineStrike(); });
+$('c').addEventListener('pointerdown', e => { if (MINE.game) { e.stopPropagation(); mineStrike(); } }, true);
+$('drillB').addEventListener('click', e => { e.stopPropagation(); drillToggle(); e.currentTarget.blur(); });
+$('moonP').addEventListener('click', e => { e.stopPropagation(); moonKey(); e.currentTarget.blur(); });
+function moonFrame(dt) {
+  const now = NET.now();
+  for (const r of NET.rem.values()) if (r.om) for (const q of r.om) if (Array.isArray(q) && num(q[0]) && num(q[1]) && ORES[q[0]] && q[1] > ORES[q[0]].minedT && q[1] <= now + 5000) { ORES[q[0]].minedT = q[1]; ORES[q[0]].mine = false; }
+  const here = onMoon(P.x); if (LSTN.blink && here) LSTN.blink.visible = (now / 600 | 0) % 2 === 0;
+  for (const o of ORES) { const up = now - o.minedT > ORE_BACK; if (o.g.visible !== up) { o.g.visible = up; o.sol[2] = up ? 1.0 : 0; } if (up && here && Math.abs(o.x - P.x) < 300) o.g.children[1].rotation.y += dt; }
+  $('drillB').hidden = !(MINE.own && CAR.foot && started && !RIDE); $('drillB').classList.toggle('on', MINE.tool); if (!CAR.foot && MINE.tool) MINE.tool = false;
+  const g = MINE.game;
+  if (g) { g.t += dt; g.n += g.dir * g.sp * dt; if (g.n > 1) { g.n = 1; g.dir = -1; } if (g.n < 0) { g.n = 0; g.dir = 1; } if (Math.random() < dt * 12) puffAt(g.o.x + (Math.random() - 0.5), g.o.y + 0.6, g.o.z + (Math.random() - 0.5), 0x8a8d92);
+    if (Math.random() < dt * 9) personSound(P.x, P.z, 0.08, 160 + Math.random() * 60);
+    $('mnZone').style.left = (g.z0 * 100) + '%'; $('mnZone').style.width = (g.zw * 100) + '%'; $('mnNeedle').style.left = (g.n * 100) + '%'; $('mnTimeF').style.width = Math.max(0, 100 - g.t / 5 * 100) + '%';
+    document.querySelectorAll('.mnPips i').forEach((el, k) => el.classList.toggle('on', k < g.hits));
+    if (g.t >= 5 || HP.dead > 0 || !CAR.foot) { mineCancel(); if (g.t >= 5 && g.hits >= 3) { g.o.minedT = NET.now(); g.o.mine = true; MINE.carry++; saveMine(); personSound(P.x, P.z, 0.5, 2600); toast('Lunar ore +1 · ' + MINE.carry + ' carried'); } else if (g.t >= 5) toast('It cracked but held. Try again'); } }
+  MOONACT = null; const bp = $('moonP');
+  if (here && CAR.foot && !RIDE && HP.dead <= 0 && started && !g && !SHOP.on) {
+    if (Math.hypot(P.x - LSTN.sell[0], P.z - LSTN.sell[1]) < 2 && Math.abs(P.y - LSTN.y) < 3) MOONACT = { k: 'sell' };
+    else if (!MINE.own && Math.hypot(P.x - LSTN.rack[0], P.z - LSTN.rack[1]) < 2 && Math.abs(P.y - LSTN.y) < 3) MOONACT = { k: 'drill' };
+    else for (const o of ORES) if (o.g.visible && Math.hypot(P.x - o.x, P.z - o.z) < 2.9 && Math.abs(P.y - o.y) < 3) { MOONACT = MINE.tool ? { k: 'mine', o } : { k: 'hint', msg: MINE.own ? 'Equip the drill first (Y, D-pad down or the Drill button)' : 'You need the mining drill from the lunar station' }; break; }
+  }
+  if (LSTN.rackDrill) LSTN.rackDrill.visible = !MINE.own;
+  bp.hidden = !MOONACT || MOONACT.k === 'hint' && !MINE.own; if (!MOONACT) return; const key = touchMode ? '' : '  (' + (GP.pad ? 'D-pad up' : 'F') + ')';
+  bp.textContent = MOONACT.k === 'sell' ? (MINE.carry ? 'Sell ' + MINE.carry + ' lunar ore · ' + $$(MINE.carry * 1000) : 'Ore exchange · $1,000 each') + key : MOONACT.k === 'drill' ? 'Take the mining drill' + key : MOONACT.k === 'mine' ? 'Mine lunar ore' + key : MOONACT.msg;
+}
+
+/* ───────────── TVs: Joe Bart stream VODs on the real YouTube player ─────────────
+   Any placed piece with a 'screen' plays the newest uploads of the Joe Bart VODs channel through one YouTube embed (#tvFrame), drawn
+   over the TV's screen with a CSS matrix3d each frame. It is controlled with the player's postMessage commands (no API script needed).
+   Sit on a seat (F) and the remote appears bottom left. Volume falls off with distance. Local to this device. */
+const TV_LIST = 'UU-lfGGqb5hHLBqVnVnWyrsw', SEATS = { sofa: 1, armchair: 1, beanbag: 1, stool: 1 };
+FBY('tv').screen = { w: 1.2, h: 0.62, y: 0.95, z: -0.052 }; FBY('bigtv').screen = { w: 2.3, h: 1.25, y: 1.275, z: -0.062 };
+const TVP = { ifr: null, ready: false, t0: 0, ping: 0, cur: 0, dur: 0, state: -1, title: '', vol: 70, muted: false, userPaused: false, vis: false, pc: null, sentVol: -1, volT: 0, blocked: false, made: 0 };
+const SIT = { on: false, x: 0, y: 0, z: 0, yaw: 0, pc: null, h: null };
+function tvCmd(func, args) { if (!TVP.ifr || !TVP.ifr.contentWindow) return; try { TVP.ifr.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: args || [] }), '*'); } catch (e) { /* not loaded yet */ } }
+function tvMake() {
+  const f = $('tvFrame'); TVP.ifr = f; TVP.made = performance.now();
+  f.src = 'https://www.youtube.com/embed/videoseries?list=' + TV_LIST + '&enablejsapi=1&autoplay=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1' + (/^https?:/.test(location.origin) ? '&origin=' + encodeURIComponent(location.origin) : '');
+  f.addEventListener('load', () => { TVP.ping = 0; });
+}
+addEventListener('message', e => { if (!TVP.ifr || e.source !== TVP.ifr.contentWindow) return; let d = e.data; try { if (typeof d === 'string') d = JSON.parse(d); } catch (er) { return; } if (!d || typeof d !== 'object') return;
+  if (!TVP.ready) { TVP.ready = true; tvCmd('setVolume', [TVP.vol]); if (!TVP.muted) tvCmd('unMute'); }
+  if (d.event === 'onStateChange' && num(d.info)) TVP.state = d.info; const i = d.info; if ((d.event === 'infoDelivery' || d.event === 'initialDelivery') && i && typeof i === 'object') { if (num(i.currentTime)) TVP.cur = i.currentTime; if (num(i.duration) && i.duration > 0) TVP.dur = i.duration; if (num(i.playerState)) TVP.state = i.playerState; if (i.videoData && typeof i.videoData.title === 'string' && i.videoData.title) TVP.title = i.videoData.title.slice(0, 120); } });
+const fmtT = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s2 = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s2).padStart(2, '0'); };
+function homog(src, dst) {                              // the 3x3 map from the iframe's rectangle to four points on screen, as a CSS matrix3d
+  const A = [], bb = []; for (let k = 0; k < 4; k++) { const [x, y] = src[k], [u, v] = dst[k]; A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); bb.push(u); A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); bb.push(v); }
+  for (let c = 0; c < 8; c++) { let piv = c; for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[piv][c])) piv = r; [A[c], A[piv]] = [A[piv], A[c]]; [bb[c], bb[piv]] = [bb[piv], bb[c]]; const d = A[c][c] || 1e-9;
+    for (let r = 0; r < 8; r++) { if (r === c) continue; const f = A[r][c] / d; if (!f) continue; for (let k = c; k < 8; k++) A[r][k] -= f * A[c][k]; bb[r] -= f * bb[c]; } }
+  const h = bb.map((v, k) => v / A[k][k]); return 'matrix3d(' + [h[0], h[3], 0, h[6], h[1], h[4], 0, h[7], 0, 0, 1, 0, h[2], h[5], 0, 1].join(',') + ')';
+}
+const _tv = new T.Vector3();
+function tvFrame(dt) {
+  const h = CAR.foot ? homeAt(P.x, P.y, P.z) : null; let best = null;
+  if (h && h.grp) for (const pc of h.pieces) { const f = FBY(pc.t); if (!f.screen) continue; const d = Math.hypot(P.x - (h.x + pc.x), P.z - (h.z + pc.z)); if (!best || d < best.d) best = { pc, d, h, f }; }
+  if (best && !TVP.ifr) tvMake(); const f = TVP.ifr; if (!f) return;
+  if (!TVP.ready && performance.now() - TVP.ping > 1000) { TVP.ping = performance.now(); try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 'tv', channel: 'widget' }), '*'); } catch (e) { /* not yet */ } }
+  if (!TVP.ready && !TVP.blocked && performance.now() - TVP.made > 15000) { TVP.blocked = true; toast('The TV could not reach YouTube from here'); }
+  const remote = $('tvRemote'); remote.hidden = !SIT.on;
+  if (SIT.on) { $('tvTitle').textContent = TVP.title || (TVP.ready ? 'Joe Bart VODs' : 'Tuning in…'); $('tvTime').textContent = fmtT(TVP.cur) + ' / ' + fmtT(TVP.dur); if (!TVP.seeking && TVP.dur) $('tvSeek').value = Math.round(TVP.cur / TVP.dur * 1000); $('tvPlay').textContent = TVP.state === 1 || TVP.state === 3 ? 'Pause' : 'Play'; $('tvMute').textContent = TVP.muted ? 'Unmute' : 'Mute'; }
+  if (!best) { if (TVP.vis) { f.hidden = true; TVP.vis = false; tvCmd('pauseVideo'); } return; }
+  if (!TVP.vis || TVP.pc !== best.pc) { TVP.vis = true; TVP.pc = best.pc; if (!TVP.userPaused) tvCmd('playVideo'); }
+  const pc = best.pc, sc = best.f.screen, cr = Math.cos(pc.r), sr = Math.sin(pc.r), wx = best.h.x + pc.x, wz = best.h.z + pc.z, wy = best.h.in.y + pc.y, pts = [];
+  const nx = -sr, nz = -cr, vis = (camera.position.x - wx) * nx + (camera.position.z - wz) * nz > 0.05; let ok = vis;
+  for (const [lx, ly] of [[sc.w / 2, sc.y + sc.h / 2], [-sc.w / 2, sc.y + sc.h / 2], [-sc.w / 2, sc.y - sc.h / 2], [sc.w / 2, sc.y - sc.h / 2]]) { if (!ok) break; _tv.set(wx + lx * cr + sc.z * sr, wy + ly, wz - lx * sr + sc.z * cr);
+    const cz = _tv.clone().applyMatrix4(camera.matrixWorldInverse).z; if (cz > -0.2) { ok = false; break; } _tv.project(camera); pts.push([(_tv.x + 1) / 2 * innerWidth, (1 - _tv.y) / 2 * innerHeight]); }
+  f.hidden = !ok; if (ok) f.style.transform = homog([[0, 0], [960, 0], [960, 540], [0, 540]], pts);
+  if ((TVP.volT -= dt) <= 0 && TVP.ready) { TVP.volT = 0.3; const v = Math.round(TVP.vol * clamp(1 - (best.d - 3) / 22, 0, 1)); if (Math.abs(v - TVP.sentVol) > 1) { TVP.sentVol = v; tvCmd('setVolume', [v]); } }
+}
+function sitDown(h, pc) { const f = FBY(pc.t); SIT.on = true; SIT.h = h; SIT.pc = pc; SIT.x = h.x + pc.x; SIT.z = h.z + pc.z; SIT.y = h.in.y + Math.min(0.3, f.h * 0.4); SIT.yaw = pc.r; AIM.yaw = pc.r; AIM.pitch = -0.05; POSE.v = 1; if (document.pointerLockElement) document.exitPointerLock(); toast('F, Esc or a move key to stand up'); }
+function standUp() { if (!SIT.on) return; SIT.on = false; POSE.v = 0; const r = SIT.yaw; P.x = SIT.x - Math.sin(r) * 1.1; P.z = SIT.z - Math.cos(r) * 1.1; P.y = SIT.h ? SIT.h.in.y + 0.05 : P.y; $('tvRemote').hidden = true; }
+function tvSeek(t) { TVP.cur = clamp(t, 0, TVP.dur || 1e6); tvCmd('seekTo', [TVP.cur, true]); }
+function tvToggle() { if (TVP.state === 1 || TVP.state === 3) { tvCmd('pauseVideo'); TVP.userPaused = true; TVP.state = 2; } else { tvCmd('playVideo'); TVP.userPaused = false; TVP.state = 1; } }
+function tvVol(v) { TVP.vol = clamp(Math.round(v), 0, 100); $('tvVol').value = TVP.vol; TVP.sentVol = -1; TVP.volT = 0; if (TVP.vol > 0 && TVP.muted) { TVP.muted = false; tvCmd('unMute'); } }
+function tvMute() { TVP.muted = !TVP.muted; tvCmd(TVP.muted ? 'mute' : 'unMute'); }
+function tvKey(e) { const c = e.code;
+  if (['KeyF', 'Escape', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'].includes(c)) { standUp(); return true; }
+  if (c === 'KeyK' || c === 'KeyP') tvToggle(); else if (c === 'ArrowLeft') tvSeek(TVP.cur - 10); else if (c === 'ArrowRight') tvSeek(TVP.cur + 10); else if (c === 'ArrowUp') tvVol(TVP.vol + 5); else if (c === 'ArrowDown') tvVol(TVP.vol - 5);
+  else if (c === 'KeyN') tvCmd('nextVideo'); else if (c === 'KeyR') tvSeek(0); else if (c === 'KeyM') tvMute(); else return false; return true; }
+function tvPad(gp) { const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > 0.5)), e = i => B(i) && !(SIT.prev || [])[i];
+  if (e(0)) tvToggle(); else if (e(1)) standUp(); else if (e(2)) tvCmd('nextVideo'); else if (e(3)) tvSeek(0); else if (e(4)) tvSeek(TVP.cur - 30); else if (e(5)) tvSeek(TVP.cur + 30); else if (e(12)) tvVol(TVP.vol + 10); else if (e(13)) tvVol(TVP.vol - 10); else if (e(14)) tvSeek(TVP.cur - 10); else if (e(15)) tvSeek(TVP.cur + 10);
+  SIT.prev = gp.buttons.map((q, i) => B(i)); }
+const tvOn = (id, fn) => $(id).addEventListener('click', e => { e.stopPropagation(); fn(); e.currentTarget.blur(); });
+tvOn('tvRe', () => tvSeek(0)); tvOn('tvBack', () => tvSeek(TVP.cur - 30)); tvOn('tvFwd', () => tvSeek(TVP.cur + 30)); tvOn('tvPlay', tvToggle); tvOn('tvNext', () => tvCmd('nextVideo')); tvOn('tvMute', tvMute); tvOn('tvUp', standUp);
+tvOn('tvGoB', () => { const v = $('tvGo').value.trim().split(':').map(Number); if (!v.length || v.some(n => !(n >= 0))) { toast('Type a time like 1:23:45 or 12:30'); return; } tvSeek(v.reduce((a, n) => a * 60 + n, 0)); $('tvGo').value = ''; });
+$('tvSeek').addEventListener('input', () => { TVP.seeking = true; if (TVP.dur) $('tvTime').textContent = fmtT($('tvSeek').value / 1000 * TVP.dur) + ' / ' + fmtT(TVP.dur); });
+$('tvSeek').addEventListener('change', () => { TVP.seeking = false; if (TVP.dur) tvSeek($('tvSeek').value / 1000 * TVP.dur); });
+$('tvVol').addEventListener('input', () => tvVol(+$('tvVol').value));
+for (const id of ['tvRemote', 'mineUI']) for (const ev of ['pointerdown', 'keydown']) $(id).addEventListener(ev, e => e.stopPropagation());
 
 /* ───────────── holding up the gas station ───────────── */
 function crackSafe() {
@@ -4177,6 +4357,8 @@ let started = false, auto = true, camMode = 0, soundOn = true, todSkip = 0;
 const DRIVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'KeyE', 'KeyQ', 'ShiftLeft', 'ShiftRight'];
 addEventListener('keydown', e => {
   if (e.target && e.target.tagName === 'INPUT') return;
+  if (MINE.game) { e.preventDefault(); if (e.repeat) return; if (e.code === 'Escape') mineCancel(); else if (['KeyF', 'Space', 'Enter', 'KeyX'].includes(e.code)) mineStrike(); return; }
+  if (SIT.on && !e.repeat && tvKey(e)) { e.preventDefault(); return; }
   if (ORB.on) { e.preventDefault(); if (e.code === 'Escape') orbClose(); else if (!e.repeat && (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyF')) orbFire(); else keys[e.code] = true; return; }
   if (SHOP.on) { e.preventDefault(); if (e.repeat) return; if (e.code === 'ArrowUp' || e.code === 'KeyW') shopMove(-1); else if (e.code === 'ArrowDown' || e.code === 'KeyS') shopMove(1); else if (e.code === 'Enter' || e.code === 'Space' || e.code === 'NumpadEnter') shopPick(); else if (e.code === 'Backspace' || e.code === 'Escape' || e.code === 'KeyF') shopBack(); return; }   // the shop menu has the keyboard while it is open
   if (HACK.on) { e.preventDefault(); if (e.repeat) return; const m = /^(?:Digit|Numpad)(\d)$/.exec(e.code); if (m) hackKey(m[1]); else if (e.code === 'Backspace') hackKey('del'); else if (e.code === 'Enter' || e.code === 'NumpadEnter') hackKey('ok'); else if (e.code === 'Escape') closeHack('You walked away from the ATM'); return; }   // the keypad has the keyboard while it is open
@@ -4186,7 +4368,7 @@ addEventListener('keydown', e => {
   if (DRIVE_KEYS.includes(e.code) || e.code === 'Enter') e.preventDefault();
   if (!started) { if (e.code === 'Enter' || DRIVE_KEYS.includes(e.code)) begin(); return; }
   if (DRIVE_KEYS.includes(e.code) && auto) setAuto(false);
-  if (e.code === 'KeyF') { if (CAR.foot && homeKey()) {} else if (CAR.foot && GS.camNear) coverCam(); else if (CAR.foot && GS.near) crackSafe(); else if (CAR.foot && GATENEAR) hackGate(); else if (CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (CAR.foot && ATMNEAR) tryRob(); else setAuto(!auto); }
+  if (e.code === 'KeyF') { if (CAR.foot && (homeKey() || moonKey())) {} else if (CAR.foot && GS.camNear) coverCam(); else if (CAR.foot && GS.near) crackSafe(); else if (CAR.foot && GATENEAR) hackGate(); else if (CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (CAR.foot && ATMNEAR) tryRob(); else setAuto(!auto); }
   if (e.code === 'KeyC') nextCam();
   if (e.code === 'KeyT') skipTime();
   if (e.code === 'KeyR') { if (CAR.foot) reloadGun(); else respawn(); }
@@ -4197,6 +4379,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyZ') toggleFoot();
   if (CAR.foot && /^Digit\d$/.test(e.code)) { const d = +e.code.slice(5), i = GUNSLOT[(d + 9) % 10]; if (OWN.has(i)) setGun(i); else toast(GUNS[i].name + ': buy it at Iron Works in the mall'); }
   if (e.code === 'KeyB' && CAR.foot) homeStore();
+  if (e.code === 'KeyY' && CAR.foot) drillToggle();
   if (e.code === 'KeyB' && CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); }
 });
 addEventListener('keyup', e => { if (e.target && e.target.tagName === 'INPUT') return; keys[e.code] = false; if (e.code === 'ControlLeft' || e.code === 'ControlRight') poseKey(false); });
@@ -4304,6 +4487,7 @@ function readInput(dt) {
   let thr = keys.KeyW || keys.ArrowUp || touch.g ? 1 : 0, brk = keys.KeyS || keys.ArrowDown || touch.b ? 1 : 0, hb = (keys.KeyE || touch.e || (keys.Space && !CAR.jet && !CAR.plane)) && !CAR.ufo && !CAR.heli && !CAR.foot ? 1 : 0;
   const gp = GP.pad = gpPick();
   if (gp && SHOP.on) { const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > 0.5)), ed = i => B(i) && !gpPrev[i]; if (ed(12)) shopMove(-1); if (ed(13)) shopMove(1); if (ed(0)) shopPick(); if (ed(1)) shopBack(); gpPrev = gp.buttons.map((q, i) => B(i)); }
+  if (SIT.on || MINE.game) { if (gp) (MINE.game ? minePad : tvPad)(gp); inp.steer = inp.thr = inp.brk = inp.hb = inp.boost = inp.jump = inp.roll = 0; return; }
   if (ORB.on) { if (gp) orbPad(gp); inp.steer = inp.thr = inp.brk = inp.hb = inp.boost = inp.jump = inp.roll = 0; return; }
   if (SHOP.on) { inp.steer = inp.thr = inp.brk = inp.hb = inp.boost = inp.jump = inp.roll = 0; return; }
   if (gp && HACK.on) { const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > 0.5)); hackPad(i => B(i) && !gpPrev[i]); gpPrev = gp.buttons.map((q, i) => B(i)); }
@@ -4331,7 +4515,7 @@ function readInput(dt) {
       gpBoost = B(10) || (B(2) && !armed && !CAR.ufo);                // click the left stick to sprint or boost; X boosts anything unarmed
       if (CAR.foot && !PLACE.on) { if (edge(4) || edge(14)) cycleGun(-1); if (edge(5) || edge(15)) cycleGun(1); if (edge(11)) reloadGun(); }
       else gpRoll = (B(4) ? 1 : 0) - (B(5) ? 1 : 0);
-      if (edge(8)) toggleMap(); if (edge(9)) toggleTravel(); if (edge(12) && CAR.foot && homeKey()) {} else if (edge(12) && CAR.foot && GS.camNear) coverCam(); else if (edge(12) && CAR.foot && GS.near) crackSafe(); else if (edge(12) && CAR.foot && GATENEAR) hackGate(); else if (edge(12) && CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (edge(12) && CAR.foot && ATMNEAR) tryRob(); else if (edge(12) && !CAR.plane) setAuto(!auto); if (edge(13) && !CAR.plane && !CAR.foot) respawn(); if (CAR.foot) { if (edge(13)) poseKey(true); else if (!B(13) && gpPrev[13]) poseKey(false); }
+      if (edge(8)) toggleMap(); if (edge(9)) toggleTravel(); if (edge(13) && CAR.foot && !PLACE.on) drillToggle(); if (edge(12) && CAR.foot && (homeKey() || moonKey())) {} else if (edge(12) && CAR.foot && GS.camNear) coverCam(); else if (edge(12) && CAR.foot && GS.near) crackSafe(); else if (edge(12) && CAR.foot && GATENEAR) hackGate(); else if (edge(12) && CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (edge(12) && CAR.foot && ATMNEAR) tryRob(); else if (edge(12) && !CAR.plane) setAuto(!auto); if (edge(13) && !CAR.plane && !CAR.foot) respawn(); if (CAR.foot) { if (edge(13)) poseKey(true); else if (!B(13) && gpPrev[13]) poseKey(false); }
       if (rx || ry) { const k = GUN.scoped ? 0.22 : GUN.ads ? 0.65 : 1; AIM.yaw -= rx * 2.9 * dt * k; AIM.pitch = clamp(AIM.pitch - ry * 2.0 * dt * k, -0.95, 1.05); }
     }
     gpPrev = gp.buttons.map((q, i) => B(i));
@@ -4524,6 +4708,7 @@ function stepHeli(dt) {
   P.air = false; P.drift = P.slip = 0; P.surf = 1; P.waterT = 0;
 }
 function stepPlayer(dt) {
+  if (SIT.on) { P.x = SIT.x; P.z = SIT.z; P.y = SIT.y; P.vx = P.vy = P.vz = 0; P.heading = SIT.yaw; P.grounded = true; P.gy = P.y; return; }   // sitting: stay put
   if (inSpace(P.x)) return stepSpace(dt);
   hcStep(dt);
   if (CAR.foot) return stepFoot(dt);
@@ -4660,7 +4845,7 @@ function stepPlayer(dt) {
   netCollide();
 
   /* vertical */
-  let g = groundAt(P.x, P.z, P.y); if (g < -1.1) g = -1.1; if (CAR.plane && g < FLOAT_Y) g = FLOAT_Y;      // the floats keep the aircraft on top of the water
+  let g = lowG(groundAt(P.x, P.z, P.y), P.x, P.z, -1.1); if (CAR.plane && g < FLOAT_Y) g = FLOAT_Y;      // the floats keep the aircraft on top of the water
   P.vy -= gravAt(P.x) * dt; let ny = P.y + P.vy * dt;
   if (ny <= g) { P.vy = clamp((g - P.y) / dt, -30, Math.min(13, 0.5 * Math.hypot(P.vx, P.vz) + 2)); ny = g; P.grounded = true; } else P.grounded = ny - g < 0.25;
   P.y = ny; P.gy = g;
@@ -4918,7 +5103,7 @@ function netSend() {
   const now = NET.now(), gap = now - NET.sendT; if (!NET.room || (gap >= 0 && gap < 55)) return; NET.sendT = now;   // (the room clock can step when we first meet the others, so a negative gap sends)
   const q = playerMesh.quaternion, v = netVel();
   NET.room.presence({ v: 1, n: NET.name, col: NET.color, rd: RIDE ? 1 : 0, w: HP.dead > 0 ? 1 : 0, hp: Math.round((CAR.foot ? PH.v / PH.max : HP.v / HP.max) * 100), dm: [...NET.dm].slice(-6), g: GUN.i, bl: LB.mine.length ? LB.mine[0].t : 0, c: CAR.id, m: CAR.mass, p: [r2(P.x), r2(P.y), r2(P.z)], q: [r4(q.x), r4(q.y), r4(q.z), r4(q.w)], vel: [r2(v[0]), r2(v[1]), r2(v[2])],
-    bo: beamOn && CAR.ufo ? 1 : 0, beam: NET.beam, frz: NET.frz, oil: NET.oil || null, pre: NET.pre, ice: P.frozenT > 0 ? 1 : 0, bd: P.bleed ? P.bleed.hit.map(r2) : null, ts: NET.ts, os: netOs(), nq: netNq(), ac: netAc(), adm: netAdm(), cd: netCd(), wl: WANTED.lv ? [WANTED.lv, Math.round(WANTED.last.x), Math.round(WANTED.last.z)] : 0, rw: RIDE ? RIDE.id : null, ga: gaKey(GUN.i), pc: netPc(), gs: GS.regUntil > NET.now() || GS.safeUntil > NET.now() || GS.camBroke > NET.now() || GS.camCover > NET.now() ? [Math.round(GS.regUntil), Math.round(GS.safeUntil), Math.round(GS.camBroke), Math.round(GS.camCover)] : null, hl: H.lobby, hs: H.lead && (H.on || NET.now() - H.endT < 15000) ? heistSnap() : null, hk: H.hk || null, bk: H.closed || null, ft: FIT, cv: CAR.foot ? null : carLook(CAR.id), bx: NET.bx.length ? NET.bx : null, ar: Math.round(ARM.v), cg: NET.cg.length ? NET.cg.slice(-20) : null, at: netAt(), pu: GUN.punch > 0.1 ? 1 : 0, cr: CAR.foot ? POSE.v : 0 }).catch(() => {});
+    bo: beamOn && CAR.ufo ? 1 : 0, beam: NET.beam, frz: NET.frz, oil: NET.oil || null, pre: NET.pre, ice: P.frozenT > 0 ? 1 : 0, bd: P.bleed ? P.bleed.hit.map(r2) : null, ts: NET.ts, os: netOs(), om: netOm(), tl: MINE.tool && CAR.foot ? 1 : 0, nq: netNq(), ac: netAc(), adm: netAdm(), cd: netCd(), wl: WANTED.lv ? [WANTED.lv, Math.round(WANTED.last.x), Math.round(WANTED.last.z)] : 0, rw: RIDE ? RIDE.id : null, ga: gaKey(GUN.i), pc: netPc(), gs: GS.regUntil > NET.now() || GS.safeUntil > NET.now() || GS.camBroke > NET.now() || GS.camCover > NET.now() ? [Math.round(GS.regUntil), Math.round(GS.safeUntil), Math.round(GS.camBroke), Math.round(GS.camCover)] : null, hl: H.lobby, hs: H.lead && (H.on || NET.now() - H.endT < 15000) ? heistSnap() : null, hk: H.hk || null, bk: H.closed || null, ft: FIT, cv: CAR.foot ? null : carLook(CAR.id), bx: NET.bx.length ? NET.bx : null, ar: Math.round(ARM.v), cg: NET.cg.length ? NET.cg.slice(-20) : null, at: netAt(), pu: GUN.punch > 0.1 ? 1 : 0, cr: CAR.foot ? POSE.v : 0 }).catch(() => {});
 }
 function netTag(r) {                                // name tag: text drawn to a canvas, never markup
   const cv = r.tagCv, g = cv.getContext('2d'); g.clearRect(0, 0, 256, 64);
@@ -4965,13 +5150,13 @@ function netUpdate(dt) {
     else { r.pos.lerp(r.pred, 1 - Math.exp(-18 * dt)); r.quat.slerp(r.sq, 1 - Math.exp(-12 * dt)); }
     tmpV.set(0, 0, -1).applyQuaternion(r.sq); const fl = Math.hypot(tmpV.x, tmpV.z) || 1; r.fx = tmpV.x / fl; r.fz = tmpV.z / fl;
     r.mesh.position.copy(r.pos); r.mesh.quaternion.copy(r.quat); if (r.car.foot && r.pres && r.pres.cr === 2) { r.mesh.rotateX(-1.5); r.mesh.position.y += 0.2; } if (r.car.ufo) r.mesh.userData.chassis.rotation.y += dt * 1.6;
-    if (r.car.foot) { remoteGunAtt(r, s); showGun(r.mesh, num(s.g) && s.g >= 0 && s.g < GM.length && s.g === Math.floor(s.g) ? s.g : 0); const sp2 = Math.hypot(r.sv.x, r.sv.z); r.walkT = (r.walkT || 0) + sp2 * dt * 1.9; walkPose(r.mesh, r.walkT, sp2 <= 5.4 ? sp2 / 5.4 * 0.55 : 0.55 + Math.min(1, (sp2 - 5.4) / 4.2) * 0.45, s.g !== 4, Math.abs(r.sv.y) > 2.5, 0, now / 1000); if (s.g === 4) fistPose(r.mesh, s.pu ? 1 : 0); stancePose(r.mesh, s.cr === 1 || s.cr === 2 ? s.cr : 0, r.walkT, 0); }
+    if (r.car.foot) { remoteGunAtt(r, s); showGun(r.mesh, s.tl === 1 ? -1 : num(s.g) && s.g >= 0 && s.g < GM.length && s.g === Math.floor(s.g) ? s.g : 0); showDrill(r.mesh, s.tl === 1); const sp2 = Math.hypot(r.sv.x, r.sv.z); r.walkT = (r.walkT || 0) + sp2 * dt * 1.9; walkPose(r.mesh, r.walkT, sp2 <= 5.4 ? sp2 / 5.4 * 0.55 : 0.55 + Math.min(1, (sp2 - 5.4) / 4.2) * 0.45, s.g !== 4, Math.abs(r.sv.y) > 2.5, 0, now / 1000); if (s.g === 4) fistPose(r.mesh, s.pu ? 1 : 0); stancePose(r.mesh, s.cr === 1 || s.cr === 2 ? s.cr : 0, r.walkT, 0); }
     if (s.w === 1 && Math.random() < dt * 9) puffAt(r.pos.x, r.pos.y + 1.2, r.pos.z);
     r.tag.position.set(r.pos.x, r.pos.y + (r.car.foot ? 2.45 : r.car.ufo ? 4.2 : r.car.plane ? 4.6 : r.car.heli ? 5 : 3.1), r.pos.z);
     if (s.ice === 1 && !r.ice) { r.ice = r.car.foot ? new T.Mesh(new T.BoxGeometry(1.15, 2.15, 1.15), iceMat) : new T.Mesh(new T.BoxGeometry(2.6, 2, r.halfLen * 2 + 0.7), iceMat); r.ice.position.y = r.car.foot ? 1.05 : 1; r.ice.renderOrder = 2; r.mesh.add(r.ice); } if (r.ice) r.ice.visible = s.ice === 1;   // a walker gets a person-sized block
     const ol = s.oil; if (ol && ol.targetId === NET.me && num(ol.seq) && NET.oilSeen !== pr.peer + ':' + ol.seq) { NET.oilSeen = pr.peer + ':' + ol.seq; if (num(ol.at) && now - ol.at < 4000 && HP.dead <= 0) { if (CAR.foot) startBleed(ol.h); else { P.oilT = 2.6; P.oilDir = Math.random() < 0.5 ? 1 : -1; toast('Oiled by ' + r.name); oilPuddle(P.x, P.gy, P.z); } } }   // their El Blick hit us: on foot we bleed, in a vehicle we spin out on the oil
     if (vec(s.bd, 3) && s.w !== 1) { const h = [clamp(s.bd[0], -6, 6), clamp(s.bd[1], -3, 3), clamp(s.bd[2], 0, 4)]; if (!r.bleed) r.bleed = { hit: h, spT: 0, trT: 0 }; else r.bleed.hit = h; if (r.mesh.visible) bleedFx(r.bleed, r.pos.x, r.pos.y, r.pos.z, r.fx, r.fz, dt); } else r.bleed = null;   // they are bleeding: draw it on their model
-    r.ac = Array.isArray(s.ac) && s.ac.length <= 14 ? s.ac : null; r.pc = Array.isArray(s.pc) && s.pc.length <= 8 ? s.pc : null; r.os = Array.isArray(s.os) && s.os.length <= 8 ? s.os : null; if (Array.isArray(s.gs) && num(s.gs[0]) && num(s.gs[1])) { if (num(s.gs[2]) && num(s.gs[3])) { const lim2 = NET.now() + 700000; GS.camBroke = Math.max(GS.camBroke, Math.min(s.gs[2], lim2)); GS.camCover = Math.max(GS.camCover, Math.min(s.gs[3], lim2)); } const lim = NET.now() + 700000; GS.regUntil = Math.max(GS.regUntil, Math.min(s.gs[0], lim)); GS.safeUntil = Math.max(GS.safeUntil, Math.min(s.gs[1], lim)); } r.hl = s.hl && typeof s.hl === 'object' ? s.hl : null; r.hs = s.hs && typeof s.hs === 'object' ? s.hs : null; r.hk = typeof s.hk === 'string' ? s.hk : null; if (num(s.bk) && s.bk > (H.closed || 0) && s.bk < NET.now() + 600000) H.closed = s.bk; r.bx = Array.isArray(s.bx) && s.bx.length <= 6 ? s.bx : null;
+    r.ac = Array.isArray(s.ac) && s.ac.length <= 14 ? s.ac : null; r.pc = Array.isArray(s.pc) && s.pc.length <= 8 ? s.pc : null; r.os = Array.isArray(s.os) && s.os.length <= 8 ? s.os : null; r.om = Array.isArray(s.om) && s.om.length <= 60 ? s.om : null; if (Array.isArray(s.gs) && num(s.gs[0]) && num(s.gs[1])) { if (num(s.gs[2]) && num(s.gs[3])) { const lim2 = NET.now() + 700000; GS.camBroke = Math.max(GS.camBroke, Math.min(s.gs[2], lim2)); GS.camCover = Math.max(GS.camCover, Math.min(s.gs[3], lim2)); } const lim = NET.now() + 700000; GS.regUntil = Math.max(GS.regUntil, Math.min(s.gs[0], lim)); GS.safeUntil = Math.max(GS.safeUntil, Math.min(s.gs[1], lim)); } r.hl = s.hl && typeof s.hl === 'object' ? s.hl : null; r.hs = s.hs && typeof s.hs === 'object' ? s.hs : null; r.hk = typeof s.hk === 'string' ? s.hk : null; if (num(s.bk) && s.bk > (H.closed || 0) && s.bk < NET.now() + 600000) H.closed = s.bk; r.bx = Array.isArray(s.bx) && s.bx.length <= 6 ? s.bx : null;
     r.cd = Array.isArray(s.cd) && s.cd.length <= 16 ? s.cd : null; r.cg = Array.isArray(s.cg) && s.cg.length <= 24 ? s.cg.filter(q => typeof q === 'string' && q.length < 80) : null;
     if (Array.isArray(s.at)) for (const q of s.at.slice(0, 30)) if (Array.isArray(q) && num(q[0]) && num(q[1]) && ATMS[q[0]]) ATMS[q[0]].until = Math.max(ATMS[q[0]].until, Math.min(q[1], NET.clk() / 1000 + 600));   // ATMs other players emptied
     if (Array.isArray(s.adm)) for (const q of s.adm) if (Array.isArray(q) && q[0] === NET.me && typeof q[1] === 'string' && num(q[2])) { const k = pr.peer + '|' + q[1], was = NET.admSeen.get(k) || 0; if (q[2] > was) { NET.admSeen.set(k, q[2]); const a = ACT.find(x => x.src === q[1]); if (a) { hurtActor(a, Math.min(200, q[2] - was), r.pos.x, r.pos.z); if (a.st !== 2 && a.st !== 1) { a.st = 0; a.tgtId = pr.peer; } } } }   // other players hitting the people this game runs
@@ -5256,7 +5441,7 @@ function removeParachute() { if (CHUTE) { scene.remove(CHUTE.g); CHUTE = null; }
 function getOut() {
   if (CAR.foot || HP.dead > 0 || !started) return;
   if (inSpace(P.x)) { toast('Not out here'); return; }
-  const airborneExit = !P.onHC && P.y - Math.max(groundAt(P.x, P.z, P.y + 0.5), -1) > 3.5;              // high enough to bail out under a canopy
+  const airborneExit = !P.onHC && P.y - lowG(groundAt(P.x, P.z, P.y + 0.5), P.x, P.z, -1) > 3.5;              // high enough to bail out under a canopy
   if (!airborneExit && Math.hypot(P.vx, P.vz) > 4) { toast('Slow down first, or bail out higher up'); return; }
   if (!walker) { walker = makeCar('walker', NET.color, false, false, Object.assign({}, FIT, { egg: eggKey(NET.name) }), ATT); scene.remove(walker); walker.rotation.set(0, 0, 0); }
   if (auto) setAuto(false); setBeam(false);
@@ -5305,7 +5490,7 @@ function stepFoot(dt) {
   staticHits();
   pushFromPeople();
   for (const n of npcs) { if (!n.live) continue; const dx = P.x - n.x, dz = P.z - n.wz, rr = n.halfLen * 0.7 + 0.6, d2 = dx * dx + dz * dz; if (d2 < rr * rr && d2 > 1e-4 && Math.abs(P.y - n.y) < 2) { const d = Math.sqrt(d2); P.x += dx / d * (rr - d); P.z += dz / d * (rr - d); } }
-  let g = groundAt(P.x, P.z, P.y + 0.5); if (g < -1.0) g = -1.0;                                  // wades and swims, never drowns
+  let g = lowG(groundAt(P.x, P.z, P.y + 0.5), P.x, P.z, -1.0);                                  // wades and swims, never drowns
   P.vy -= gravAt(P.x) * dt;
   const jp = inp.jump && !jumpWas && !frz; jumpWas = !!inp.jump;
   { const high = P.y - g;
@@ -5336,7 +5521,7 @@ function dmgNpc(n, d) {
 const tracers = []; for (let i = 0; i < 12; i++) { const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(new Float32Array(6), 3)); const l = new T.Line(g, new T.LineBasicMaterial({ color: 0xffe9a0, transparent: true, opacity: 0 })); l.frustumCulled = false; l.visible = false; l.userData.life = 0; scene.add(l); tracers.push(l); }
 let tracerI = 0, mfire = false;
 function cycleGun(dir) { let k = GUNSLOT.indexOf(GUN.i); for (let n = 0; n < 10; n++) { k = (k + dir + 10) % 10; if (OWN.has(GUNSLOT[k])) return setGun(GUNSLOT[k]); } }
-function setGun(i) { if (!CAR.foot) return; i = (i + GUNS.length) % GUNS.length; if (!OWN.has(i)) return; GUN.i = i; GUN.cool = Math.max(GUN.cool, 0.25); GUN.rl = 0; GUN.bloom = 0; toast(GUNS[GUN.i].name); }
+function setGun(i) { if (!CAR.foot) return; i = (i + GUNS.length) % GUNS.length; if (!OWN.has(i)) return; if (MINE.tool && started) MINE.tool = false; GUN.i = i; GUN.cool = Math.max(GUN.cool, 0.25); GUN.rl = 0; GUN.bloom = 0; toast(GUNS[GUN.i].name); }
 function fireGun() {
   if (!CAR.foot || GUN.cool > 0 || GUN.rl > 0 || !started || HP.dead > 0 || (P.frozenT > 0 && !RIDE)) return; const gn = GUNS[GUN.i];
   if (gn.melee) { if (!RIDE) punch(gn); return; }
@@ -5393,12 +5578,12 @@ function reloadGun() { const gn = GUNS[GUN.i]; if (gn.rocket && ROCK.v <= 0) ret
 function footFrame(dt) {
   laserFrame();
   if (GUN.cool > 0) GUN.cool -= dt; if (GUN.punch > 0) GUN.punch = Math.max(0, GUN.punch - dt);
-  const trig = CAR.foot && started && !PLACE.on && (keys.KeyX || touch.f || mfire || gpFireHeld);
+  const trig = CAR.foot && started && !PLACE.on && !MINE.tool && !SIT.on && (keys.KeyX || touch.f || mfire || gpFireHeld);
   if (trig && (GUNS[GUN.i].auto || !GUN.trig || GUN.i >= 2)) fireGun(); GUN.trig = !!trig;                    // the pistol fires once per press; the SMG sprays; shotgun and rifle cycle as fast as they can
   if (GUN.rl > 0) { GUN.rl -= dt; if (GUN.rl <= 0) { GUN.rl = 0; if (GUNS[GUN.i].rocket) { if (ROCK.v > 0) { ROCK.v--; GUN.ammo[GUN.i] = 1; saveKit(); } } else GUN.ammo[GUN.i] = magOf(GUN.i); } }
   { const r = GUN.rec * (1 - Math.exp(-7 * dt)); AIM.pitch -= r; GUN.rec -= r; GUN.bloom *= Math.exp(-5 * dt); }
   if (flash.visible) { flash.userData.life -= dt; if (flash.userData.life <= 0) { flash.visible = false; if (gunView.userData.fl) gunView.userData.fl.visible = false; } }
-  if (CAR.foot) { showGun(playerModel, GUN.i); showGun(gunView, GUN.i); gunView.position.y = -0.2 - (GUN.rl > 0 ? Math.sin(Math.min(1, GUN.rl / GUNS[GUN.i].rl) * Math.PI) * 0.25 : 0) + GUN.rec * 0.3; gunView.position.x = GUN.ads ? 0.0 : 0.17; gunView.position.z = -0.08 + GUN.rec * 0.5 - (GUN.punch > 0 ? Math.sin((1 - GUN.punch / 0.3) * Math.PI) * 0.32 : 0); if (GUNS[GUN.i].melee) gunView.position.x = 0.15;
+  if (CAR.foot) { showGun(playerModel, MINE.tool ? -1 : GUN.i); showGun(gunView, MINE.tool ? -1 : GUN.i); showDrill(playerModel, MINE.tool); gunView.position.y = -0.2 - (GUN.rl > 0 ? Math.sin(Math.min(1, GUN.rl / GUNS[GUN.i].rl) * Math.PI) * 0.25 : 0) + GUN.rec * 0.3; gunView.position.x = GUN.ads ? 0.0 : 0.17; gunView.position.z = -0.08 + GUN.rec * 0.5 - (GUN.punch > 0 ? Math.sin((1 - GUN.punch / 0.3) * Math.PI) * 0.32 : 0); if (GUNS[GUN.i].melee) gunView.position.x = 0.15;
     const xs = 1 + ((GUNS[GUN.i].spread * (1 + 1.3 * Math.min(1, Math.hypot(P.vx, P.vz) / 9.6)) + GUN.bloom) * (GUN.ads ? 0.45 : 1)) * 22; $('xhair').style.transform = 'scale(' + xs.toFixed(2) + ')'; }
   for (const t of tracers) { if (!t.visible) continue; t.userData.life -= dt; if (t.userData.life <= 0) t.visible = false; else t.material.opacity = t.userData.life / 0.07; }
   const fp = camMode === 2 && started, ck = fp && ((!CAR.foot && cockpitFor(CAR)) || (!!RIDE && cockpitFor(RIDE.car)));
@@ -5420,7 +5605,7 @@ function footFrame(dt) {
   else if (!w.hidden) w.hidden = true;
   GUN.scoped = CAR.foot && started && GUN.ads && (GUN.i === 3 || !!(ATT[GUN.i] && ATT[GUN.i].long)) && !RIDE && HP.dead <= 0; GUN.rdot = !GUN.scoped && CAR.foot && started && GUN.ads && camMode === 2 && !!(ATT[GUN.i] && ATT[GUN.i].dot) && !RIDE && HP.dead <= 0; $('rdot').hidden = !GUN.rdot;   // a red dot in first person: look through the sight
   $('scope').hidden = !GUN.scoped; $('xhair').hidden = !(CAR.foot && started) || GUN.scoped || GUN.rdot;
-  if (CAR.foot) $('ammo').textContent = GUNS[GUN.i].rocket ? 'Bazooka ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/1') + ' \u00B7 ' + ROCK.v + ' rockets' : GUNS[GUN.i].melee ? 'Fists' : GUNS[GUN.i].name + ' ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/' + magOf(GUN.i));
+  if (CAR.foot) $('ammo').textContent = MINE.tool ? 'Mining drill \u00B7 ' + MINE.carry + ' ore' : GUNS[GUN.i].rocket ? 'Bazooka ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/1') + ' \u00B7 ' + ROCK.v + ' rockets' : GUNS[GUN.i].melee ? 'Fists' : GUNS[GUN.i].name + ' ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/' + magOf(GUN.i));
   PH.hurtT += dt; if (CAR.foot && HP.dead <= 0 && PH.hurtT > 6 && PH.v < PH.max) PH.v = Math.min(PH.max, PH.v + 9 * dt);   // health comes back after six seconds without being hit
   $('arm').hidden = !(CAR.foot && ARM.v > 0.5); $('armFill').style.width = Math.round(ARM.v) + '%';
   const hf = $('hpFill'), pc = CAR.foot ? PH.v / PH.max : HP.v / HP.max; hf.style.width = Math.round(pc * 100) + '%'; hf.style.background = pc < 0.3 ? '#e2483a' : pc < 0.6 ? '#ffc44d' : '#7ee04b';
@@ -5506,7 +5691,7 @@ function runFrame(now, dt, last0, draw) {
   }
 
   if (!inSpace(P.x)) { planChunks(P.x, P.z, false); pumpChunks(5); } updateRoads(P.z, false);
-  footFrame(dt); peopleFrame(dt); moneyFrame(dt); shopFrame(dt); heistFrame(dt); gasFrame(dt); policeFrame(dt); homeFrame(dt); bunkFrame(dt); strikeFrame(dt); stepRockets(dt); remoteBooms(); wantedHud(); updateSmoke(dt); updatePlaces(dt); updateBeam(); bleedTick(dt); updateMissiles(dt); netUpdate(dt); netSend();
+  footFrame(dt); peopleFrame(dt); moneyFrame(dt); shopFrame(dt); heistFrame(dt); gasFrame(dt); policeFrame(dt); homeFrame(dt); bunkFrame(dt); strikeFrame(dt); moonFrame(dt); tvFrame(dt); stepRockets(dt); remoteBooms(); wantedHud(); updateSmoke(dt); updatePlaces(dt); updateBeam(); bleedTick(dt); updateMissiles(dt); netUpdate(dt); netSend();
   if (playerModel.userData.ice) playerModel.userData.ice.visible = P.frozenT > 0; else if (P.frozenT > 0) { const ft = CAR.foot, im = new T.Mesh(ft ? new T.BoxGeometry(1.15, 2.15, 1.15) : new T.BoxGeometry(2.6, 2, 5.2), iceMat); im.position.y = ft ? 1.05 : 1; im.renderOrder = 2; playerModel.add(im); playerModel.userData.ice = im; }
   if (!respawning) {
     if (auto && Math.abs(P.z) > REND - 45) respawn(true);                                   // auto-drive turns round at the harbours
@@ -5541,7 +5726,7 @@ function runFrame(now, dt, last0, draw) {
     $('odo').textContent = (P.odo / 1000).toFixed(1) + ' km';
   }
 }
-window.__drive = { craterAt, crimeKill, RUNHIT, dispatch, STRIKES, ORB, SAT, BUNK, BUNKI, bunkGo, orbOpen, orbFire, addStrike, buySat, NZ, shopStock, closeShop, HOUSES, HOME, PLACE, FURN, homeKey, homeStore, placeIt, cancelPlace, startPlace, REMPC: () => REMPC, coverCam, camShot, cashierHit, camLive, WANTED, PSTN, PCARS, wantedAtLeast, clearWanted, GS, crackSafe, POSE, H, BNK, BANKI, bankZone: () => BANKZONE, bankDoor: () => BANKDOOR, drop: () => DROP, heistSnap, hackGate, gateNear: () => GATENEAR, openShop, FIT, ATT, UPG, DEC, WARD, applyUpg, carLook, tgtCar, rebuildWalker, mallAlarm, cops: () => ACT.filter(a => a.cop), OWN, ROCK, ARM, ROCKETS: () => ROCKETS, BOOMS: () => BOOMS, shopPick, shopMove, SHOPS, SHOP, openShop, shopNear: () => SHOPNEAR, REMCASHN: () => REMCASH.size, MONEY, CASH, ATMS, HACK, tryRob, hackKey, dropCash, addCash, atmNear: () => ATMNEAR, cam: () => camera, fovNow: () => camera.fov, ACT, PEOPLE, REMA, exitDriver, spawnActor, pedAt, MALLI, door: () => MALLDOOR, SP, SPC, MOON, TR, trSample, HULL, PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { todFix = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap, keys, lockCands, carIndex: id => CARS.findIndex(c => c.id === id), startBleed, bleedTick, bloods, drops, FREEZE_T, BLEED_T, fireBlick, updateMissiles, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
+window.__drive = { MINE, ORES, LSTN, SIT, TVP, moonKey, mineStart, mineStrike, sitDown, standUp, tvCmd, drillToggle, craterAt, crimeKill, RUNHIT, dispatch, STRIKES, ORB, SAT, BUNK, BUNKI, bunkGo, orbOpen, orbFire, addStrike, buySat, NZ, shopStock, closeShop, HOUSES, HOME, PLACE, FURN, homeKey, homeStore, placeIt, cancelPlace, startPlace, REMPC: () => REMPC, coverCam, camShot, cashierHit, camLive, WANTED, PSTN, PCARS, wantedAtLeast, clearWanted, GS, crackSafe, POSE, H, BNK, BANKI, bankZone: () => BANKZONE, bankDoor: () => BANKDOOR, drop: () => DROP, heistSnap, hackGate, gateNear: () => GATENEAR, openShop, FIT, ATT, UPG, DEC, WARD, applyUpg, carLook, tgtCar, rebuildWalker, mallAlarm, cops: () => ACT.filter(a => a.cop), OWN, ROCK, ARM, ROCKETS: () => ROCKETS, BOOMS: () => BOOMS, shopPick, shopMove, SHOPS, SHOP, openShop, shopNear: () => SHOPNEAR, REMCASHN: () => REMCASH.size, MONEY, CASH, ATMS, HACK, tryRob, hackKey, dropCash, addCash, atmNear: () => ATMNEAR, cam: () => camera, fovNow: () => camera.fov, ACT, PEOPLE, REMA, exitDriver, spawnActor, pedAt, MALLI, door: () => MALLDOOR, SP, SPC, MOON, TR, trSample, HULL, PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => renderer.render(scene, camera), P, npcs, setTod: v => { todFix = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap, keys, lockCands, carIndex: id => CARS.findIndex(c => c.id === id), startBleed, bleedTick, bloods, drops, FREEZE_T, BLEED_T, fireBlick, updateMissiles, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap };
 requestAnimationFrame(frame);
 })();
 </script>
@@ -5551,7 +5736,7 @@ requestAnimationFrame(frame);
 (() => {
   'use strict';
   const $ = id => document.getElementById(id), box = $('impBox'), txt = $('impTxt'), msg = $('impMsg'); if (!box || !txt) return;
-  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn', 'dd-sat'], NUM = { 'dd-cash': 1e9, 'dd-armour': 100, 'dd-rockets': 99 }, KEYS = [...SETS, ...STATE, 'dd-unlock', ...Object.keys(NUM), 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
+  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn', 'dd-sat', 'dd-mine'], NUM = { 'dd-cash': 1e9, 'dd-armour': 100, 'dd-rockets': 99 }, KEYS = [...SETS, ...STATE, 'dd-unlock', ...Object.keys(NUM), 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
   const rd = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const wr = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, v); return true; } catch (e) { return false; } };
   const jp = (t, d) => { try { const v = JSON.parse(t); return v === null || v === undefined ? d : v; } catch (e) { return d; } };
@@ -5638,7 +5823,7 @@ window.DD_FIREBASE = {
   if (!btn || !cfg || !cfg.apiKey) return;
   btn.hidden = false;
   const V = '10.12.2', SDK = ['app', 'auth', 'firestore'].map(n => 'https://www.gstatic.com/firebasejs/' + V + '/firebase-' + n + '-compat.js');
-  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn', 'dd-sat'], NUM = ['dd-cash', 'dd-armour', 'dd-rockets'], KEYS = [...SETS, ...STATE, 'dd-unlock', ...NUM, 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
+  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn', 'dd-sat', 'dd-mine'], NUM = ['dd-cash', 'dd-armour', 'dd-rockets'], KEYS = [...SETS, ...STATE, 'dd-unlock', ...NUM, 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
   const rd = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const wr = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } };
   const jp = (t, d) => { try { const v = JSON.parse(t); return v === null || v === undefined ? d : v; } catch (e) { return d; } };
