@@ -2507,9 +2507,9 @@ function updateMissiles(dt) {
     const bk = !!CAR.blick, amax = bk ? 6 : 4, cone = bk ? 0.95 : 0.86, rng = bk ? 110 : 280, lkT = bk ? 0.45 : 0.7;
     if (MSL.ammo < amax) { MSL.reload += dt; if (MSL.reload > (bk ? 1.6 : 2.5)) { MSL.reload = 0; MSL.ammo++; } }
     /* lock-on: the live traffic car closest to the helicopter's nose, within 30 degrees and 280 m */
-    const fx = -Math.sin(P.heading), fz = -Math.cos(P.heading); let best = null, bs = cone;
+    const fx = -Math.sin(P.heading), fz = -Math.cos(P.heading); let best = null, bs = cone - 0.1;
     const cands = lockCands().concat(copTargets());
-    for (const n of cands) { if (!n.live || n.mode >= 4) continue; const dx = n.x - P.x, dy = n.y - P.y, dz = n.wz - P.z, d = Math.hypot(dx, dy, dz); if (d < 6 || d > rng || (bk && Math.abs(dy) > 6)) continue; const dot = (dx * fx + dz * fz) / Math.hypot(dx, dz || 1e-6), sc = dot - d * 0.0002 + (n.copT ? 0.08 : 0); if (dot > cone && sc > bs) { bs = sc; best = n; } }
+    for (const n of cands) { if (!n.live || n.mode >= 4) continue; const dx = n.x - P.x, dy = n.y - P.y, dz = n.wz - P.z, d = Math.hypot(dx, dy, dz); if (d < 6 || d > rng || (bk && Math.abs(dy) > 6)) continue; const dot = (dx * fx + dz * fz) / Math.hypot(dx, dz || 1e-6), sc = dot - d * 0.0002 + (n.copT ? 0.08 : 0); if (dot > (n.copT ? cone - 0.1 : cone) && sc > bs) { bs = sc; best = n; } }
     if (best && !canSee(P.x, P.y + 1, P.z, best.x, best.y + 1, best.wz)) best = null;   // no lock through buildings
     if (best === MSL.cand && best) MSL.lockT += dt; else { MSL.cand = best; MSL.lockT = 0; }
     if (best) { MSL.v.set(best.x, best.y + 1, best.wz).project(camera); const on = MSL.v.z < 1; el.hidden = !on; if (on) { el.style.transform = 'translate(' + ((MSL.v.x * 0.5 + 0.5) * innerWidth).toFixed(1) + 'px,' + ((-MSL.v.y * 0.5 + 0.5) * innerHeight).toFixed(1) + 'px)'; const lk = MSL.lockT > lkT; el.classList.toggle('locked', lk); $('lockTxt').textContent = lk ? (bk ? 'Blick' : 'Locked') : 'Locking'; } } else el.hidden = true;
@@ -3616,7 +3616,7 @@ function dmgPoliceCar(c, d) {
 function copTargets() {                                // lock-on targets for the helicopter, police first
   const out = [];
   for (const a of ACT) if (a.cop && a.st !== 2) out.push(a._tg || (a._tg = { copT: true, mode: 0, get live() { return a.st !== 2 && ACT.includes(a); }, get x() { return a.x; }, get y() { return a.y; }, get wz() { return a.z; }, hitBy: oil => { MYHIT = performance.now(); hurtActor(a, oil ? 30 : 70, a.x + 1, a.z); if (a.police) wantedAtLeast(2); } }));
-  for (const c of PCARS) if (c.st !== 'parked' && c.st !== 'gone' && c.st !== 'wreck') out.push(c._tg || (c._tg = { copT: true, mode: 0, get live() { return c.st !== 'wreck' && c.st !== 'gone'; }, get x() { return c.x; }, get y() { return c.y; }, get wz() { return c.z; }, hitBy: oil => { MYHIT = performance.now(); dmgPoliceCar(c, oil ? 40 : 90); if (oil) { c.sp *= 0.2; c.yaw += 2; } } }));
+  for (const c of PCARS) if (c.st !== 'parked' && c.st !== 'gone' && c.st !== 'wreck') out.push(c._tg || (c._tg = { copT: true, mode: 0, get live() { return c.st !== 'wreck' && c.st !== 'gone'; }, get x() { return c.x; }, get y() { return c.y; }, get wz() { return c.z; }, hitBy: oil => { MYHIT = performance.now(); if (oil) { dmgPoliceCar(c, 40); c.sp *= 0.2; c.yaw += 2; } else { c.frz = 6; c.sp = 0; dmgPoliceCar(c, 25); toast('Police car frozen'); } } }));
   if (ATK.vis && !ATK.stop) out.push(ATK.tg);
   return out;
 }
@@ -3645,7 +3645,8 @@ function stepPcar(c, dt) {
   const dMe = Math.hypot(P.x - c.x, P.z - c.z), seesMe = c.crew > 0 && WANTED.lv > 0 && (dMe < CB[WANTED.lv] || dMe < 160 && canSee(c.x, c.y + 1.6, c.z, P.x, P.y + 1.2, P.z)); if (seesMe && WANTED.lv > 0) wantedSeen();
   if (c.st === 'board') { if (!ACT.some(a => a.task === 'board' && a.car === c)) c.st = c.crew > 0 ? 'drive' : 'parked'; }
   if (c.st === 'drive') {
-    if (WANTED.lv === 0 || c.crew === 0) { c.sp *= Math.exp(-2 * dt); if (c.sp < 0.5) c.st = 'stop'; }
+    if (c.frz > 0) { c.frz -= dt; c.sp = 0; }
+    else if (WANTED.lv === 0 || c.crew === 0) { c.sp *= Math.exp(-2 * dt); if (c.sp < 0.5) c.st = 'stop'; }
     else { const tx = seesMe ? P.x : WANTED.last.x, tz = seesMe ? P.z : WANTED.last.z, d = Math.hypot(tx - c.x, tz - c.z), w = navPoint(c.x, c.z, tx, tz);
       const want = Math.atan2(-(w[0] - c.x), -(w[1] - c.z)), diff = wrapPi(want - c.yaw);
       if (c.rev > 0) { c.rev -= dt; c.sp = -6; c.yaw -= Math.sign(diff || 1) * 1.2 * dt; }
@@ -4610,7 +4611,7 @@ function explode(x, y, z, mine) {
   for (const c of npcs) { if (!c.live || c.mode === 6) continue; const f = fall(Math.hypot(c.x - x, c.y + 0.8 - y, c.wz - z) - 1); if (f > 0) dmgNpc(c, 260 * f); }
   for (const a of [...ACT]) { const f = fall(Math.hypot(a.x - x, a.y + 1 - y, a.z - z)); if (f > 0) { hurtActor(a, 140 * f, x, z); if (a.st === 2) { a.vy = 5 + 6 * f; a.air = true; } } }
   for (const v of [...PEOPLE.vis.values()]) { const f = fall(Math.hypot(v.x - x, v.y + 1 - y, v.z - z)); if (f > 0) { const a = spawnActor(v.key, v.x, v.y, v.z, v.yaw, v.seed, { st: 1, hp: 50 }); if (a) { hurtActor(a, 140 * f, x, z); a.vy = 5 + 6 * f; a.air = true; } } }
-  if (ATK.vis) { const d = Math.hypot(ATK.x - x, ATK.z - z); if (d < BOOMR + 3) atkHit(170 * Math.max(0.3, 1 - d / (BOOMR + 3)), 'boom'); }
+  if (ATK.vis) { const d = Math.hypot(ATK.x - x, ATK.z - z); if (d < BOOMR + 3) atkHit(ATK_HP, 'boom'); }   // a bazooka rocket one-shots the armored truck
   MYHIT = performance.now(); for (const c of PCARS) { const f = fall(Math.hypot(c.x - x, c.y + 0.8 - y, c.z - z) - 1); if (f > 0) dmgPoliceCar(c, 160 * f); }
   for (const e of REMA.values()) { const f = fall(Math.hypot(e.x - x, e.y + 1 - y, e.z - z)); if (f > 0) { const k = e.owner + '|' + e.src; NET.adm.set(k, (NET.adm.get(k) || 0) + Math.round(140 * f)); } }
   for (const r of NET.rem.values()) { if (!r.init || r.pres.w === 1) continue; const f = fall(Math.hypot(r.pred.x - x, r.pred.y + 1 - y, r.pred.z - z)); if (f > 0) NET.dm.set(r.id, (NET.dm.get(r.id) || 0) + Math.round(110 * f)); }
