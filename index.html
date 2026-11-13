@@ -554,10 +554,10 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
   const MAX = 8, STALE = 5000, PREFIX = 'driftless-';
   const cleanCode = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 24);
   const rand = n => { let s = ''; const a = 'abcdefghijkmnpqrstuvwxyz23456789'; const b = new Uint32Array(n); try { crypto.getRandomValues(b); } catch (e) { for (let i = 0; i < n; i++) b[i] = Math.random() * 1e9; } for (let i = 0; i < n; i++) s += a[b[i] % a.length]; return s; };
-  function roomFromHash() {                          // #room=abc → "abc"; with none, make one up and put it in the address bar so it can be shared
+  function roomFromHash() {                          // #room=abc → "abc"; with none, join public Server 1 and put it in the address bar so it can be shared
     const m = /(?:^#|&)room=([^&]*)/.exec(location.hash || ''); let code = '';
     if (m) { try { code = cleanCode(decodeURIComponent(m[1])); } catch (e) { code = cleanCode(m[1]); } }
-    if (!code) { code = rand(6); try { history.replaceState(history.state, '', location.href.split('#')[0] + '#room=' + code); } catch (e) { try { location.hash = 'room=' + code; } catch (e2) { /* no address bar */ } } }
+    if (!code) { code = 'srv1'; try { history.replaceState(history.state, '', location.href.split('#')[0] + '#room=' + code); } catch (e) { try { location.hash = 'room=' + code; } catch (e2) { /* no address bar */ } } }
     return code;
   }
   const inviteLink = code => location.href.split('#')[0] + '#room=' + code;
@@ -1703,16 +1703,33 @@ const HDEF = { hN1: { name: 'Pine Cabin', price: 250000, style: 'cabin', w: 14, 
 const HSTY = { cabin: { wall: '#8a5a3a', roof: '#3d3833', floor: '#a8794a', base: '#6b6f78', gable: 2.6 }, cabin2: { wall: '#a87a4a', roof: '#5a3b2a', floor: '#b88a5a', base: '#6b6f78', gable: 3 },
   lodge: { wall: '#6b4a2f', roof: '#2f3a3d', floor: '#9a6a3a', base: '#8d8a84', gable: 3.4 }, modern: { wall: '#e8e6df', roof: '#2b3038', floor: '#d6dbe0', base: '#bdb8ac', glass: true },
   town: { wall: '#9a4a3a', roof: '#3a3d44', floor: '#a8794a', base: '#8d8a84' }, loft: { wall: '#bdb8ac', roof: '#3a3d44', floor: '#8a8f98', base: '#8d8a84', glass: true },
-  villa: { wall: '#f2efe6', roof: '#b5583a', floor: '#e9e2d0', base: '#cfc6b2' }, pent: { wall: '#bfe3f0', roof: '#2b3038', floor: '#2a2d33', base: '#2b3038', glass: true } };
-const HOUSES = [];
-function houseShell(p, b, gl, id, x, y, z, H, noDoor) {   // walls with a doorway in the +z wall, floor, roof, the storage crate; registers the house
+  villa: { wall: '#f2efe6', roof: '#b5583a', floor: '#e9e2d0', base: '#cfc6b2' }, pent: { wall: '#bfe3f0', roof: '#2b3038', floor: '#e6e1d6', base: '#2b3038', glass: true } };
+const HOUSES = [], PENT_GLASS = new T.MeshPhongMaterial({ color: 0xa8d8f0, transparent: true, opacity: 0.13, shininess: 130, specular: 0xffffff, depthWrite: false });   // real glass: you see the city through it
+function houseShell(p, b, gl, id, x, y, z, H, noDoor, opt) {   // walls with a doorway in the +z wall, floor, roof, the storage crate; registers the house
   const def = HDEF[id], S = HSTY[def.style], w = def.w, d = def.d, x0 = x - w / 2, x1 = x + w / 2, z0 = z - d / 2, z1 = z + d / 2, top = y + H, TK = 0.25, wall = C(S.wall), glass = C(S.glass ? '#6f93a8' : '#2a3a48');
   const W = (a0, a1, c0, c1, col) => { b.box(a0, a1, y, top, c0, c1, col || wall); BOXES.push([a0, a1, c0, c1, top]); };
   b.box(x0 - 0.3, x1 + 0.3, y - 0.8, y + 0.04, z0 - 0.3, z1 + 0.3, C(S.base)); flatQ(b, x0 + TK, x1 - TK, z0 + TK, z1 - TK, y + 0.06, C(S.floor));
-  if (S.glass) { for (const [a0, a1, c0, c1] of [[x0, x1, z0, z0 + TK], [x0, x0 + TK, z0, z1], [x1 - TK, x1, z0, z1], [x0, x - 0.9, z1 - TK, z1], [x + 0.9, x1, z1 - TK, z1]]) { b.box(a0, a1, y, y + 0.6, c0, c1, C(S.base)); b.box(a0, a1, y + 0.6, top - 0.3, c0, c1, glass); b.box(a0, a1, top - 0.3, top, c0, c1, C(S.base)); BOXES.push([a0, a1, c0, c1, top]); } }
-  else { W(x0, x1, z0, z0 + TK); W(x0, x0 + TK, z0, z1); W(x1 - TK, x1, z0, z1); W(x0, x - 0.9, z1 - TK, z1); W(x + 0.9, x1, z1 - TK, z1);
-    for (const [a, c] of [[-1, 1], [1, 1]]) b.box(x + a * w / 4 - 1, x + a * w / 4 + 1, y + 1, y + 2.2, z1 - 0.05, z1 + 0.02, glass);
-    for (const sx of [x0 - 0.02, x1 - 0.03]) for (const zz of [z - d / 4, z + d / 4]) b.box(sx, sx + 0.05, y + 1, y + 2.2, zz - 0.9, zz + 0.9, glass); }
+  if (S.glass) {
+    const segs = [[x0, x1, z0, z0 + TK], [x0, x0 + TK, z0, z1], [x1 - TK, x1, z0, z1], [x0, x - 0.9, z1 - TK, z1], [x + 0.9, x1, z1 - TK, z1]];
+    if (opt && opt.open) segs.splice(0, 1, [x0, opt.open[0], z0, z0 + TK], [opt.open[1], x1, z0, z0 + TK]);      // a wide opening in the back wall, onto the terrace
+    for (const [a0, a1, c0, c1] of segs) {
+      b.box(a0, a1, y, y + 0.6, c0, c1, C(S.base)); b.box(a0, a1, top - 0.3, top, c0, c1, C(S.base)); BOXES.push([a0, a1, c0, c1, top]);
+      if (!opt || opt.see !== false) { const m = new T.Mesh(new T.BoxGeometry(a1 - a0, top - 0.3 - (y + 0.6), c1 - c0), PENT_GLASS); m.position.set((a0 + a1) / 2, (y + 0.6 + top - 0.3) / 2, (c0 + c1) / 2); p.grp.add(m); }
+      else b.box(a0, a1, y + 0.6, top - 0.3, c0, c1, glass);
+    }
+    if (opt && opt.open) b.box(opt.open[0], opt.open[1], top - 0.3, top, z0, z0 + TK, C(S.base));                  // the beam over the opening
+  }
+  else {                                                // walls with real window openings: wall pieces, a sill and a header, and a clear glass pane in each; the whole run stays solid
+    const run = (a0, a1, c0, c1, alongX, wins) => {
+      BOXES.push([a0, a1, c0, c1, top]); let cur = alongX ? a0 : c0; const end = alongX ? a1 : c1;
+      const piece = (u0, u1, y0, y1) => { if (u1 - u0 < 0.01) return; if (alongX) b.box(u0, u1, y0, y1, c0, c1, wall); else b.box(a0, a1, y0, y1, u0, u1, wall); };
+      for (const wc of wins) { const u0 = wc - 0.9, u1 = wc + 0.9; piece(cur, u0, y, top); piece(u0, u1, y, y + 1.0); piece(u0, u1, y + 2.2, top);
+        const m = new T.Mesh(alongX ? new T.BoxGeometry(1.8, 1.2, c1 - c0) : new T.BoxGeometry(a1 - a0, 1.2, 1.8), PENT_GLASS); m.position.set(alongX ? wc : (a0 + a1) / 2, y + 1.6, alongX ? (c0 + c1) / 2 : wc); p.grp.add(m); cur = u1; }
+      piece(cur, end, y, top);
+    };
+    run(x0, x1, z0, z0 + TK, true, [x - w / 4, x + w / 4]); run(x0, x0 + TK, z0, z1, false, [z - d / 4, z + d / 4]); run(x1 - TK, x1, z0, z1, false, [z - d / 4, z + d / 4]);
+    run(x0, x - 0.9, z1 - TK, z1, true, [x - w / 4]); run(x + 0.9, x1, z1 - TK, z1, true, [x + w / 4]);
+  }
   b.box(x - 0.9, x + 0.9, y + 2.4, top, z1 - TK, z1, S.glass ? C(S.base) : wall);
   if (S.gable) gable(b, x0 - 0.4, x1 + 0.4, z0 - 0.4, z1 + 0.4, top, S.gable, C(S.roof), wall); else b.box(x0 - 0.3, x1 + 0.3, top, top + 0.35, z0 - 0.3, z1 + 0.3, C(S.roof));
   b.box(x0 + TK, x1 - TK, top - 0.1, top, z0 + TK, z1 - TK, C('#efece4')); for (let i = 0; i < Math.max(1, Math.round(w / 8)); i++) gl.box(x0 + (i + 0.5) * w / Math.max(1, Math.round(w / 8)) - 0.6, x0 + (i + 0.5) * w / Math.max(1, Math.round(w / 8)) + 0.6, top - 0.15, top - 0.1, z - 0.6, z + 0.6, C('#fff6dc'));
@@ -1737,12 +1754,33 @@ function bHouse(p, b, ln, gl) {                          // a home on its plot
   homeRing(p, h, x, z + def.d / 2 + 5, y);
 }
 function bPent(p, b, ln, gl) {                           // a glass tower; the penthouse sits on the roof, reached by the lobby lift
-  const x = p.x, z = p.z, y = p.h, TH = 60, glass = C('#2a3a48'), band = C('#cfd6dc');
-  b.box(x - 17, x + 17, y, y + TH, z - 14, z + 14, glass); for (let k = 1; k < 15; k++) b.box(x - 17.05, x + 17.05, y + k * 4 - 0.3, y + k * 4, z - 14.05, z + 14.05, band); BOXES.push([x - 17, x + 17, z - 14, z + 14, y + TH]);
-  b.box(x - 2.4, x + 2.4, y, y + 3.4, z + 14, z + 14.1, C('#101418')); b.box(x - 3, x + 3, y + 3.4, y + 3.8, z + 14, z + 14.6, C('#c9a23a'));       // lobby doors
-  for (const [a0, a1, c0, c1] of [[x - 17, x + 17, z - 14, z - 13.8], [x - 17, x + 17, z + 13.8, z + 14], [x - 17, x - 16.8, z - 14, z + 14], [x + 16.8, x + 17, z - 14, z + 14]]) { b.box(a0, a1, y + TH, y + TH + 1.1, c0, c1, band); BOXES.push([a0, a1, c0, c1, y + TH + 1.1]); }   // roof railing
+  const x = p.x, z = p.z, y = p.h, TH = 60, yy = y + TH, glass = C('#2a3a48'), band = C('#cfd6dc'), gold = C('#c9a23a'), marble = C('#e6e1d6'), steel = C('#aeb6bd');
+  b.box(x - 17, x + 17, y, y + TH, z - 14, z + 14, glass); for (let k = 1; k < 15; k++) b.box(x - 17.05, x + 17.05, y + k * 4 - 0.3, y + k * 4, z - 14.05, z + 14.05, band); BOXES.push([x - 17, x + 17, z - 14, z + 14, yy]);
+  b.box(x - 2.4, x + 2.4, y, y + 3.4, z + 14, z + 14.1, C('#101418')); b.box(x - 3, x + 3, y + 3.4, y + 3.8, z + 14, z + 14.6, gold);       // lobby doors
+  for (const [a0, a1, c0, c1] of [[x - 17, x + 17, z + 13.8, z + 14], [x - 17, x - 16.8, z - 14, z + 14], [x + 16.8, x + 17, z - 14, z + 14]]) { b.box(a0, a1, yy, yy + 1.1, c0, c1, band); BOXES.push([a0, a1, c0, c1, yy + 1.1]); }   // roof railing: front and sides; the back opens onto the terrace
   const sg = mallSign('SKYLINE', 6, 1.2, '#16181d', '#e9c86a'); sg.position.set(x, y + 4.6, z + 14.12); p.grp.add(sg);
-  const h = houseShell(p, b, gl, 'pent', x, y + TH, z - 1, 4.2, true); h.lobby = [x, z + 14.6]; h.elev = [x, z - 1 + HDEF.pent.d / 2 - 1.1]; h.up = [x, y + TH + 0.1, z - 1 + HDEF.pent.d / 2 - 3.6];
+  const h = houseShell(p, b, gl, 'pent', x, yy, z - 1, 5.4, true, { see: true, open: [x - 9, x + 9] }); h.lobby = [x, z + 14.6]; h.elev = [x, z - 1 + HDEF.pent.d / 2 - 1.1]; h.up = [x, yy + 0.1, z - 1 + HDEF.pent.d / 2 - 3.6];
+  /* inside: marble with a gold inlay, chandeliers, a feature fireplace, a kitchen island */
+  flatQ(b, x - 14, x + 14, z - 12, z - 11.85, yy + 0.08, gold); flatQ(b, x - 14, x + 14, z + 10, z + 10.15, yy + 0.08, gold); flatQ(b, x - 14, x - 13.85, z - 12, z + 10.15, yy + 0.08, gold); flatQ(b, x + 13.85, x + 14, z - 12, z + 10.15, yy + 0.08, gold);
+  for (const [cx, cz] of [[-8, -4], [0, -4], [8, -4], [-6, 5], [6, 5]]) { gl.box(x + cx - 0.6, x + cx + 0.6, yy + 4.4, yy + 4.6, z + cz - 0.6, z + cz + 0.6, C('#fff2c8')); b.box(x + cx - 0.03, x + cx + 0.03, yy + 4.6, yy + 5.4, z + cz - 0.03, z + cz + 0.03, gold); }
+  b.box(x - 14.75, x - 13.6, yy, yy + 5.4, z - 3.3, z + 1.3, C('#2a2d33')); gl.box(x - 13.62, x - 13.58, yy + 0.35, yy + 1.35, z - 2.2, z + 0.2, C('#ff8a2c')); b.box(x - 13.7, x - 13.45, yy + 1.5, yy + 1.62, z - 3.5, z + 1.5, gold); BOXES.push([x - 14.75, x - 13.6, z - 3.3, z + 1.3, yy + 5.4]);
+  b.box(x + 6, x + 12, yy, yy + 1.0, z + 0.3, z + 2.0, marble); b.box(x + 5.9, x + 12.1, yy + 1.0, yy + 1.12, z + 0.2, z + 2.1, C('#16181d')); BOXES.push([x + 5.9, x + 12.1, z + 0.2, z + 2.1, yy + 1.12]);
+  for (let k = 0; k < 4; k++) b.box(x + 6.8 + k * 1.6 - 0.25, x + 6.8 + k * 1.6 + 0.25, yy, yy + 0.75, z + 2.7, z + 3.2, C('#16181d'));
+  /* the terrace: a huge marble deck hanging off the back of the tower, with a glass balustrade, an infinity pool, loungers, a fire pit and planters */
+  const bz0 = z - 36, bz1 = z - 14;
+  b.box(x - 17, x + 17, yy - 0.8, yy, bz0, bz1, marble); b.box(x - 17.1, x + 17.1, yy - 0.3, yy, bz0 - 0.1, bz0 + 0.02, gold); BOXES.push([x - 17, x + 17, bz0, bz1, yy]);
+  flatQ(b, x - 16.4, x + 16.4, bz0 + 0.5, bz0 + 0.65, yy + 0.02, gold); flatQ(b, x - 16.4, x - 16.25, bz0 + 0.5, bz1, yy + 0.02, gold); flatQ(b, x + 16.25, x + 16.4, bz0 + 0.5, bz1, yy + 0.02, gold);
+  const pane = (a0, a1, c0, c1, y0, y1) => { const m = new T.Mesh(new T.BoxGeometry(a1 - a0, y1 - y0, c1 - c0), PENT_GLASS); m.position.set((a0 + a1) / 2, (y0 + y1) / 2, (c0 + c1) / 2); p.grp.add(m); };
+  for (const [a0, a1, c0, c1] of [[x - 17, x + 17, bz0, bz0 + 0.1], [x - 17, x - 16.9, bz0, bz1], [x + 16.9, x + 17, bz0, bz1]]) { pane(a0, a1, c0, c1, yy, yy + 1.2); b.box(a0 - 0.04, a1 + 0.04, yy + 1.2, yy + 1.3, c0 - 0.04, c1 + 0.04, steel); BOXES.push([a0, a1, c0, c1, yy + 1.3]); }
+  for (let k = -8; k <= 8; k++) gl.box(x + k * 2 - 0.07, x + k * 2 + 0.07, yy + 1.32, yy + 1.42, bz0 - 0.04, bz0 + 0.12, C('#ffe9b0'));       // string lights along the edge
+  { const px0 = x - 9, px1 = x + 9, pz0 = bz0 + 1.6, pz1 = bz0 + 8.4;
+    for (const [a0, a1, c0, c1] of [[px0 - 0.4, px1 + 0.4, pz0 - 0.4, pz0], [px0 - 0.4, px1 + 0.4, pz1, pz1 + 0.4], [px0 - 0.4, px0, pz0, pz1], [px1, px1 + 0.4, pz0, pz1]]) { b.box(a0, a1, yy, yy + 0.7, c0, c1, marble); BOXES.push([a0, a1, c0, c1, yy + 0.7]); }
+    b.box(px0, px1, yy, yy + 0.05, pz0, pz1, C('#2f8fc0')); flatQ(gl, px0, px1, pz0, pz1, yy + 0.5, C('#6fd0f0')); }                                    // the infinity pool: you can wade in it
+  for (const lx of [-13, -10, 10, 13]) { b.box(x + lx - 0.45, x + lx + 0.45, yy + 0.28, yy + 0.5, bz0 + 11, bz0 + 13, C('#f6f3ea')); b.box(x + lx - 0.45, x + lx + 0.45, yy + 0.5, yy + 1.0, bz0 + 12.7, bz0 + 13, C('#f6f3ea'));
+    for (const sx of [-0.4, 0.4]) for (const sz of [11.1, 12.9]) b.box(x + lx + sx - 0.04, x + lx + sx + 0.04, yy, yy + 0.28, bz0 + sz - 0.04, bz0 + sz + 0.04, steel); }
+  { const fx = x, fz = bz0 + 16; b.box(fx - 1.3, fx + 1.3, yy, yy + 0.5, fz - 1.3, fz + 1.3, C('#3a3d44')); gl.box(fx - 0.9, fx + 0.9, yy + 0.5, yy + 0.56, fz - 0.9, fz + 0.9, C('#ff9a3c')); gl.box(fx - 0.3, fx + 0.3, yy + 0.56, yy + 1.2, fz - 0.3, fz + 0.3, C('#ffd27a')); SOLIDS.push([fx, fz, 1.4, yy + 0.6]); }     // fire pit
+  for (const [qx, qz] of [[-15.6, bz0 + 1.2], [15.6, bz0 + 1.2], [-15.6, bz1 - 1.5], [15.6, bz1 - 1.5], [-15.6, bz0 + 12], [15.6, bz0 + 12]]) { b.box(x + qx - 0.6, x + qx + 0.6, yy, yy + 0.75, qz - 0.6, qz + 0.6, C('#2b2f36')); addLeafy(b, x + qx, yy + 0.75, qz, 1.05, C('#3f7a34'), qx + qz); }
+  h.in.z0 = bz0 + 0.4;                                                                                          // furniture can go out onto the terrace too
   homeRing(p, h, x, z + 19.5, y);
 }
 const BUNK = { h: null, mouth: [0, 0], y: 0, out: [0, 0], wtex: null, shut: null, shutBox: null, satDoor: null, satBox: null, satRing: [0, 0], con: [0, 0], holo: null, holoAt: [0, 0, 0] };
@@ -5021,6 +5059,8 @@ function netBeamPull(dt) {
     b.addEventListener('click', e => { e.stopPropagation(); if (sv.code === cur) { open(false); return; } location.hash = 'room=' + sv.code; location.reload(); });   // switching rooms is a fresh join, so reload into the new one
     list.appendChild(b); rows.set(sv.code, { b, c });
   }
+  { const b = document.createElement('button'); b.type = 'button'; const n = document.createElement('i'); n.style.fontStyle = 'normal'; n.textContent = 'Private room'; const c = document.createElement('span'); c.textContent = 'New';
+    b.append(n, c); b.addEventListener('click', e => { e.stopPropagation(); let code = ''; while (code.length < 6) code += 'abcdefghjkmnpqrstuvwxyz23456789'[Math.floor(Math.random() * 31)]; location.hash = 'room=' + code; location.reload(); }); list.appendChild(b); }   // your own room: share its invite link
   let busy = false, last = 0;
   async function refresh() {
     if (busy || Date.now() - last < 3000) return; busy = true; last = Date.now(); $('svRef').disabled = true;
