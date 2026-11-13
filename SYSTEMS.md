@@ -260,6 +260,10 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - HUD #atkHud (time left / stopped / bags), map/minimap `atkBlips` (flashing gold square, TRUCK DROP), toast when a run starts.
 - Test hooks: `atkStartNow(k)`, `atkHit`, `ATK.tg.hitBy(oil)`, `atkKey`, `atkPress`, `atkWin`, `atkFail`, `atkGrab(i)`, `atkDeliver`,
   `atkPos`, `ATK_DROP`, `hurtActor`. Tests: scratchpad `atk1.js` (solo), `atk3.js` (3 players: 2 involved get 65k, 1 gets 0).
+- V62 lock-on fixes: the truck's own SOLIDS circles blocked `canSee`, so missile/El Blick lock-on never held; the lock check now aims
+  at `y + 3.9` (over the roof) for `ATK.tg`. Guided hits on the truck trigger within 4.5 m; unguided missiles/oil that pass within
+  4.2 m also hit it. On-foot aim assist counts the truck like a cop (`t.atk`), and for the bazooka the assist pull is 100% (the rocket
+  flies straight at the assisted target; guns keep the 10% pull). Test: scratchpad `atklock.js` (heli freeze, Hellhound oil, bazooka).
 - Pitfalls met here: `ar` was already the armour presence key (so `ak`); a stop is set in `ATK.myStop` immediately but `ATK.stop` only
   next frame, so guards against repeat hits must check both.
 
