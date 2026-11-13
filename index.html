@@ -2143,9 +2143,9 @@ let sigT = 0, AIRPLANE = null, UFOSPOT = null, DEALSPOT = null, TRAPSPOT = null;
 const MSL = { list: [], cand: null, lockT: 0, ammo: 4, reload: 0, fired: 0, hits: 0, v: new T.Vector3() };
 const mslGeo = new T.ConeGeometry(0.2, 1.7, 8).rotateX(Math.PI / 2), mslMat = new T.MeshBasicMaterial({ color: 0x9fe9ff }), mslTrailMat = new T.MeshBasicMaterial({ color: 0xcff6ff, transparent: true, opacity: 0.55, blending: T.AdditiveBlending, depthWrite: false });
 const iceMat = new T.MeshBasicMaterial({ color: 0x9fe6ff, transparent: true, opacity: 0.4, depthWrite: false }), FREEZE_T = 7;
+function iceOn(n) { if (!n.ice) { n.ice = new T.Mesh(new T.BoxGeometry(2.5, n.type === 'truck' ? 3.5 : 1.9, n.halfLen * 2 + 0.7), iceMat); n.ice.position.y = n.type === 'truck' ? 1.8 : 0.95; n.ice.renderOrder = 2; n.mesh.add(n.ice); } n.ice.visible = true; }
 function freezeNpc(n) {
-  if (!n.ice) { n.ice = new T.Mesh(new T.BoxGeometry(2.5, n.type === 'truck' ? 3.5 : 1.9, n.halfLen * 2 + 0.7), iceMat); n.ice.position.y = n.type === 'truck' ? 1.8 : 0.95; n.ice.renderOrder = 2; n.mesh.add(n.ice); }
-  n.frozen = FREEZE_T; n.ice.visible = true; n.speed *= 0.25; MSL.hits++;
+  iceOn(n); n.frozen = FREEZE_T; n.speed *= 0.25; MSL.hits++;
 }
 const blickGeo = new T.IcosahedronGeometry(0.34, 0), blickMat = new T.MeshPhongMaterial({ color: 0x0b0b0d, specular: 0x9a8f6a, shininess: 90 });
 const oilGeo = new T.CircleGeometry(1, 14).rotateX(-Math.PI / 2), oils = []; let oilI = 0;
@@ -2614,7 +2614,7 @@ function updateFree(n, dt) {
     n.t -= dt; const dist = Math.hypot(P.x - n.x, P.z - n.wz);
     if (CAR.foot && !RIDE && dist < 18 && !n.driverOut && n.rc) { exitDriver(n, false); return; }      // you are on foot: they stop and come at you in person
     if (n.t <= 0 || dist > 340) { n.mode = 2; n.marker.visible = false; }
-    tx = P.x + P.vx * 0.35; tz = P.z + P.vz * 0.35; tsp = clamp(Math.hypot(P.vx, P.vz) + 9, 13, 46); if (n.frozen > 0) tsp = 4;
+    tx = P.x + P.vx * 0.35; tz = P.z + P.vz * 0.35; tsp = clamp(Math.hypot(P.vx, P.vz) + 9, 13, 46); if (n.frozen > 0) tsp = 0;
     const aim = Math.abs(wrapPi(Math.atan2(-(tx - n.x), -(tz - n.wz)) - n.yaw));
     if (dist < 14 && aim > 0.8) tsp = -15;           // too close to turn in: (negative = no slowdown) swing out wide and come back around
   }
@@ -2720,8 +2720,8 @@ function trBind(c) {
 function trUnbind(n, hideFor) { if (n.rc) { n.rc.act = null; if (hideFor) n.rc.hide = TR.abs + hideFor; } n.rc = null; n.live = false; n.mode = 0; n.pup = null; n.mesh.visible = false; n.marker.visible = false; if (held === n) held = null; }
 function trResync(n) { n.mode = 0; n.d = 0; n.pf = 1; n.fade = 0; n.first = true; n.pup = null; n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = n.stun = 0; n.marker.visible = false; }   // gives up and reappears in its slot
 function trRejoin(n) { const S = trSample(n.rc, n.d); n.mode = 0; n.pup = null; n.marker.visible = false; n.kx = n.x - S.x; n.kz = n.wz - S.z; n.spin = wrapPi(n.yaw - S.yaw); n.kvx = n.kvz = n.spinV = 0; n.pf = 1; n.first = true; if (Math.hypot(n.kx, n.kz) > 30) trResync(n); }
-function netNq() {                                  // the cars this player has knocked off their line: [id, x, y, z, yaw, mode, wrecked]
-  let a = null; for (const n of npcs) { if (!n.live || !n.rc || n.pup || !(n.mode || n.spinOut > 0)) continue; (a || (a = [])).push([n.rc.id, Math.round(n.x * 10) / 10, Math.round(n.y * 10) / 10, Math.round(n.wz * 10) / 10, Math.round(n.yaw * 100) / 100, n.mode || 2, n.wreck ? 1 : 0]); if (a.length >= 6) break; }
+function netNq() {                                  // the cars this player has knocked off their line: [id, x, y, z, yaw, mode, 1 wrecked / 2 frozen]
+  let a = null; for (const n of npcs) { if (!n.live || !n.rc || n.pup || !(n.mode || n.spinOut > 0 || n.frozen > 0)) continue; (a || (a = [])).push([n.rc.id, Math.round(n.x * 10) / 10, Math.round(n.y * 10) / 10, Math.round(n.wz * 10) / 10, Math.round(n.yaw * 100) / 100, n.mode || 2, n.wreck ? 1 : n.frozen > 0 ? 2 : 0]); if (a.length >= 6) break; }
   return a;
 }
 let pLat = 0;
@@ -2745,7 +2745,7 @@ function updateNpcs(dt) {
       const q = n.pup;
       if (TR.abs - n.pupT > 0.35) { if (q[5] === 6) trUnbind(n, 25); else trRejoin(n); continue; }
       const k = 1 - Math.exp(-10 * dt); n.x += (q[1] - n.x) * k; n.y += (q[2] - n.y) * k; n.wz += (q[3] - n.wz) * k; n.yaw += wrapPi(q[4] - n.yaw) * k; n.mode = 7; n.speed = 0; n.z = n.wz; n.d = Math.min(14, n.d + dt);
-      n.marker.visible = q[5] === 1; if (q[6] && Math.random() < dt * 9) puffAt(n.x, n.y + 1.1, n.wz);
+      n.marker.visible = q[5] === 1; if (q[6] === 1 && Math.random() < dt * 9) puffAt(n.x, n.y + 1.1, n.wz); if (q[6] === 2) { iceOn(n); n.frozen = Math.max(n.frozen, 0.6); }   // wrecked: smoke; frozen: ice, kept on while the updates keep coming
       n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(0, n.yaw, 0); continue;
     }
     if (n.mode === 7) { trRejoin(n); continue; }
@@ -2765,8 +2765,8 @@ function updateNpcs(dt) {
       blk(P.x, P.z, P.y, HULL.L); for (const a of ACT) blk(a.x, a.z, a.y, 0.4); for (const e of REMA.values()) blk(e.x, e.z, e.y, 0.4);
       for (const r of NET.rem.values()) if (r.init) blk(r.pred.x, r.pred.z, r.pred.y, r.halfLen || 2.2);
       for (const m of npcs) if (m !== n && m.live && (m.mode || m.d > 0.05 || m.stun > 0)) blk(m.x, m.wz, m.y, m.halfLen);
-      if (n.frozen > 0) tgt = Math.min(tgt, 0.2);
     }
+    if (n.frozen > 0) tgt = 0;                       // frozen solid: it stops dead until the ice melts
     n.pf += clamp(tgt - n.pf, -2.4 * dt, 0.9 * dt); n.d = Math.max(0, n.d + (1 - n.pf) * dt); if (n.d === 0 && n.pf > 1) n.pf = 1;
     if (n.d > TR.DMAX) { trResync(n); S = trSample(c, 0); }                                         // held up too long: it gives up waiting
     n.kx += n.kvx * dt; n.kz += n.kvz * dt; const dk = Math.exp(-3 * dt); n.kvx *= dk; n.kvz *= dk; n.spin += n.spinV * dt; n.spinV *= dk;
