@@ -201,6 +201,35 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - Tests: scratchpad `bunk.js` (buy, walk in, holo, sat, console, fire, expiry), `bunk2.js` (views), `crat.js` (crater shape, drive in),
   `mpos.js` (strike reaches player 2 and kills them), `want.js` (run-overs, response time, bubbles).
 
+## Lunar station and ore mining (V58)
+- `buildLunar()` (runs at boot) picks the flattest spot near the landing site (5x5 samples of moonH over the footprint), builds a slab
+  (BOXES, walkable), a hab module, a dome, solar panels, a mast with a blinking light, the ore exchange (`LSTN.sell`) and the drill rack
+  (`LSTN.rack`, both with green rings). 40 ore nodes `ORES` [{i, x, z, y, g, sol, minedT, mine}] are scattered 45-425 m around it (seeded).
+- `MINE = {own, carry}` saved as dd-mine (object), plus runtime `tool` (drill equipped) and `game`. The drill is free at the rack;
+  `drillToggle()` = Y key, D-pad down (edge 13), or the #drillB button. Picking a gun (`setGun`) puts it away. The drill model is
+  `DRILLGEO`, shown in the gun hand by `showDrill(model, on)` (local and remote, presence `tl`); guns are hidden while it is out
+  (showGun(model, -1)), and firing is blocked.
+- Mining (`mineStart`): exactly 5 s; a needle sweeps the bar, `mineStrike()` (F/Space/Enter/X, click or tap the canvas, the Strike
+  button, gamepad A/X/RT) counts a hit inside the green zone; 3 hits by 5 s = +1 ore (max 10 carried). Esc or B cancels. Input is frozen
+  while mining (input function and keydown branches). Mined nodes return after `ORE_BACK` (4 min); shared via presence `om` [[i, t]].
+- Selling: `sellOre()` at the exchange ring, $1,000 each. `moonFrame` sets `MOONACT` (sell / drill / mine / hint) and the #moonP prompt;
+  `moonKey()` is in the F and D-pad-up chains after homeKey.
+
+## TVs and sitting (V58)
+- Furniture with a `screen` {w, h, y, z} plays video: 'tv' (TV and stand) and the new 'bigtv' (Big-screen TV, $3,500).
+- One YouTube embed `#tvFrame` (960x540, under the HUD, pointer-events none) plays the uploads playlist of Joe Bart VODs (@joebartvod,
+  playlist `UU-lfGGqb5hHLBqVnVnWyrsw`). It is drawn over the nearest screen in the home you are in with a CSS matrix3d from `homog()`
+  (four projected corners); hidden when the screen faces away or you leave. It is driven by postMessage commands (`tvCmd`: playVideo,
+  pauseVideo, seekTo, setVolume, mute, unMute, nextVideo) after a 'listening' handshake; it answers with initialDelivery / infoDelivery /
+  onStateChange (`TVP.cur, dur, state, title`). The iframe needs a referrer (referrerpolicy, origin param) or YouTube shows a configuration
+  error; from file:// it always fails. Volume falls off with distance (`TVP.vol` x falloff, sent every 0.3 s). Headless Chromium cannot
+  decode the video, so only the handshake is testable here.
+- Sitting: seats are `SEATS` (sofa, armchair, beanbag, stool); standing near one gives HOMEACT 'sit' -> `sitDown(h, pc)` (SIT state,
+  crouch pose, faces the seat's front, stepPlayer holds you there). `standUp()` on F, Esc, WASD, Space, gamepad B or the button.
+- Remote #tvRemote (bottom left, while sitting): restart, -30s, play/pause, +30s, next, a seek slider, go-to-time (h:mm:ss), mute,
+  volume. Keys: arrows seek/volume, K or P pause, N next, R restart, M mute. Gamepad (`tvPad`): A pause, X next, Y restart, LB/RB
+  -/+30 s, D-pad left/right -/+10 s, up/down volume, B stand. TV and sitting are local to each device.
+
 ## Multiplayer (room presence)
 
 - `netSend()` builds one presence object ~18 Hz; `netUpdate()` reads peers. Fields: v n col rd w hp dm g c m p q vel bo beam frz oil pre
