@@ -250,7 +250,8 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   bag masks, job done if anyone has flag 16. The stopper's game spawns the 2 guards (`a.atk = true`; actors sync as usual).
 - Flags: 1 hit, 2 cracked the doors, 4 killed a guard (`crimeKill` -> also 2 stars), 8 took a bag, 16 delivered.
 - Doors: prompt #atkP 'Crack the doors' (F / D-pad up / tap) within 2.6 m of the rear -> `ATK.game` 3-dial pin game on canvas #atkCv
-  (3 pins per dial, needle sweeps, window +-0.3 rad, press F/Space/Enter/X/click/tap/A/X/RT, Esc/B cancels, 45 s limit, 3 misses fail).
+  (3 pins per dial, needle sweeps, press F/Space/Enter/X/click/tap/A/X/RT, Esc/B cancels). V63 forgiving: window +-0.62 rad (drawn
+  +-0.5), needle 1.5 rad/s (+3% per pin, +0.12 per dial), next pin at least half a turn away, 5 misses fail, 60 s limit.
   Win -> flag 2, 3 stars. Fail -> `ATK.lock` 15 s, 3 stars, a unit dispatched at once.
 - Bags: walk over one (1.5 m) -> `atkGrab(i)`; carried bags show on your back (`bagOn`) and on remote players (from their `ak` mask).
 - Delivery: `ATK_DROP` beside the road at z 1750 (south of the city, on the map once the doors are open). Carrying a bag there with
