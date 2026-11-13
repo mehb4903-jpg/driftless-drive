@@ -243,7 +243,7 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - Model `atkModel()`: boxy steel body, gold stripe, barred side windows, two rear door pivots (`ATK.doors`), ice box, 6 bag meshes,
   the drop-off ring + flag (`ATK.dropM`). Collision: two SOLIDS circles (`ATK.sol`) moved every frame (parked far away when hidden).
 - Hits: `ATK.tg` wrapper in `copTargets()` (missile and El Blick lock-on, `hitBy(oil)`), gun target `{atk:1}` in fireGun, bazooka
-  blasts in `explode`, ramming (speed > 5 within 4.2 m, uses last frame's speed because the collision slows the car first).
+  blasts in `explode` (V61: any blast within BOOMR + 3 m stops it in one shot), ramming (speed > 5 within 4.2 m, uses last frame's speed because the collision slows the car first).
   `atkHit(d, kind)`: 600 hp; a freeze missile or El Blick stops it at once, damage stops it at 0 hp. `atkStopNow` -> `ATK.myStop`, 2 stars.
 - Shared state (presence `ak` = [R, flags, bags, stopX, stopZ, stopYaw*100, stopTime], sent only while you have flags or a stop;
   parsed only if 7 numbers). Every client merges: earliest stop wins (ties by id), doors open if anyone has flag 2, bags taken = union of
