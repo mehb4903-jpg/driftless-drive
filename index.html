@@ -345,6 +345,18 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 #plBar #plOk{background:#2f9a52;color:#06110c}
 #safeP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#e9c86a;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
 #gateP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#e9c86a;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
+#wbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;pointer-events:auto;z-index:20;max-width:calc(100vw - 32px);flex-wrap:wrap;justify-content:center}
+#wbar[hidden]{display:none}
+.wslot{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;padding:5px 9px;background:var(--panel);border:1px solid var(--line);border-radius:7px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--display);line-height:1.1;cursor:pointer;color:var(--ink)}
+.wslot i{font-style:normal;font-size:11px;color:var(--ink-dim);letter-spacing:.08em}
+.wslot b{font-size:14px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.wslot span{font-size:12px;color:#7fe8ff;font-variant-numeric:tabular-nums;min-height:13px}
+.wslot.on{border-color:var(--amber);background:rgba(255,196,77,.18)}
+.wslot.on b{color:var(--amber)}
+.wslot.empty span{color:var(--road)}
+.is-touch #wbar{bottom:calc(150px + env(safe-area-inset-bottom,0px));background:rgba(14,22,30,.92);padding:8px;border:1px solid var(--line);border-radius:10px;max-width:min(430px,calc(100vw - 32px))}
+.is-touch .wslot{min-width:64px;min-height:48px}
+.is-touch #ammo.tap{pointer-events:auto;border:1px solid var(--line);border-radius:6px;padding:4px 10px;background:var(--panel)}
 #xhair{position:fixed;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;pointer-events:none}
 #xhair::before,#xhair::after{content:"";position:absolute;background:rgba(255,255,255,.92);box-shadow:0 0 2px rgba(0,0,0,.9)}
 #xhair::before{left:12px;top:0;width:2px;height:26px;clip-path:polygon(0 0,100% 0,100% 30%,0 30%,0 70%,100% 70%,100% 100%,0 100%)}
@@ -399,6 +411,8 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
 .mapin{max-width:1180px;width:100%;min-width:0}
 #mapCanvas{width:min(100%,calc(100vh - 110px));margin:0 auto;height:auto;display:block;border-radius:8px;border:1px solid var(--line)}
+#gpsClear{display:block;margin:8px auto 0;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;background:rgba(150,100,230,.35);color:#f1e9ff;border:1px solid #b48cff;border-radius:6px;padding:8px 16px;cursor:pointer}
+#gpsClear[hidden]{display:none}
 #mapNote{margin:10px 0 0;text-align:center;font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
 #flash{position:fixed;inset:0;background:#0b1118;opacity:0;pointer-events:none;transition:opacity .35s}
 #toast{position:fixed;left:50%;top:calc(64px + env(safe-area-inset-top,0px));transform:translateX(-50%);
@@ -453,9 +467,9 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <b>G</b><span>Fast travel (debug)</span>
       <b>Z</b><span>Get out / get in (or ride with a player)</span>
       <b class="foot-only" hidden>On foot</b><span class="foot-only" hidden>W A S D move, mouse looks (click to capture it), Q E turn, Shift run, Space jump</span>
-      <b class="foot-only" hidden>X</b><span class="foot-only" hidden>Shoot or punch (or left mouse). Right mouse aims; with the rifle it scopes in. R reloads</span>
+      <b class="foot-only" hidden>X</b><span class="foot-only" hidden>Shoot or punch (or left mouse). Right mouse or V aims; with the rifle it scopes in. R reloads</span>
       <b class="foot-only" hidden>Ctrl</b><span class="foot-only" hidden>Crouch (tap); hold to go prone. Tap again or jump to stand</span>
-      <b class="foot-only" hidden>1 &ndash; 0</b><span class="foot-only" hidden>Fists, Pistol, SMG, Shotgun, Rifle, then what you buy at Iron Works</span>
+      <b class="foot-only" hidden>1 &ndash; 0</b><span class="foot-only" hidden>Fists, Pistol, SMG, Shotgun, Rifle, then what you buy at Iron Works. The mouse wheel or the weapon bar switches too</span>
       <b class="jet-only" hidden>Shift</b><span class="jet-only" hidden>Rear jet boost</span>
       <b class="jet-only" hidden>Space</b><span class="jet-only" hidden>Jump, hold in the air to hover</span>
       <b class="jet-only" hidden>In air</b><span class="jet-only" hidden>W S pitch, A D yaw, Q E roll</span>
@@ -529,8 +543,9 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
   <label id="impRep"><input type="checkbox" id="impReplace"> Replace my current save so it matches exactly (otherwise this is added to what you have)</label>
   <div class="impRow"><button id="impGo" type="button">Import</button><button id="impCopy" type="button">Copy my save</button><button id="impX" type="button">Close</button></div>
   <p id="impMsg"></p></div></div>
-<div id="map" hidden><div class="mapin"><canvas id="mapCanvas"></canvas><p id="mapNote"></p></div></div>
+<div id="map" hidden><div class="mapin"><canvas id="mapCanvas"></canvas><p id="mapNote"></p><button id="gpsClear" type="button" hidden>Clear GPS route</button></div></div>
 <div id="xhair" hidden><i></i></div>
+<div id="wbar" hidden aria-label="Weapons"></div>
 <button id="shopP" type="button" hidden>Talk</button>
 <div id="shop" hidden><div class="sm" role="dialog" aria-label="Shop">
   <div class="smB" id="smB"><b id="smN">Shop</b><span id="smCash">$0</span></div>
@@ -2717,9 +2732,9 @@ function drawBig() {
   if (inSpace(P.x)) { drawMap(bigG, BK, true); $('mapNote').textContent = 'Open space · Earth ' + (SP.dE / 1000).toFixed(1) + ' km · Moon ' + (SP.dM / 1000).toFixed(1) + ' km · M or Esc closes the map'; return; }
   if (onMoon(P.x)) { const sc = MXW / (MOON.R + 160); bigG.translate(MW / 2, MH / 2); bigG.scale(sc, sc); bigG.translate(-mpx(MOON.x), -mpy(MOON.z)); drawMap(bigG, BK * sc, true); $('mapNote').textContent = 'The Moon · Climb past ' + MOON.EXIT + ' m in the saucer to fly home · M or Esc closes the map'; return; }
   drawMap(bigG, BK, true);
-  $('mapNote').textContent = POI.filter(p => p.found).length + ' of ' + POI.length + ' places found · Best lap ' + fmtLap(lap.best) + ' · M or Esc closes the map';
+  $('mapNote').textContent = POI.filter(p => p.found).length + ' of ' + POI.length + ' places found · Best lap ' + fmtLap(lap.best) + ' · Click the map for a GPS route · M or Esc closes the map';
 }
-$('map').addEventListener('click', () => toggleMap(false));
+$('map').addEventListener('click', e => { if (e.target === bigCv && gpsCanSet()) { gpsFromMap(e); return; } toggleMap(false); });
 $('bMap').addEventListener('click', e => { toggleMap(); e.currentTarget.blur(); });
 /* debug fast travel: drop the car next to any place */
 function teleport(x, z, heading) {
@@ -2748,6 +2763,7 @@ function rebuildTravel() {                            // the list is made each t
 $('travel').addEventListener('click', () => toggleTravel(false));
 $('bTravel').addEventListener('click', e => { toggleTravel(); e.currentTarget.blur(); });
 function updatePlaces(dt) {
+  gpsFrame(dt);
   if (mapRow < MH) pumpMap(3);
   updateLap(dt);
   if (started && CAR.foot && !RIDE && HP.dead <= 0 && MALLDOOR) { if (inMall(P.x)) { if (Math.hypot(P.x - MALLI.x, P.z - MALLI.z - 64.6) < 2.3) mallGo(false); } else if (Math.hypot(P.x - MALLDOOR.x, P.z - MALLDOOR.z) < 2.3 && Math.abs(P.y - MALLDOOR.y) < 3) mallGo(true); }
@@ -3679,7 +3695,8 @@ function wantedLink(now) {                             // a driver and their pas
   if (lv > WANTED.lv && (fresh || lv > before)) { WANTED.lv = lv; if (num(w[1]) && num(w[2])) { WANTED.last.x = w[1]; WANTED.last.z = w[2]; } WANTED.seenT = now; toast('Wanted with ' + mate.name + ' ' + '★'.repeat(lv)); }
   else if (!fresh && before > 0 && lv === 0 && WANTED.lv > 0) clearWanted(false);
 }
-function policeBlips(g, k) {                         // cops and cars on the map, and the search circle while you are hidden
+function policeBlips(g, k) {
+  gpsBlips(g, k);                         // cops and cars on the map, and the search circle while you are hidden
   const fl = Math.floor(NET.now() / 300) & 1;
   if (WANTED.lv > 0) { const bub = (x, z) => { g.beginPath(); g.arc(mpx(x), mpy(z), CB[WANTED.lv] / MS, 0, TAU); g.fillStyle = 'rgba(226,72,58,.13)'; g.fill(); g.lineWidth = 1 / k; g.strokeStyle = 'rgba(226,72,58,.6)'; g.stroke(); };   // where the police would find you
     for (const a of ACT) if (a.police && a.st !== 2 && !inMall(a.x)) bub(a.x, a.z); for (const c of PCARS) if (c.crew > 0 && c.st !== 'wreck' && c.st !== 'gone') bub(c.x, c.z); }
@@ -3689,6 +3706,91 @@ function policeBlips(g, k) {                         // cops and cars on the map
   for (const c of PCARS) if (c.st !== 'gone') dot(c.x, c.z, true);
   for (const e of REMPC.values()) dot(e.m.position.x, e.m.position.z, true);
 }
+
+/* ───────────── GPS ─────────────
+   Click a spot on the map and a trail of purple arrows leads you there along the roads. It only exists on your screen: nothing
+   about it is sent to other players. The roads are the 21 x 21 city grid plus the main road out to both harbours. */
+const GPS = { on: false, dx: 0, dz: 0, pts: null, cum: null, len: 0, t: 0, inst: null, pin: null, end: null, told: false }, GR = { ready: false, nodes: [], adj: [], edges: [] };
+function gpsGraph() {
+  if (GR.ready) return GR; const N = 21, E = CITY.E, S0 = CITY.P, nodes = GR.nodes, adj = GR.adj, edges = GR.edges;
+  const addNode = (x, z) => { nodes.push([x, z]); adj.push([]); return nodes.length - 1; };
+  const addEdge = (a, b, road) => { const A = nodes[a], B = nodes[b], e = { a, b, road, len: Math.hypot(B[0] - A[0], B[1] - A[1]) }; if (road) { let l = 0, px = A[0], pz = A[1]; for (let k = 1; k <= 8; k++) { const z = A[1] + (B[1] - A[1]) * k / 8, x = roadX(z); l += Math.hypot(x - px, z - pz); px = x; pz = z; } e.len = l; } edges.push(e); adj[a].push([b, e]); adj[b].push([a, e]); };
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) addNode(-E + i * S0, -E + j * S0);
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { if (i + 1 < N) addEdge(i * N + j, (i + 1) * N + j, false); if (j + 1 < N) addEdge(i * N + j, i * N + j + 1, false); }
+  for (const [start, dir] of [[10 * N + 0, -1], [10 * N + (N - 1), 1]]) { let prev = start, z = nodes[start][1]; while (Math.abs(z + dir * 100) <= REND + 0.1) { z += dir * 100; const n = addNode(roadX(z), z); addEdge(prev, n, true); prev = n; } }   // the avenue goes on out to each harbour
+  GR.ready = true; return GR;
+}
+function gpsPt(e, t) { const G = GR, A = G.nodes[e.a], B = G.nodes[e.b]; if (e.road) { const z = A[1] + (B[1] - A[1]) * t; return [roadX(z), z]; } return [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t]; }
+function gpsSnap(x, z) {                              // the nearest point on any road
+  const G = gpsGraph(); let best = null;
+  for (const e of G.edges) { const A = G.nodes[e.a], B = G.nodes[e.b], vx = B[0] - A[0], vz = B[1] - A[1], l2 = vx * vx + vz * vz || 1, t = clamp(((x - A[0]) * vx + (z - A[1]) * vz) / l2, 0, 1), px = A[0] + vx * t, pz = A[1] + vz * t, d = (px - x) * (px - x) + (pz - z) * (pz - z); if (!best || d < best.d) best = { e, t, d }; }
+  if (!best) return null; const q = gpsPt(best.e, best.t); best.x = q[0]; best.z = q[1]; return best;
+}
+function gpsSlice(e, t0, t1) {                        // the points along one road from t0 to t1
+  const n = e.road ? Math.max(1, Math.ceil(Math.abs(t1 - t0) * e.len / 20)) : 1, out = []; for (let k = 0; k <= n; k++) out.push(gpsPt(e, t0 + (t1 - t0) * k / n)); return out;
+}
+function gpsPlan(sx, sz, dx, dz) {
+  const G = gpsGraph(), S = gpsSnap(sx, sz), D = gpsSnap(dx, dz); if (!S || !D) return null; const n = G.nodes.length;
+  let poly;
+  if (S.e === D.e) poly = gpsSlice(S.e, S.t, D.t);
+  else {
+    const dist = new Float64Array(n).fill(Infinity), prev = new Int32Array(n).fill(-1), pe = new Array(n).fill(null), done = new Uint8Array(n);
+    dist[S.e.a] = S.t * S.e.len; dist[S.e.b] = (1 - S.t) * S.e.len;
+    for (let it = 0; it < n; it++) { let u = -1, bd = Infinity; for (let i = 0; i < n; i++) if (!done[i] && dist[i] < bd) { bd = dist[i]; u = i; } if (u < 0) break; done[u] = 1; for (const [v, e] of G.adj[u]) { const nd = dist[u] + e.len; if (nd < dist[v]) { dist[v] = nd; prev[v] = u; pe[v] = e; } } }
+    const ca = dist[D.e.a] + D.t * D.e.len, cb = dist[D.e.b] + (1 - D.t) * D.e.len; if (!isFinite(ca) && !isFinite(cb)) return null;
+    const endN = ca <= cb ? D.e.a : D.e.b, chain = []; for (let v = endN; v >= 0; v = prev[v]) chain.push(v); chain.reverse();
+    const first = chain[0]; poly = gpsSlice(S.e, S.t, first === S.e.a ? 0 : 1);
+    for (let k = 1; k < chain.length; k++) { const e = pe[chain[k]], fwd = e.a === chain[k - 1]; poly = poly.concat(gpsSlice(e, fwd ? 0 : 1, fwd ? 1 : 0)); }
+    poly = poly.concat(gpsSlice(D.e, endN === D.e.a ? 0 : 1, D.t));
+  }
+  const pts = [poly[0]]; for (const q of poly) { const l = pts[pts.length - 1]; if (Math.hypot(q[0] - l[0], q[1] - l[1]) > 0.5) pts.push(q); }
+  const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  return { pts, cum, len: cum[cum.length - 1], end: [D.x, D.z] };
+}
+const gpsHere = () => !(onMoon(P.x) || inSpace(P.x) || inMall(P.x) || inBank(P.x, P.z));
+function gpsCanSet() { return gpsHere(); }
+function gpsSet(x, z) {
+  if (!(Math.abs(x) < XLIM && Math.abs(z) < ZLIM)) { toast('Pick a spot on the island'); return; }
+  GPS.on = true; GPS.dx = x; GPS.dz = z; GPS.t = 0; GPS.pts = null; GPS.told = false; $('gpsClear').hidden = false; gpsRoute(); if (mapOpen) drawBig(); toast('GPS route set');
+}
+function gpsClear(msg) { GPS.on = false; GPS.pts = null; if (GPS.inst) GPS.inst.visible = false; if (GPS.pin) GPS.pin.visible = false; $('gpsClear').hidden = true; if (mapOpen) drawBig(); if (msg) toast(msg); }
+function gpsFromMap(e) {
+  const r = e.target.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * MW * MS - MXW, z = (e.clientY - r.top) / r.height * MH * MS - MZ;
+  if (GPS.on && GPS.end && Math.hypot(x - GPS.end[0], z - GPS.end[1]) < 70) { gpsClear('GPS route cleared'); return; }       // click the pin again to take it away
+  gpsSet(x, z);
+}
+function gpsRoute() {
+  const r = gpsPlan(P.x, P.z, GPS.dx, GPS.dz); if (!r) { if (!GPS.told) { GPS.told = true; toast('No road route found'); } GPS.pts = null; return; }
+  GPS.pts = r.pts; GPS.cum = r.cum; GPS.len = r.len; GPS.end = r.end;
+}
+function gpsGeo() {
+  const g = new T.BufferGeometry(), v = [0, 0, -1.4, 1.5, 0, 0.8, 0.9, 0, 0.8, 0, 0, -1.4, 0.9, 0, 0.8, 0, 0, -0.45, 0, 0, -1.4, 0, 0, -0.45, -0.9, 0, 0.8, 0, 0, -1.4, -0.9, 0, 0.8, -1.5, 0, 0.8];
+  g.setAttribute('position', new T.Float32BufferAttribute(v.map((q, i) => i % 3 === 2 ? q * 1.7 : q * 1.7), 3)); return g;
+}
+const _gm = new T.Matrix4(), _gq = new T.Quaternion(), _gp = new T.Vector3(), _gs = new T.Vector3(1, 1, 1), _ge = new T.Euler();
+function gpsFrame(dt) {
+  if (!GPS.on || !gpsHere()) { if (GPS.inst) GPS.inst.visible = false; if (GPS.pin) GPS.pin.visible = false; return; }
+  GPS.t -= dt; if (GPS.t <= 0 || !GPS.pts) { GPS.t = 2; gpsRoute(); } const pts = GPS.pts; if (!pts) return;
+  if (Math.hypot(P.x - GPS.end[0], P.z - GPS.end[1]) < 28) { gpsClear('You have arrived'); return; }
+  if (!GPS.inst) { GPS.inst = new T.InstancedMesh(gpsGeo(), new T.MeshBasicMaterial({ color: 0xb48cff, transparent: true, opacity: 0.55, depthWrite: false, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }), 56); GPS.inst.frustumCulled = false; scene.add(GPS.inst);
+    GPS.pin = new T.Mesh(new T.CylinderGeometry(1.4, 1.4, 90, 16, 1, true), new T.MeshBasicMaterial({ color: 0xb48cff, transparent: true, opacity: 0.35, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, fog: false })); scene.add(GPS.pin); }
+  let s0 = 0, bd = Infinity; for (let i = 1; i < pts.length; i++) { const ax = pts[i - 1][0], az = pts[i - 1][1], vx = pts[i][0] - ax, vz = pts[i][1] - az, l2 = vx * vx + vz * vz || 1, t = clamp(((P.x - ax) * vx + (P.z - az) * vz) / l2, 0, 1), d = Math.hypot(ax + vx * t - P.x, az + vz * t - P.z); if (d < bd) { bd = d; s0 = GPS.cum[i - 1] + t * Math.sqrt(l2); } }
+  let n = 0, seg = 1; const total = GPS.len;
+  for (let s = s0 + 9; s < total && n < 56; s += 10) {
+    while (seg < pts.length - 1 && GPS.cum[seg] < s) seg++; const a = pts[seg - 1], b = pts[seg], sl = GPS.cum[seg] - GPS.cum[seg - 1] || 1, t = clamp((s - GPS.cum[seg - 1]) / sl, 0, 1);
+    const dx = b[0] - a[0], dz = b[1] - a[1], dl = Math.hypot(dx, dz) || 1, ux = dx / dl, uz = dz / dl, x = a[0] + dx * t - uz * 2.4, z = a[1] + dz * t + ux * 2.4;   // drive on the right-hand lane
+    const y = (inCity(x, z, 8) ? CITY.y : roadY(z)) + 0.24; _gp.set(x, y, z); _ge.set(0, Math.atan2(-ux, -uz), 0); _gq.setFromEuler(_ge); _gm.compose(_gp, _gq, _gs); GPS.inst.setMatrixAt(n++, _gm);
+  }
+  GPS.inst.count = n; GPS.inst.instanceMatrix.needsUpdate = true; GPS.inst.visible = n > 0;
+  const ex = GPS.end[0], ez = GPS.end[1]; GPS.pin.position.set(ex, (inCity(ex, ez, 8) ? CITY.y : roadY(ez)) + 45, ez); GPS.pin.visible = true;
+}
+function gpsBlips(g, k) {                              // the route and its pin on the maps
+  if (!GPS.on) return; g.save(); g.lineJoin = g.lineCap = 'round';
+  if (GPS.pts) { g.beginPath(); GPS.pts.forEach((q, i) => i ? g.lineTo(mpx(q[0]), mpy(q[1])) : g.moveTo(mpx(q[0]), mpy(q[1]))); g.strokeStyle = 'rgba(180,140,255,.9)'; g.lineWidth = 2.4 / k; g.stroke(); }
+  const ex = GPS.end ? GPS.end[0] : GPS.dx, ez = GPS.end ? GPS.end[1] : GPS.dz; g.beginPath(); g.arc(mpx(ex), mpy(ez), 5 / k, 0, TAU); g.fillStyle = '#b48cff'; g.fill(); g.lineWidth = 1.4 / k; g.strokeStyle = '#fff'; g.stroke(); g.restore();
+}
+$('gpsClear').addEventListener('click', e => { e.stopPropagation(); gpsClear('GPS route cleared'); });
+window.__gps = { GPS, gpsPlan, gpsSet, gpsClear };
 
 /* ───────────── homes and furniture ─────────────
    Stand in a home's green ring to buy it. Inside: an empty home and a storage crate. Furniture bought at Home & Co goes to the crate
@@ -4377,12 +4479,13 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyG') toggleTravel();
   if (e.code === 'KeyX' && (CAR.heli || CAR.blick)) fireMissile();
   if (e.code === 'KeyZ') toggleFoot();
+  if (e.code === 'KeyV' && CAR.foot && !e.repeat) GUN.ads = true;       // hold V to aim, like the right mouse button
   if (CAR.foot && /^Digit\d$/.test(e.code)) { const d = +e.code.slice(5), i = GUNSLOT[(d + 9) % 10]; if (OWN.has(i)) setGun(i); else toast(GUNS[i].name + ': buy it at Iron Works in the mall'); }
   if (e.code === 'KeyB' && CAR.foot) homeStore();
   if (e.code === 'KeyY' && CAR.foot) drillToggle();
   if (e.code === 'KeyB' && CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); }
 });
-addEventListener('keyup', e => { if (e.target && e.target.tagName === 'INPUT') return; keys[e.code] = false; if (e.code === 'ControlLeft' || e.code === 'ControlRight') poseKey(false); });
+addEventListener('keyup', e => { if (e.target && e.target.tagName === 'INPUT') return; keys[e.code] = false; if (e.code === 'KeyV') GUN.ads = false; if (e.code === 'ControlLeft' || e.code === 'ControlRight') poseKey(false); });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; gpPrev = []; gpFireHeld = false; mfire = false; });
 /* ── touch controls. Every control tracks the one pointer that pressed it and captures it, so several fingers work at once
    and a finger that slides off, or a cancelled pointer, always releases the control. ── */
@@ -5521,6 +5624,24 @@ function dmgNpc(n, d) {
 const tracers = []; for (let i = 0; i < 12; i++) { const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(new Float32Array(6), 3)); const l = new T.Line(g, new T.LineBasicMaterial({ color: 0xffe9a0, transparent: true, opacity: 0 })); l.frustumCulled = false; l.visible = false; l.userData.life = 0; scene.add(l); tracers.push(l); }
 let tracerI = 0, mfire = false;
 function cycleGun(dir) { let k = GUNSLOT.indexOf(GUN.i); for (let n = 0; n < 10; n++) { k = (k + dir + 10) % 10; if (OWN.has(GUNSLOT[k])) return setGun(GUNSLOT[k]); } }
+/* the weapon bar: what you carry, what is in your hands, one click or tap to switch. On a phone, tap the weapon name to open it */
+const WBAR = { sig: '', open: false, wT: 0 };
+function wbarUpdate() {
+  const box = $('wbar'); if (!box) return; if (!CAR.foot) WBAR.open = false;
+  box.hidden = !(CAR.foot && started && (!touchMode || WBAR.open)); const am = $('ammo'); if (am) am.classList.toggle('tap', touchMode && CAR.foot && started);
+  if (box.hidden) return;
+  const items = []; GUNSLOT.forEach((i, k) => { if (!OWN.has(i)) return; const g = GUNS[i]; items.push({ key: String((k + 1) % 10), name: g.name, ammo: g.melee ? '' : g.rocket ? GUN.ammo[i] + '/1 \u00B7 ' + ROCK.v : GUN.ammo[i] + '/' + magOf(i), on: !MINE.tool && GUN.i === i, empty: !g.melee && GUN.ammo[i] <= 0 && !g.rocket, pick: () => setGun(i) }); });
+  if (MINE.own) items.push({ key: 'Y', name: 'Drill', ammo: MINE.carry + ' ore', on: !!MINE.tool, empty: false, pick: () => drillToggle() });
+  const sig = items.map(q => q.key + q.name + q.ammo + q.on).join('|'); if (sig === WBAR.sig) return; WBAR.sig = sig; box.textContent = '';
+  for (const q of items) { const b = document.createElement('button'); b.type = 'button'; b.className = 'wslot' + (q.on ? ' on' : '') + (q.empty ? ' empty' : ''); const k = document.createElement('i'); k.textContent = q.key; const n = document.createElement('b'); n.textContent = q.name; const a = document.createElement('span'); a.textContent = q.ammo; b.append(k, n, a);
+    b.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); q.pick(); WBAR.open = false; WBAR.sig = ''; wbarUpdate(); }); box.appendChild(b); }
+}
+{ const am = $('ammo'); if (am) am.addEventListener('pointerdown', e => { if (!(touchMode && CAR.foot && started)) return; e.preventDefault(); e.stopPropagation(); WBAR.open = !WBAR.open; WBAR.sig = ''; wbarUpdate(); }); }
+addEventListener('pointerdown', e => { if (WBAR.open && !(e.target.closest && e.target.closest('#wbar,#ammo'))) { WBAR.open = false; wbarUpdate(); } }, true);
+addEventListener('wheel', e => {                  // the mouse wheel flicks through your weapons
+  if (!CAR.foot || !started || PLACE.on || HP.dead > 0 || !e.deltaY || document.querySelector('#shop:not([hidden]),#hack:not([hidden]),#map:not([hidden]),#travel:not([hidden]),#servers:not([hidden]),#impBox:not([hidden]),#orb:not([hidden]),#tvRemote:not([hidden]),#mineUI:not([hidden])')) return;
+  const t = performance.now(); if (t - WBAR.wT < 140) return; WBAR.wT = t; cycleGun(e.deltaY > 0 ? 1 : -1);
+}, { passive: true });
 function setGun(i) { if (!CAR.foot) return; i = (i + GUNS.length) % GUNS.length; if (!OWN.has(i)) return; if (MINE.tool && started) MINE.tool = false; GUN.i = i; GUN.cool = Math.max(GUN.cool, 0.25); GUN.rl = 0; GUN.bloom = 0; toast(GUNS[GUN.i].name); }
 function fireGun() {
   if (!CAR.foot || GUN.cool > 0 || GUN.rl > 0 || !started || HP.dead > 0 || (P.frozenT > 0 && !RIDE)) return; const gn = GUNS[GUN.i];
@@ -5605,7 +5726,7 @@ function footFrame(dt) {
   else if (!w.hidden) w.hidden = true;
   GUN.scoped = CAR.foot && started && GUN.ads && (GUN.i === 3 || !!(ATT[GUN.i] && ATT[GUN.i].long)) && !RIDE && HP.dead <= 0; GUN.rdot = !GUN.scoped && CAR.foot && started && GUN.ads && camMode === 2 && !!(ATT[GUN.i] && ATT[GUN.i].dot) && !RIDE && HP.dead <= 0; $('rdot').hidden = !GUN.rdot;   // a red dot in first person: look through the sight
   $('scope').hidden = !GUN.scoped; $('xhair').hidden = !(CAR.foot && started) || GUN.scoped || GUN.rdot;
-  if (CAR.foot) $('ammo').textContent = MINE.tool ? 'Mining drill \u00B7 ' + MINE.carry + ' ore' : GUNS[GUN.i].rocket ? 'Bazooka ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/1') + ' \u00B7 ' + ROCK.v + ' rockets' : GUNS[GUN.i].melee ? 'Fists' : GUNS[GUN.i].name + ' ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/' + magOf(GUN.i));
+  wbarUpdate(); if (CAR.foot) $('ammo').textContent = MINE.tool ? 'Mining drill \u00B7 ' + MINE.carry + ' ore' : GUNS[GUN.i].rocket ? 'Bazooka ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/1') + ' \u00B7 ' + ROCK.v + ' rockets' : GUNS[GUN.i].melee ? 'Fists' : GUNS[GUN.i].name + ' ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/' + magOf(GUN.i));
   PH.hurtT += dt; if (CAR.foot && HP.dead <= 0 && PH.hurtT > 6 && PH.v < PH.max) PH.v = Math.min(PH.max, PH.v + 9 * dt);   // health comes back after six seconds without being hit
   $('arm').hidden = !(CAR.foot && ARM.v > 0.5); $('armFill').style.width = Math.round(ARM.v) + '%';
   const hf = $('hpFill'), pc = CAR.foot ? PH.v / PH.max : HP.v / HP.max; hf.style.width = Math.round(pc * 100) + '%'; hf.style.background = pc < 0.3 ? '#e2483a' : pc < 0.6 ? '#ffc44d' : '#7ee04b';
