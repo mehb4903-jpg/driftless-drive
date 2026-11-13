@@ -235,6 +235,18 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   volume. Keys: arrows seek/volume, K or P pause, N next, R restart, M mute. Gamepad (`tvPad`): A pause, X next, Y restart, LB/RB
   -/+30 s, D-pad left/right -/+10 s, up/down volume, B stand. TV and sitting are local to each device.
 
+## El Blick and freeze missiles on people (V64)
+- Lock-on (`copTargets`) now offers every hostile actor: `a.cop || a.gun || a.st === 0 || a.guard || a.atk` (was police only). Their
+  wrapper `hitBy(oil)` -> `actorHitBy(a, oil)`. Unguided missiles/oil that pass within 1.8 m of an actor also hit it.
+- El Blick -> `a.bleed` {t 5 s}: `actorFx` drains 30% of max hp over 5 s (BLEED_T, BLEED_F, the same rule as the player bleed in the
+  standalone copy), caps their speed at walking x0.8 (BLEED_SLOW), spurts blood from the hit (`bloodSpurt`, falling droplets) and leaves
+  a drip trail (`bloodDrip`, 40 pooled ground decals, `bloodFrame`). Bleeding out counts as your kill (MYHIT -> crimeKill rules).
+- Freeze missile -> `a.frozen = FREEZE_T` + 20 damage: `actorFx` returns true so `stepActor` skips moving and shooting; an ice block
+  (`a.ice`, removed in dropActor) sits on them. They can still be shot.
+- Police cars: freeze missile sets `c.frozen` (stepPcar returns early, no driving, no unloading, ice box on the car); El Blick unchanged.
+- Local to the actor's owner: other players see the actor stop or slow and lose health, but not the ice or blood (not in presence).
+- Test: scratchpad `bleed.js` (Hellhound oil on an armed NPC: 100 -> 70 hp over 5 s, ~2 m/s; heli freeze: stands still in ice; frozen police car).
+
 ## Armored truck heist (V60)
 - Schedule from the shared clock, nothing sent: run id `R = floor((NET.now() - ATK.base) / ATK_P)` (8 min), `ATK.base` is 0 except for
   the test hook `atkStartNow(k)`. The truck drives for `ATK_DRIVE` (4 min) on `atkRoute(R)` (a rectangle of city street lines picked
