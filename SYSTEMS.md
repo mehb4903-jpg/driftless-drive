@@ -24,6 +24,10 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 
 ## How to edit safely (learned the hard way)
 
+- Pitfalls, short list: boot-time code must not touch a `const`/`let` declared later in the file (TDZ); never end an inserted
+  fragment with a `//` comment when code follows on the same line; check a name is free before adding it (BK/BNK, gAt/gravAt, T as
+  a local, `ar` in presence); `store()` only returns objects.
+
 - Patch with python scripts in the scratchpad: `rep(old, new)` that asserts the anchor occurs exactly once, collect failures, write only
   if none failed. Anchors with `›`, `“`, `·` etc are real Unicode characters in the file, not `\u` escapes.
 - **Never put a `//` comment on a line that continues afterwards.** A comment added at the end of a replacement swallows the rest of that
@@ -230,6 +234,34 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - Remote #tvRemote (bottom left, while sitting): restart, -30s, play/pause, +30s, next, a seek slider, go-to-time (h:mm:ss), mute,
   volume. Keys: arrows seek/volume, K or P pause, N next, R restart, M mute. Gamepad (`tvPad`): A pause, X next, Y restart, LB/RB
   -/+30 s, D-pad left/right -/+10 s, up/down volume, B stand. TV and sitting are local to each device.
+
+## Armored truck heist (V60)
+- Schedule from the shared clock, nothing sent: run id `R = floor((NET.now() - ATK.base) / ATK_P)` (8 min), `ATK.base` is 0 except for
+  the test hook `atkStartNow(k)`. The truck drives for `ATK_DRIVE` (4 min) on `atkRoute(R)` (a rectangle of city street lines picked
+  from R) at `ATK_V` 11 m/s; `atkPos(t)` gives the right-hand-lane position with rounded corners. It is NOT a TR rail slot: TR cars stop
+  at lights and turn at random, the truck must not; it is just as deterministic. Traffic treats it as a blocker (blk in updateNpcs).
+- Model `atkModel()`: boxy steel body, gold stripe, barred side windows, two rear door pivots (`ATK.doors`), ice box, 6 bag meshes,
+  the drop-off ring + flag (`ATK.dropM`). Collision: two SOLIDS circles (`ATK.sol`) moved every frame (parked far away when hidden).
+- Hits: `ATK.tg` wrapper in `copTargets()` (missile and El Blick lock-on, `hitBy(oil)`), gun target `{atk:1}` in fireGun, bazooka
+  blasts in `explode`, ramming (speed > 5 within 4.2 m, uses last frame's speed because the collision slows the car first).
+  `atkHit(d, kind)`: 600 hp; a freeze missile or El Blick stops it at once, damage stops it at 0 hp. `atkStopNow` -> `ATK.myStop`, 2 stars.
+- Shared state (presence `ak` = [R, flags, bags, stopX, stopZ, stopYaw*100, stopTime], sent only while you have flags or a stop;
+  parsed only if 7 numbers). Every client merges: earliest stop wins (ties by id), doors open if anyone has flag 2, bags taken = union of
+  bag masks, job done if anyone has flag 16. The stopper's game spawns the 2 guards (`a.atk = true`; actors sync as usual).
+- Flags: 1 hit, 2 cracked the doors, 4 killed a guard (`crimeKill` -> also 2 stars), 8 took a bag, 16 delivered.
+- Doors: prompt #atkP 'Crack the doors' (F / D-pad up / tap) within 2.6 m of the rear -> `ATK.game` 3-dial pin game on canvas #atkCv
+  (3 pins per dial, needle sweeps, window +-0.3 rad, press F/Space/Enter/X/click/tap/A/X/RT, Esc/B cancels, 45 s limit, 3 misses fail).
+  Win -> flag 2, 3 stars. Fail -> `ATK.lock` 15 s, 3 stars, a unit dispatched at once.
+- Bags: walk over one (1.5 m) -> `atkGrab(i)`; carried bags show on your back (`bagOn`) and on remote players (from their `ak` mask).
+- Delivery: `ATK_DROP` beside the road at z 1750 (south of the city, on the map once the doors are open). Carrying a bag there with
+  0 stars -> `atkDeliver()` (flag 16) -> job done for everyone. Job = first bag delivered.
+- Payout: each client pays itself $65,000 (`ATK_PAY`) when the job is done and its own flags are non-zero, once per run:
+  `ATK.paid` / dd-atk {run}. Uninvolved players get nothing. Run over at 470 s ("The truck's been recovered").
+- HUD #atkHud (time left / stopped / bags), map/minimap `atkBlips` (flashing gold square, TRUCK DROP), toast when a run starts.
+- Test hooks: `atkStartNow(k)`, `atkHit`, `ATK.tg.hitBy(oil)`, `atkKey`, `atkPress`, `atkWin`, `atkFail`, `atkGrab(i)`, `atkDeliver`,
+  `atkPos`, `ATK_DROP`, `hurtActor`. Tests: scratchpad `atk1.js` (solo), `atk3.js` (3 players: 2 involved get 65k, 1 gets 0).
+- Pitfalls met here: `ar` was already the armour presence key (so `ak`); a stop is set in `ATK.myStop` immediately but `ATK.stop` only
+  next frame, so guards against repeat hits must check both.
 
 ## Multiplayer (room presence)
 
