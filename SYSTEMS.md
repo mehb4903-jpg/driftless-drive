@@ -210,7 +210,8 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   `DRILLGEO`, shown in the gun hand by `showDrill(model, on)` (local and remote, presence `tl`); guns are hidden while it is out
   (showGun(model, -1)), and firing is blocked.
 - Mining (`mineStart`): exactly 5 s; a needle sweeps the bar, `mineStrike()` (F/Space/Enter/X, click or tap the canvas, the Strike
-  button, gamepad A/X/RT) counts a hit inside the green zone; 3 hits by 5 s = +1 ore (max 10 carried). Esc or B cancels. Input is frozen
+  button, gamepad A/X/RT) counts a hit inside the green zone (V59, easier: zone 36% wide shrinking 2% per hit, 4% grace either side,
+  needle speed 0.55 +0.12 per hit); 3 hits by 5 s = +1 ore (max 10 carried). Esc or B cancels. Input is frozen
   while mining (input function and keydown branches). Mined nodes return after `ORE_BACK` (4 min); shared via presence `om` [[i, t]].
 - Selling: `sellOre()` at the exchange ring, $1,000 each. `moonFrame` sets `MOONACT` (sell / drill / mine / hint) and the #moonP prompt;
   `moonKey()` is in the F and D-pad-up chains after homeKey.
