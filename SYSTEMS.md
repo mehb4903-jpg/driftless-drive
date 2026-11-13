@@ -66,6 +66,8 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - `P` = player state, `CAR` = current vehicle def from `CARS` (or `FOOTCAR`). `setCar(i)`, `toggleFoot()`/`getOut()`/`getIn()`, `PARK` =
   parked car while on foot. `stepPlayer` -> `stepFoot`/`stepUfo`/`stepHeli`/`stepSpace` or car physics. Fixed step `H_STEP`.
 - Health: `HP` (vehicle), `PH` (person), `ARM.v` armour (soaks 70% on foot). `damage(d)`. Down on foot: respawn beside PARK after 10 s.
+- Easter egg: names King Rello / Lil Marz (`EGGS`, `eggKey(name)`) make the on-foot model `buildClassic()`: the porch `sitMan` figure
+  box for box, stood up and scaled 0.79, with the walker's rig. Passed as `fit.egg` into `makeCar('walker', ...)`.
 - Stance `POSE.v` 0/1/2 (stand/crouch/prone): Ctrl tap/hold, touch `tFC`, pad D-pad down. `poseKey(down)`, `poseTick`, `stancePose`.
   Affects speed, camera height, muzzle height, spread, and NPC hit chance (`t.low`). Sent as presence `cr`.
 - Camera: `updateCamera`; indoors/city it is pulled in front of walls by `camWalls()`/`camHits()`.
@@ -76,7 +78,8 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   `GUNSLOT` maps number keys 1..0. `OWN` = owned set (0-4 free). `GM` = box models per gun (index 4 empty). `gunMesh(i, view, att)`.
 - `fireGun()`: melee -> `punch()`; rocket -> `launchRocket()`; else hitscan against target list `tg` (npcs, people via `peopleTargets`,
   remote players with head boxes). Headshot x3 rifle / x2 others. Aim assist pulls 10% toward targets inside a 12 degree cone.
-- Attachments `ATT[gun] = {dot,long,supp,ext,grip,laser,fin}`, `ATTOWN`, `magOf(i)`, `refreshGuns()`, `laserFrame()`. Scope overlay `#scope`
+- Attachments `ATT[gun] = {dot,long,supp,ext,grip,laser,fin}`, `ATTOWN`, `magOf(i)`, `refreshGuns()`, `laserFrame()`. Others see the
+  gun in your hand with its parts: presence `ga` = `gaKey(i)`, rebuilt on their side by `remoteGunAtt(r, s)`. Scope overlay `#scope`
   (rifle or long scope), red dot overlay `#rdot` (first person + dot). `GUN.scoped`, `GUN.rdot`.
 - Rockets/explosions: `ROCKETS`, `stepRockets`, `explode(x,y,z,mine)` (damages everyone in 7 m, shared via presence `bx`).
 
@@ -117,6 +120,8 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   out of your way reset (station cars teleport home, patrols removed, officers back at their posts).
 - Map: `policeBlips(g, k)` (cop dots, car squares, flashing search circle). HUD: `#wanted` shows stars, `.srch` while searching.
 - Targeting: aim assist weights cops 3x closer; heli/Blick lock-on gets `copTargets()` (wrappers with `copT`, `hitBy`).
+- Shared stars: `wantedLink(now)` links you with the player you ride with (`RIDE`, or whoever sends `rw` = your id). The higher level is
+  copied over when it rises; when the partner drops to 0 you clear too. Presence `wl` [lv, lastX, lastZ], `rw` ride target id.
 - Multiplayer: police actors go out as normal actors (`ac`, flag q[11]); moving police cars in presence `pc`; others render them
   (`REMPC`) and hide their own parked copy with the same id.
 
@@ -126,10 +131,14 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   Deaths drop cash (people; players drop 25%).
 - ATMs (`ATMS`, 18 on sidewalks) -> `tryRob()` -> PIN mini-game `HACK` (`hackKey`, `hackSubmit`, `hackFail`; `HACK.kind` = 'atm' | 'gate' |
   'safe'). Empty for 5 min, shared via presence `at`.
-- Gas station (Halfway Diner, `gasShop()` + `GS`): hollow building, cashier hold-up by aiming a gun (6 s), safe in the back room = $420
-  (`crackSafe`/`safeCracked`). Timers shared via presence `gs`. `gasFrame(dt)`.
+- Gas station (Halfway Diner, `gasShop()` + `GS`): hollow building with a back door (`GS.back`), cashier hold-up by aiming a gun (6 s),
+  safe in the back room = $420 (`crackSafe`/`safeCracked`). Security camera `GS.cam` over the door: `camLive()`; cover it (`coverCam`, prompt
+  `#camP`) or shoot it (`camShot`, target `pp.cam`). A robbery seen by a live camera = 1 star at once (`robbed()`); otherwise the cashier
+  starts a 15 s report timer (`GS.report`). One punch knocks him out (`cashierHit`, melee) and cancels it; a bullet kills him (2 stars only
+  if the camera is live). Shooting the camera sends him running for the back door (`GS.flee`); if he gets out he reports you (1 star) and is
+  gone until restock. Timers (till, safe, camera broken, camera covered) shared via presence `gs` [reg, safe, camBroke, camCover].
 - Bank job (`H`, `heistFrame`, `startHeist`, `heistStage`): ring outside Driftless Savings, 10 s lobby, stages 1 guards, 2 gate keypad,
-  3 drill (100 s, runs while crew is inside), 4 pallets, 5 drop-off at (360,-120), 6 done ($15,000 split), 7 failed (12 min).
+  3 drill (100 s, runs while crew is inside), crew members who go down come back up at the bank doors, 4 pallets, 5 drop-off at (360,-120), 6 done ($15,000 split), 7 failed (12 min).
   Lowest crew id runs it and broadcasts `hs`; lobby via `hl`; non-leader gate hack via `hk`; closed-until via `bk`. Interior at BANKI.
 
 ## Mall and shops
@@ -145,7 +154,7 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 ## Multiplayer (room presence)
 
 - `netSend()` builds one presence object ~18 Hz; `netUpdate()` reads peers. Fields: v n col rd w hp dm g c m p q vel bo beam frz oil pre
-  ice ts nq ac adm cd cg at ft cv bx ar pu cr hl hs hk bk gs (+ pc for police cars). Validate everything received (`num`, `vec`, `hexOK`,
+  ice ts nq ac adm cd cg at ft cv bx ar pu cr hl hs hk bk gs pc wl rw ga. Validate everything received (`num`, `vec`, `hexOK`,
   `cleanFit`, `cleanLook`).
 - Damage to another player: cumulative `NET.dm` map; the receiver applies the increase (first hit counts in full).
 - Shared clock `NET.now()`; time of day, traffic, lights and pedestrians are all derived from it.
@@ -154,4 +163,6 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 
 - Moon/space: `MOON`, `SPC`, `spaceHop(to)`, `stepSpace`, vehicles with `space: true`.
 - Mall police banner / wanted HUD: `#wanted`, `wantedHud()`.
+- Touch: foot buttons tFF fire, tFJ jump, tFS run, tFA aim, tFW next gun, tFC crouch, tFR reload. Heli lock-on ignores targets behind
+  buildings (`canSee` on the chosen one).
 - Parachute: `buildChute`, `openChute`, `CHUTE`. Controller: `gpPick`, `readInput` (pad mapping), `rumble`.
