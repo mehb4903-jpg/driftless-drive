@@ -324,7 +324,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 #mnTimeF{height:100%;background:#e2b33c;border-radius:3px}
 #mnHit{font:700 16px var(--display);letter-spacing:.08em;text-transform:uppercase;background:#7fe0ff;color:#0e161e;border:0;border-radius:6px;padding:9px 26px;cursor:pointer}
 .mnHint{font:13px sans-serif;color:#b9b5aa;text-align:center}
-#tvFrame{position:fixed;left:0;top:0;width:960px;height:540px;border:0;transform-origin:0 0;pointer-events:none;z-index:0;background:#000}
+#tvFrame{position:fixed;left:0;top:0;width:960px;height:540px;border:0;transform-origin:0 0;pointer-events:none;z-index:-1;background:#000}
 #tvRemote{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(360px,calc(100vw - 32px));background:rgba(14,22,30,.94);border:1px solid #3a4a58;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;pointer-events:auto;z-index:31}
 #tvRemote[hidden]{display:none}
 .tvTop{display:flex;justify-content:space-between;gap:8px;font:600 14px var(--display);color:#e9e6dc;letter-spacing:.04em}
@@ -570,7 +570,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 <button id="moonP" type="button" hidden>Moon</button>
 <button id="drillB" type="button" hidden>Drill</button>
 <div id="mineUI" hidden><div class="mnT">Drilling lunar ore</div><div class="mnBar"><div id="mnZone"></div><div id="mnNeedle"></div></div><div class="mnPips"><i></i><i></i><i></i></div><div class="mnTime"><div id="mnTimeF"></div></div><button id="mnHit" type="button">Strike</button><div class="mnHint">Strike when the needle is in the green. Land three before the drill stops.</div></div>
-<div id="tvRemote" hidden><div class="tvTop"><b id="tvTitle">Joe Bart VODs</b><span id="tvTime">0:00 / 0:00</span></div><input type="range" id="tvSeek" min="0" max="1000" value="0" aria-label="Position in the video"><div class="tvRow"><button type="button" id="tvRe" aria-label="Restart">&#8634;</button><button type="button" id="tvBack">&minus;30s</button><button type="button" id="tvPlay">Pause</button><button type="button" id="tvFwd">+30s</button><button type="button" id="tvNext">Next</button></div><div class="tvRow"><input id="tvGo" type="text" inputmode="numeric" placeholder="1:23:45" aria-label="Go to time"><button type="button" id="tvGoB">Go</button><button type="button" id="tvMute">Mute</button><input type="range" id="tvVol" min="0" max="100" value="70" aria-label="Volume"></div><div class="tvRow"><button type="button" id="tvUp">Stand up</button><span class="tvHint">Arrows seek and volume &middot; K pause &middot; N next</span></div></div>
+<div id="tvRemote" hidden><div class="tvTop"><b id="tvTitle">Joe Bart VODs</b><span id="tvTime">0:00 / 0:00</span></div><input type="range" id="tvSeek" min="0" max="1000" value="0" aria-label="Position in the video"><div class="tvRow"><button type="button" id="tvRe" aria-label="Restart">&#8634;</button><button type="button" id="tvBack">&minus;30s</button><button type="button" id="tvPlay">Pause</button><button type="button" id="tvFwd">+30s</button><button type="button" id="tvNext">Next</button><button type="button" id="tvAd">Skip ad</button></div><div class="tvRow"><input id="tvGo" type="text" inputmode="numeric" placeholder="1:23:45" aria-label="Go to time"><button type="button" id="tvGoB">Go</button><button type="button" id="tvMute">Mute</button><input type="range" id="tvVol" min="0" max="100" value="70" aria-label="Volume"></div><div class="tvRow"><button type="button" id="tvUp">Stand up</button><span class="tvHint">Arrows seek and volume &middot; K pause &middot; N next</span></div></div>
 <div id="orb" hidden><div class="orbBox"><div class="orbHead"><b>Orbital strike</b><span id="orbInfo"></span></div><canvas id="orbCv"></canvas><div class="orbBtns"><button type="button" id="orbFire">Fire &middot; $200,000</button><button type="button" id="orbX">Close</button></div><div class="orbHint">Tap or click the map to aim. The stick, WASD or arrows move the target. Enter or A fires.</div></div></div>
 <div id="plBar" hidden><span id="plT">Placing</span><button type="button" id="plOk">Place</button><button type="button" id="plL" aria-label="Turn left">&#10226;</button><button type="button" id="plR" aria-label="Turn right">&#10227;</button><button type="button" id="plS">Store</button><button type="button" id="plX">Cancel</button></div>
 <button id="camP" type="button" hidden>Cover the camera</button>
@@ -1111,7 +1111,7 @@ function groundAt(x, z, y) {
 
 /* ───────────── renderer / scene ───────────── */
 let renderer;
-try { renderer = new T.WebGLRenderer({ canvas: $('c'), antialias: true, powerPreference: 'high-performance' }); }
+try { renderer = new T.WebGLRenderer({ canvas: $('c'), antialias: true, alpha: true, powerPreference: 'high-performance' }); }
 catch (e) { document.body.insertAdjacentHTML('beforeend', '<div id="err">This browser could not start WebGL, which the game needs.</div>'); return; }
 /* device detection, part 1 (part 2, the live switching on real input, is in the input section):
    touchMode = show the touch UI; starts from the media queries and navigator.maxTouchPoints, mirrored as <html class="is-touch">.
@@ -4156,6 +4156,10 @@ function homog(src, dst) {                              // the 3x3 map from the 
   const h = bb.map((v, k) => v / A[k][k]); return 'matrix3d(' + [h[0], h[3], 0, h[6], h[1], h[4], 0, h[7], 0, 0, 1, 0, h[2], h[5], 0, 1].join(',') + ')';
 }
 const _tv = new T.Vector3();
+/* The YouTube player sits BEHIND the canvas. Each TV's screen is a transparent window cut into the 3D picture (alpha 0, depth-tested),
+   so the video shows through exactly where the screen is, and walls, furniture and people in front of the TV cover it properly. */
+const TVHOLE = new T.Mesh(new T.PlaneGeometry(1, 1), new T.ShaderMaterial({ vertexShader: 'void main(){gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}', fragmentShader: 'void main(){gl_FragColor=vec4(0.0);}', blending: T.NoBlending, transparent: false, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+TVHOLE.visible = false; TVHOLE.frustumCulled = false; scene.add(TVHOLE);
 function tvFrame(dt) {
   const h = CAR.foot ? homeAt(P.x, P.y, P.z) : null; let best = null;
   if (h && h.grp) for (const pc of h.pieces) { const f = FBY(pc.t); if (!f.screen) continue; const d = Math.hypot(P.x - (h.x + pc.x), P.z - (h.z + pc.z)); if (!best || d < best.d) best = { pc, d, h, f }; }
@@ -4164,18 +4168,21 @@ function tvFrame(dt) {
   if (!TVP.ready && !TVP.blocked && performance.now() - TVP.made > 15000) { TVP.blocked = true; toast('The TV could not reach YouTube from here'); }
   const remote = $('tvRemote'); remote.hidden = !SIT.on;
   if (SIT.on) { $('tvTitle').textContent = TVP.title || (TVP.ready ? 'Joe Bart VODs' : 'Tuning in…'); $('tvTime').textContent = fmtT(TVP.cur) + ' / ' + fmtT(TVP.dur); if (!TVP.seeking && TVP.dur) $('tvSeek').value = Math.round(TVP.cur / TVP.dur * 1000); $('tvPlay').textContent = TVP.state === 1 || TVP.state === 3 ? 'Pause' : 'Play'; $('tvMute').textContent = TVP.muted ? 'Unmute' : 'Mute'; }
-  if (!best) { if (TVP.vis) { f.hidden = true; TVP.vis = false; tvCmd('pauseVideo'); } return; }
+  if (!best) { TVHOLE.visible = false; if (TVP.vis) { f.hidden = true; TVP.vis = false; tvCmd('pauseVideo'); } return; }
   if (!TVP.vis || TVP.pc !== best.pc) { TVP.vis = true; TVP.pc = best.pc; if (!TVP.userPaused) tvCmd('playVideo'); }
   const pc = best.pc, sc = best.f.screen, cr = Math.cos(pc.r), sr = Math.sin(pc.r), wx = best.h.x + pc.x, wz = best.h.z + pc.z, wy = best.h.in.y + pc.y, pts = [];
   const nx = -sr, nz = -cr, vis = (camera.position.x - wx) * nx + (camera.position.z - wz) * nz > 0.05; let ok = vis;
   for (const [lx, ly] of [[sc.w / 2, sc.y + sc.h / 2], [-sc.w / 2, sc.y + sc.h / 2], [-sc.w / 2, sc.y - sc.h / 2], [sc.w / 2, sc.y - sc.h / 2]]) { if (!ok) break; _tv.set(wx + lx * cr + sc.z * sr, wy + ly, wz - lx * sr + sc.z * cr);
     const cz = _tv.clone().applyMatrix4(camera.matrixWorldInverse).z; if (cz > -0.2) { ok = false; break; } _tv.project(camera); pts.push([(_tv.x + 1) / 2 * innerWidth, (1 - _tv.y) / 2 * innerHeight]); }
-  f.hidden = !ok; if (ok) f.style.transform = homog([[0, 0], [960, 0], [960, 540], [0, 540]], pts);
+  f.hidden = !ok; TVHOLE.visible = ok; if (ok) { f.style.transform = homog([[0, 0], [960, 0], [960, 540], [0, 540]], pts); TVHOLE.scale.set(sc.w, sc.h, 1); TVHOLE.rotation.set(0, pc.r + Math.PI, 0); TVHOLE.position.set(wx + sc.z * sr, wy + sc.y, wz + sc.z * cr); }
   if ((TVP.volT -= dt) <= 0 && TVP.ready) { TVP.volT = 0.3; const v = Math.round(TVP.vol * clamp(1 - (best.d - 3) / 22, 0, 1)); if (Math.abs(v - TVP.sentVol) > 1) { TVP.sentVol = v; tvCmd('setVolume', [v]); } }
 }
 function sitDown(h, pc) { const f = FBY(pc.t); SIT.on = true; SIT.h = h; SIT.pc = pc; SIT.x = h.x + pc.x; SIT.z = h.z + pc.z; SIT.y = h.in.y + Math.min(0.3, f.h * 0.4); SIT.yaw = pc.r; AIM.yaw = pc.r; AIM.pitch = -0.05; POSE.v = 1; if (document.pointerLockElement) document.exitPointerLock(); toast('F, Esc or a move key to stand up'); }
 function standUp() { if (!SIT.on) return; SIT.on = false; POSE.v = 0; const r = SIT.yaw; P.x = SIT.x - Math.sin(r) * 1.1; P.z = SIT.z - Math.cos(r) * 1.1; P.y = SIT.h ? SIT.h.in.y + 0.05 : P.y; $('tvRemote').hidden = true; }
 function tvSeek(t) { TVP.cur = clamp(t, 0, TVP.dur || 1e6); tvCmd('seekTo', [TVP.cur, true]); }
+function tvSkipAd() {                                   // an ad is a short video: run it to its end (the player ignores this for the few ads it will not let you skip)
+  if (!TVP.ready) return; if (TVP.dur > 240) { toast('No ad is playing'); return; } tvCmd('seekTo', [1e5, true]); tvCmd('playVideo'); TVP.userPaused = false; toast('Skipping the ad'); setTimeout(() => tvCmd('playVideo'), 1500);
+}
 function tvToggle() { if (TVP.state === 1 || TVP.state === 3) { tvCmd('pauseVideo'); TVP.userPaused = true; TVP.state = 2; } else { tvCmd('playVideo'); TVP.userPaused = false; TVP.state = 1; } }
 function tvVol(v) { TVP.vol = clamp(Math.round(v), 0, 100); $('tvVol').value = TVP.vol; TVP.sentVol = -1; TVP.volT = 0; if (TVP.vol > 0 && TVP.muted) { TVP.muted = false; tvCmd('unMute'); } }
 function tvMute() { TVP.muted = !TVP.muted; tvCmd(TVP.muted ? 'mute' : 'unMute'); }
@@ -4187,7 +4194,7 @@ function tvPad(gp) { const B = i => !!(gp.buttons[i] && (gp.buttons[i].pressed |
   if (e(0)) tvToggle(); else if (e(1)) standUp(); else if (e(2)) tvCmd('nextVideo'); else if (e(3)) tvSeek(0); else if (e(4)) tvSeek(TVP.cur - 30); else if (e(5)) tvSeek(TVP.cur + 30); else if (e(12)) tvVol(TVP.vol + 10); else if (e(13)) tvVol(TVP.vol - 10); else if (e(14)) tvSeek(TVP.cur - 10); else if (e(15)) tvSeek(TVP.cur + 10);
   SIT.prev = gp.buttons.map((q, i) => B(i)); }
 const tvOn = (id, fn) => $(id).addEventListener('click', e => { e.stopPropagation(); fn(); e.currentTarget.blur(); });
-tvOn('tvRe', () => tvSeek(0)); tvOn('tvBack', () => tvSeek(TVP.cur - 30)); tvOn('tvFwd', () => tvSeek(TVP.cur + 30)); tvOn('tvPlay', tvToggle); tvOn('tvNext', () => tvCmd('nextVideo')); tvOn('tvMute', tvMute); tvOn('tvUp', standUp);
+tvOn('tvRe', () => tvSeek(0)); tvOn('tvBack', () => tvSeek(TVP.cur - 30)); tvOn('tvFwd', () => tvSeek(TVP.cur + 30)); tvOn('tvPlay', tvToggle); tvOn('tvNext', () => tvCmd('nextVideo')); tvOn('tvAd', tvSkipAd); tvOn('tvMute', tvMute); tvOn('tvUp', standUp);
 tvOn('tvGoB', () => { const v = $('tvGo').value.trim().split(':').map(Number); if (!v.length || v.some(n => !(n >= 0))) { toast('Type a time like 1:23:45 or 12:30'); return; } tvSeek(v.reduce((a, n) => a * 60 + n, 0)); $('tvGo').value = ''; });
 $('tvSeek').addEventListener('input', () => { TVP.seeking = true; if (TVP.dur) $('tvTime').textContent = fmtT($('tvSeek').value / 1000 * TVP.dur) + ' / ' + fmtT(TVP.dur); });
 $('tvSeek').addEventListener('change', () => { TVP.seeking = false; if (TVP.dur) tvSeek($('tvSeek').value / 1000 * TVP.dur); });
