@@ -5258,7 +5258,7 @@ requestAnimationFrame(frame);
 (() => {
   'use strict';
   const $ = id => document.getElementById(id), box = $('impBox'), txt = $('impTxt'), msg = $('impMsg'); if (!box || !txt) return;
-  const SETS = ['dd-poi', 'dd-guns'], NUM = { 'dd-cash': 1e9, 'dd-armour': 100, 'dd-rockets': 99 }, KEYS = [...SETS, 'dd-unlock', ...Object.keys(NUM), 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
+  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn'], NUM = { 'dd-cash': 1e9, 'dd-armour': 100, 'dd-rockets': 99 }, KEYS = [...SETS, ...STATE, 'dd-unlock', ...Object.keys(NUM), 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
   const rd = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const wr = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, v); return true; } catch (e) { return false; } };
   const jp = (t, d) => { try { const v = JSON.parse(t); return v === null || v === undefined ? d : v; } catch (e) { return d; } };
@@ -5268,7 +5268,8 @@ requestAnimationFrame(frame);
   function clean(raw) {                              // keep only what the game saves, in the shape it expects
     const o = {}, src = obj(raw);
     for (const k of Object.keys(NUM)) if (k in src) { const n = Math.round(Number(src[k])); if (Number.isFinite(n) && n >= 0) o[k] = String(Math.min(n, NUM[k])); }
-    for (const k of SETS) if (k in src) { const a = arr(asJson(src[k])).filter(v => k === 'dd-guns' ? Number.isInteger(v) && v >= 0 && v < 40 : typeof v === 'string' && /^[\w-]{1,40}$/.test(v)).slice(0, 80); o[k] = JSON.stringify([...new Set(a)]); }
+    for (const k of SETS) if (k in src) { const a = arr(asJson(src[k])).filter(v => k === 'dd-guns' ? Number.isInteger(v) && v >= 0 && v < 40 : typeof v === 'string' && /^[\w.:-]{1,60}$/.test(v)).slice(0, 200); o[k] = JSON.stringify([...new Set(a)]); }
+    for (const k of STATE) if (k in src) { const v = asJson(src[k]); if (v && typeof v === 'object') { const t = JSON.stringify(v); if (t.length < 60000) o[k] = t; } }
     if ('dd-unlock' in src) { const u = {}; for (const [id, v] of Object.entries(obj(asJson(src['dd-unlock'])))) if (/^[a-z0-9_-]{1,24}$/.test(id) && v) u[id] = 1; o['dd-unlock'] = JSON.stringify(u); }
     if ('dd-laps' in src) o['dd-laps'] = JSON.stringify(arr(asJson(src['dd-laps'])).filter(q => q && typeof q.t === 'number' && q.t > 0 && q.t < 3600).map(q => ({ t: Math.round(q.t * 1000) / 1000, c: String(q.c || '').replace(/[^\w .-]/g, '').slice(0, 24), at: Number.isFinite(q.at) ? q.at : 0 })).slice(0, 10));
     if ('dd-lap' in src) { const n = parseFloat(src['dd-lap']); if (n > 0 && n < 3600) o['dd-lap'] = n.toFixed(3); }
@@ -5276,8 +5277,15 @@ requestAnimationFrame(frame);
     if (typeof src['dd-name'] === 'string') { const n = src['dd-name'].replace(/[^\w .\-]/g, '').slice(0, 16); if (n) o['dd-name'] = n; }
     return o;
   }
+  const unite = (a, b) => {
+    if (a === null || a === undefined) return b; if (b === null || b === undefined) return a;
+    if (Array.isArray(a) && Array.isArray(b)) { const seen = new Set(); return [...a, ...b].filter(v => { const t = JSON.stringify(v); return !seen.has(t) && seen.add(t); }); }
+    if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) { const o = {}; for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (k !== '__proto__' && k !== 'constructor' && k !== 'prototype') o[k] = unite(a[k], b[k]); return o; }
+    if (typeof a === 'number' && typeof b === 'number') return Math.max(a, b); return a;
+  };
   function combine(L, I) {                           // add the imported save to this one: nothing is lost
     const out = {};
+    for (const k of STATE) if (k in L || k in I) out[k] = JSON.stringify(unite(jp(L[k], null), jp(I[k], null)));
     for (const k of SETS) if (k in L || k in I) out[k] = JSON.stringify([...new Set([...arr(jp(L[k], [])), ...arr(jp(I[k], []))])]);
     if ('dd-unlock' in L || 'dd-unlock' in I) out['dd-unlock'] = JSON.stringify(Object.assign({}, obj(jp(L['dd-unlock'], {})), obj(jp(I['dd-unlock'], {}))));
     for (const k of Object.keys(NUM)) { const a = parseInt(L[k], 10), b = parseInt(I[k], 10), v = Math.max(Number.isFinite(a) ? a : 0, Number.isFinite(b) ? b : 0); if (k in L || k in I) out[k] = String(v); }
@@ -5287,7 +5295,7 @@ requestAnimationFrame(frame);
     if (I['dd-name'] || L['dd-name']) out['dd-name'] = I['dd-name'] || L['dd-name'];
     return out;
   }
-  const mySave = () => { const o = {}; for (const k of KEYS) { const v = rd(k); if (v === null) continue; o[k] = SETS.includes(k) || k === 'dd-laps' ? jp(v, []) : k === 'dd-unlock' ? jp(v, {}) : v; } return o; };
+  const mySave = () => { const o = {}; for (const k of KEYS) { const v = rd(k); if (v === null) continue; o[k] = SETS.includes(k) || k === 'dd-laps' ? jp(v, []) : k === 'dd-unlock' || STATE.includes(k) ? jp(v, {}) : v; } return o; };
   const open = v => { box.hidden = !v; if (v) { say(''); txt.focus(); } };
   $('impBtn').addEventListener('click', e => { e.stopPropagation(); open(true); });
   for (const id of ['impX', 'impClose']) $(id).addEventListener('click', e => { e.stopPropagation(); open(false); });
@@ -5337,15 +5345,25 @@ window.DD_FIREBASE = {
   if (!btn || !cfg || !cfg.apiKey) return;
   btn.hidden = false;
   const V = '10.12.2', SDK = ['app', 'auth', 'firestore'].map(n => 'https://www.gstatic.com/firebasejs/' + V + '/firebase-' + n + '-compat.js');
-  const SETS = ['dd-poi', 'dd-guns'], NUM = ['dd-cash', 'dd-armour', 'dd-rockets'], KEYS = [...SETS, 'dd-unlock', ...NUM, 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
+  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn'], NUM = ['dd-cash', 'dd-armour', 'dd-rockets'], KEYS = [...SETS, ...STATE, 'dd-unlock', ...NUM, 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
   const rd = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const wr = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } };
   const jp = (t, d) => { try { const v = JSON.parse(t); return v === null || v === undefined ? d : v; } catch (e) { return d; } };
   const arr = v => Array.isArray(v) ? v : [], obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : {};
   const snap = () => { const o = {}; for (const k of KEYS) { const v = rd(k); if (v !== null) o[k] = v; } return o; };
   const say = t => { if (note) note.textContent = t; };
+  const unite = (a, b) => {                          // everything from both saves: lists are added together, objects key by key, numbers take the larger
+    if (a === null || a === undefined) return b; if (b === null || b === undefined) return a;
+    if (Array.isArray(a) && Array.isArray(b)) { const seen = new Set(); return [...a, ...b].filter(v => { const t = JSON.stringify(v); return !seen.has(t) && seen.add(t); }); }
+    if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) { const o = {}; for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (k !== '__proto__' && k !== 'constructor' && k !== 'prototype') o[k] = unite(a[k], b[k]); return o; }
+    if (typeof a === 'number' && typeof b === 'number') return Math.max(a, b); return a;
+  };
   function merge(L, C, first, cloudNewer) {
     const out = {};
+    for (const k of STATE) {                         // outfit, gun attachments, upgrades, decals, furniture: the newest save wins; on a device's first sign in both are combined
+      if (!(k in L) && !(k in C)) continue; const a = jp(L[k], null), b = jp(C[k], null);
+      const v = first ? unite(a, b) : cloudNewer ? (b !== null ? b : a) : (a !== null ? a : b); if (v !== null && v !== undefined) out[k] = JSON.stringify(v);
+    }
     for (const k of SETS) if (k in L || k in C) out[k] = JSON.stringify([...new Set([...arr(jp(L[k], [])), ...arr(jp(C[k], []))])]);
     if ('dd-unlock' in L || 'dd-unlock' in C) out['dd-unlock'] = JSON.stringify(Object.assign({}, obj(jp(C['dd-unlock'], {})), obj(jp(L['dd-unlock'], {}))));
     for (const k of NUM) {
@@ -5359,7 +5377,7 @@ window.DD_FIREBASE = {
     if (cloudNewer && C['dd-name']) out['dd-name'] = C['dd-name']; else if (L['dd-name'] || C['dd-name']) out['dd-name'] = L['dd-name'] || C['dd-name'];
     return out;
   }
-  let fb = null, auth = null, db = null, user = null, ref = null, lastRev = 0, lastSaved = '', saving = false, loading = null;
+  let fb = null, auth = null, db = null, user = null, ref = null, lastRev = 0, lastSaved = '', saving = false, loading = null, bigNote = false;
   const load = () => loading || (loading = new Promise(res => {
     let i = 0; const next = () => {
       if (i >= SDK.length) { try { window.firebase.initializeApp(cfg); fb = window.firebase; auth = fb.auth(); db = fb.firestore(); res(true); } catch (e) { res(false); } return; }
@@ -5367,7 +5385,8 @@ window.DD_FIREBASE = {
     }; next();
   }));
   async function save(force) {
-    if (!user || !ref || saving) return; const d = snap(), s = JSON.stringify(d); if (!force && s === lastSaved) return; saving = true;
+    if (!user || !ref || saving) return; const d = snap(), s = JSON.stringify(d); if (!force && s === lastSaved) return;
+    if (s.length > 190000) { if (!bigNote) { bigNote = true; say('Your save is too big to sync to your account.'); } return; } saving = true;
     try { const rev = lastRev + 1; await ref.set({ data: s, rev, savedAt: Date.now() }); lastRev = rev; wr('dd-acct-rev-' + user.uid, String(rev)); lastSaved = s; say('Saved to your Google account'); }
     catch (e) { say('Could not save to your account just now. It will try again.'); }
     saving = false;
