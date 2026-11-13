@@ -102,6 +102,8 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 
 - `WANTED = { lv 0-3, last {x,z}, seenT, clearT, dispT }`. `wantedAtLeast(n)` (ignored indoors/space/moon/while down), `wantedSeen()`
   (refresh last-seen), `clearWanted(quiet)` (also on going down), `crimeKill(a)`.
+- Running people over (`RUNHIT.t` set with MYHIT in the two car-hit paths): `crimeKill` counts kills in `WANTED.runs`; only 3 inside
+  15 s give 1 star. Other civilian kills still give 1 star.
 - Crimes: gunfire `witnessed(x,z)` (officer LOS within 70 m, any officer within 40 m, or within 110 m of the station) -> 1; killing a
   civilian -> 1; till/safe/ATM -> 1; hitting an officer, a police car, or the cashier -> 2; killing an officer -> lv+1 (min 2).
   "Was it me" detection: `MYHIT = performance.now()` is set by every damage path the player causes (hitPerson, explode, car hits);
@@ -112,13 +114,17 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   (waiting for officers), drive, stop, wreck, gone. Crew count `c.crew` (officers inside are not actors). `stepPcar`: grid navigation
   `navPoint` (street lines `roadLine`), top speed `PC_MAX` = 85 km/h, unstick by reversing, bump/run over the player, `unloadCar` near you,
   officers re-board (`a.task = 'board'`, `boardStep`) if you drive off. `dmgPoliceCar` (160 hp).
-- `dispatch()` every 2.5 s while live units < stars: station car + idle officers if the station is within 1.3 km, else a patrol car
-  (`patrol: true`, crew aboard) spawned ~230 m away out of sight (max 3).
+- `dispatch()` runs at once on the first star, then every 2.5 s while live units < stars: station car + idle officers only if the
+  station is within 320 m, else a patrol car (`patrol: true`, crew aboard) spawned 150-210 m away out of sight (max stars + 2), so the
+  first unit reaches the scene in about 8-12 s (tested 7.8 s).
 - Police actors: `policeOpts(lv, k)` (cop + police flags; 90 hp; damage/aim scale with stars). In `copStep`: stand down at 0 stars,
   board task, report sightings, and when they cannot see you they walk to `WANTED.last` instead of tracking you.
-- Losing them: unseen > 6 s and outside the circle `WR[lv]` (90/140/200 m) around last-seen, or unseen > 30 s. 20 s after clearing, units
+- Cop bubbles (V56): every active officer and crewed police car finds you inside `CB[lv]` (60/80/100 m) even without line of sight, and
+  sees you with line of sight up to 160 m (`stepPcar` seesMe, `copStep`, a bubble pass in policeFrame). Each sighting calls wantedSeen().
+- Losing them: `WANTED.crimeT` (set by every wantedAtLeast) gives a grace of 15 + 5*lv s, then unseen > `LOSE[lv]` (8/12/16 s) clears
+  the stars. The old last-seen circle (`WR`) is no longer used for clearing. 20 s after clearing, units
   out of your way reset (station cars teleport home, patrols removed, officers back at their posts).
-- Map: `policeBlips(g, k)` (cop dots, car squares, flashing search circle). HUD: `#wanted` shows stars, `.srch` while searching.
+- Map: `policeBlips(g, k)` (cop dots, car squares, and a red bubble circle around each active unit while wanted). HUD: `#wanted` shows stars, `.srch` while searching.
 - Targeting: aim assist weights cops 3x closer; heli/Blick lock-on gets `copTargets()` (wrappers with `copT`, `hitBy`).
 - Shared stars: `wantedLink(now)` links you with the player you ride with (`RIDE`, or whoever sends `rw` = your id). The higher level is
   copied over when it rises; when the partner drops to 0 you clear too. Presence `wl` [lv, lastX, lastZ], `rw` ride target id.
@@ -164,6 +170,30 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - Furniture shop = `SHOPDEF[7]` Home & Co ('furn'), stock from `furnStock(cat)` (adds to HOME.inv). Showroom pieces drawn in shopBuild. Storage menu: `binShop(h)` opens a fake shop `{bin:true, h, def:{id:'bin'}}`; shopFrame does not auto-close `bin` shops; `binStock` rows start placing.
 - Placement (3008-style, yaw only): `PLACE = {on, t, yaw, h, ghost, from, ok, x, y, z}`; `placeFrame` raycasts from the camera along the aim (`aimRay`, far 16) against `h.grp`: a hit face with normal.y > 0.6 stacks on top, else the floor plane. Position clamped inside `h.in` with the rotated half extents; ok only if near the aim point, < 8 m from the player, under the ceiling. Ghost translucent, red when not ok. Rotate: Q/E (Shift fine), wheel / ⟲⟳ buttons / LB RB 15°. Place: click, F, gamepad A, Place button. Cancel: Esc, gamepad B (puts a moved piece back). While placing, firing and Q/E roll are suppressed.
 - Test: scratchpad `home.js` (buy, walk in, shop, storage, place, stack, lift, reload) and `home2.js` (stack, B store, screenshots). Seed localStorage dd-homes/dd-inv/dd-furn then reload to skip buying.
+
+## Waterfall bunker, map table, orbital strike (V55-V56)
+- Bunker = home id 'bunk' ($2M) in `HDEF`, POI kind 'hill' at (830, 2000), builder `bBunker` (rock face, waterfall planes with a scrolling
+  canvas texture `BUNK.wtex`, plunge pool, steel shutter `BUNK.shut`/`shutBox` until owned) + `bunkInside` (own region `BUNKI` x -24000,
+  z -700, y 60; `inBunk(x,z)` = x < -12000 && z < -300; excluded from mall map/alarm/label). Its HOUSES record has `onOwn` (opens the
+  shutter), `noDoor`, furniture bounds = the hall. `bunkFrame`: walking or driving into the mouth (`BUNK.mouth`) when owned -> `bunkGo(true)`
+  (lands in the garage, keeps car speed); x < BUNKI.x - 42 in the garage tunnel -> `bunkGo(false)` (out through the falls).
+- Map table: `holoBuild()` (lazy, first visit): terrain grid 96x96 from terrainH, CITY.boxes, road line, POI pins with sprite labels
+  (`holoLabel`), a Moon sphere orbiting above; `holoFrame` rotates it and draws remote players and strike zones live.
+- Satellite room: `SAT.own` (dd-sat), $3M at the green ring `BUNK.satRing` (HOMEACT 'sat'), `satOpen()` (run from bunkFrame once) opens
+  the door. Console `BUNK.con` (HOMEACT 'orb') -> `orbOpen()`: #orb overlay with `orbDraw()` (drawMap with `MAPW = true` forces the world
+  map), click/tap aims, WASD/arrows/stick move (900 m/s), Enter/A/Fire button = `orbFire()` ($200k, one pending at a time, max 8 zones).
+  Gamepad handled by `orbPad` from the input function; keyboard branch at the top of keydown.
+- Strikes: `STRIKES` [{key, x, z, t0, mine, st 0 pending/1 hit, gy, cr, rem, deco, fx, fires, beam}], `addStrike(x,z,t0,mine)`,
+  impact 5 s after firing (`OS_DELAY`), radius `OSR` 240 m (4x4 blocks), lasts `OS_LIFE` 20 min. Shared via presence `os` [[x,z,t0]]
+  (`netOs`), merged in `strikeFrame`. `strikeHit(s, fresh)`: removes CITY.boxes/BOXES/SOLIDS touching the circle (restored by
+  `strikeEnd`), builds the crater mesh + ejecta rubble + fires; when fresh: flash `#nflash`, shake, mushroom fx (ball/stem/cap/ring/beam),
+  kills you, npcs, actors, peds and police cars inside.
+- Crater: `craterAt(x,z)` (bowl 28 m deep to r 200, a 5 m lip near r 210, blends back to the old ground by r 240). `groundAt` returns it
+  first when `CRN` > 0; `inWater` ignores it. The shader patch `nukeMat(m)` (uniform `NZ` vec4[8] = x, z, r, gy) discards every fragment
+  inside a zone for propMat, glowMat, fireMat, terrainMat, roadMat, lineMat, the sea, SIGMAT, parked cars and `nzDepth` (shadow depth,
+  assigned as customDepthMaterial by a 2 s sweep). Chunk trees inside a zone stop colliding (`nzIn`).
+- Tests: scratchpad `bunk.js` (buy, walk in, holo, sat, console, fire, expiry), `bunk2.js` (views), `crat.js` (crater shape, drive in),
+  `mpos.js` (strike reaches player 2 and kills them), `want.js` (run-overs, response time, bubbles).
 
 ## Multiplayer (room presence)
 
