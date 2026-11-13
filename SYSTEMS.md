@@ -2,6 +2,7 @@
 
 Working notes for whoever picks this up next (including me after a context reset). Read this before touching the game.
 Keep it current: when a system changes, update its section here in the same step.
+Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `systems-notes`), commit and push.
 
 ## The basics
 
