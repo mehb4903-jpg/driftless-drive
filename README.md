@@ -49,7 +49,7 @@ Open the site in **Safari**, tap **Share**, then **Add to Home Screen**. Launch 
 ## Android app (experimental)
 
 There is an **experimental Android APK** with ads. It is not on Google Play; GitHub Actions builds it from this repository
-whenever a tag like `v0.1.0-exp` is pushed and attaches it to a **pre-release** on the
+whenever a tag like `v0.1.0-exp` is pushed (or `main` is pushed to the `android-release` branch) and attaches it to a **pre-release** on the
 [Releases page](https://github.com/mehb4903-jpg/driftless-drive/releases).
 
 - **Install:** on your phone open the newest *Experimental* pre-release, download `driftless-drive-<version>.apk`, open it and

@@ -49,7 +49,8 @@ All ad settings are in **one object** in `index.html`, `window.DD_ADS_CONFIG` (s
 A real app id together with the test unit id is a valid setup: AdMob serves test ads and nothing is paid or counted as a click.
 
 **To switch to real ads:** set `USE_TEST_ADS: false` in `index.html`, commit, and push a new tag (for example
-`git tag v0.1.1-exp && git push origin v0.1.1-exp`). The workflow builds and publishes a new APK.
+`git tag v0.1.1-exp && git push origin v0.1.1-exp`, or push to the `android-release` branch:
+`git push origin main:android-release`). The workflow builds and publishes a new APK.
 Before you do:
 
 - **Never tap your own live ads**, and do not ask friends to. AdMob detects invalid clicks and can disable the account.
@@ -119,8 +120,9 @@ Android only installs signed APKs. The workflow signs the release APK like this:
 - In CI, `npx cap add android` generates the Android project, `npx cap sync android` copies the web files and the AdMob
   plugin in, and `scripts/patch-android.js` adds the AdMob app id, landscape, fullscreen, keep-screen-on, autoplay,
   third-party cookies (YouTube embed), the launcher icon and the version number. Then `./gradlew assembleRelease`.
-- `.github/workflows/android.yml` runs on every pushed tag that starts with `v` (for example `v0.1.0-exp`) and on
-  *Run workflow* in the Actions tab, then attaches the APK and its SHA-256 to a GitHub pre-release named
+- `.github/workflows/android.yml` runs on every pushed tag that starts with `v` (for example `v0.1.0-exp`), on every push to
+  the branch `android-release` (it then makes the tag itself: `v<version in package.json>-exp`, or with `.<run number>`
+  added when that release already exists), and on *Run workflow* in the Actions tab, then attaches the APK and its SHA-256 to a GitHub pre-release named
   *Experimental &lt;tag&gt;*.
 
 Build it on your own computer (needs Node 20, JDK 17 and the Android SDK):

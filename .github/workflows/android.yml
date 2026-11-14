@@ -1,5 +1,6 @@
 # Experimental Android APK (Capacitor + AdMob test ads), published as a GitHub *pre*release. Nothing goes to Google Play.
-# Runs when a tag like v0.1.0-exp is pushed, or by hand (Actions -> Android APK -> Run workflow).
+# Runs when a tag like v0.1.0-exp is pushed, when the branch android-release is pushed (the release tag is then made here,
+# v<package.json version>-exp, or with .<run number> added if that release exists), or by hand (Actions -> Android APK -> Run workflow).
 # Signing: if the four ANDROID_* secrets below are set, the APK is signed with that keystore (updates install over each other).
 # Otherwise a throwaway keystore is generated in this run, so the APK installs, but each build has a different signature.
 name: Android APK
@@ -7,6 +8,7 @@ name: Android APK
 on:
   push:
     tags: ['v*']
+    branches: ['android-release']
   workflow_dispatch:
     inputs:
       tag:
@@ -25,10 +27,22 @@ jobs:
   apk:
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    env:
-      TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag || format('v0.0.0-exp.{0}', github.run_number) }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Pick the release tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then TAG="$GITHUB_REF_NAME"
+          elif [ -n "$INPUT_TAG" ]; then TAG="$INPUT_TAG"
+          else
+            TAG="v$(node -p "require('./package.json').version")-exp"
+            if gh release view "$TAG" > /dev/null 2>&1; then TAG="$TAG.$GITHUB_RUN_NUMBER"; fi
+          fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "Release tag: $TAG"
 
       - uses: actions/setup-node@v4
         with:
