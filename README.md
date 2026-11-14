@@ -45,3 +45,20 @@ Opening the file directly with `file://` also works.
 ## Install on iPhone / iPad (fullscreen)
 
 Open the site in **Safari**, tap **Share**, then **Add to Home Screen**. Launch it from the new Driftless icon and it runs as a full-screen app with no browser bars (iPhones have no browser fullscreen button, so this is the way). On Android, tap the **Install app** button in the game's menu (or Chrome's menu, **Install app**) for the same effect.
+
+## Android app (experimental)
+
+There is an **experimental Android APK** with ads. It is not on Google Play; GitHub Actions builds it from this repository
+whenever a tag like `v0.1.0-exp` is pushed and attaches it to a **pre-release** on the
+[Releases page](https://github.com/mehb4903-jpg/driftless-drive/releases).
+
+- **Install:** on your phone open the newest *Experimental* pre-release, download `driftless-drive-<version>.apk`, open it and
+  allow **Install unknown apps** for your browser when Android asks.
+- **Ads:** one after you tap Start driving, then at most one every 2 minutes on every 2nd death, never over the YouTube TV or
+  during a heist. They are Google **test ads** for now (`USE_TEST_ADS: true` in `DD_ADS_CONFIG` in `index.html`); the real
+  AdMob app and ad unit ids are already in the same object. Never tap your own live ads.
+- **Remove ads:** there is no $2.99 purchase yet, because Play Billing needs the app on Google Play (a Play Console account
+  costs $25 once). Instead the app menu has a **Remove ads code** field; codes are checked against SHA-256 hashes, so the codes
+  themselves are not in this repository.
+- **Google sign in** does not work inside the app. Sign in on the website and move your save with **Import save**.
+- Everything else (how the build works, signing, switching to real ads, YouTube and AdMob policy notes): [docs/ANDROID.md](docs/ANDROID.md).

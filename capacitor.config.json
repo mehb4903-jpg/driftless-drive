@@ -1,0 +1,32 @@
+{
+  "appId": "com.driftless.drive",
+  "appName": "Driftless Drive",
+  "webDir": "www",
+  "backgroundColor": "#1b2a38",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "cdnjs.cloudflare.com",
+      "cdn.jsdelivr.net",
+      "unpkg.com",
+      "fonts.googleapis.com",
+      "fonts.gstatic.com",
+      "www.gstatic.com",
+      "*.firebaseapp.com",
+      "*.googleapis.com",
+      "0.peerjs.com",
+      "*.peerjs.com",
+      "www.youtube.com",
+      "www.youtube-nocookie.com",
+      "*.googlevideo.com",
+      "*.ytimg.com"
+    ]
+  },
+  "android": {
+    "appendUserAgent": "DriftlessDriveApp",
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false,
+    "resolveServiceWorkerRequests": true
+  }
+}

@@ -201,6 +201,8 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 #acctBtn:disabled{opacity:.6;cursor:wait;transform:none}
 #roomNow,#acctNow{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim)}
 #roomNow b{color:var(--amber)}
+#appBox{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:14px;color:var(--ink-dim)}#appBox b{color:var(--amber)}#adsRow{display:inline-flex;gap:6px}
+#adsCode{font:600 14px var(--display);letter-spacing:.08em;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 10px;width:13em}#adsGo{font:600 14px var(--display);letter-spacing:.08em;text-transform:uppercase;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px}
 .is-touch #srvBtn,.is-touch #acctBtn,.is-touch #impBtn{font-size:19px;padding:9px 18px}
 #start{position:fixed;inset:0;display:flex;align-items:flex-end;
   background:linear-gradient(to top,rgba(10,16,24,.9) 0%,rgba(10,16,24,.55) 45%,rgba(10,16,24,0) 78%);
@@ -548,6 +550,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
     <div class="srow"><button id="go" type="button">Start driving</button><button id="srvBtn" type="button">Servers</button><button id="impBtn" type="button">Import save</button><button id="acctBtn" type="button" hidden>Sign in with Google</button></div>
     <div id="roomNow"></div>
     <div id="acctNow"></div>
+    <div id="appBox" hidden><b>Experimental Android build.</b> Has ads, and things may break. <span id="adsRow"><input id="adsCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="Remove ads code" aria-label="Remove ads code"><button id="adsGo" type="button">Redeem</button></span><span id="adsMsg"></span></div>
   </div>
 </div>
 <div id="travel" hidden><div class="tvin"><button id="tvClose" type="button" class="touch-only">Close</button><h2>Fast travel</h2><div id="tvList"></div><p>Debug menu. G or Esc closes it.</p></div></div>
@@ -6216,6 +6219,120 @@ window.DD_FIREBASE = {
   setTimeout(() => load().then(ok => { if (ok) startAuth(); }), 1200);                    // preload, so the sign in popup opens straight from the click
   setInterval(() => save(false), 6000);
   document.addEventListener('visibilitychange', () => { if (document.hidden) save(false); }); addEventListener('pagehide', () => save(false));
+})();
+</script>
+
+<script>
+/* ───────────── experimental Android app (Capacitor): ads and the ad-free redeem code ─────────────
+   Everything below is a no-op on the website. It only wakes up inside the native app (window.Capacitor says it is native).
+   DD_ADS_CONFIG is the ONE place for the ad settings. appId and interstitialId are the real AdMob ids. USE_TEST_ADS (default true for
+   this experimental build) makes it request Google's public TEST interstitial instead; set it to false to show real, paid ads.
+   scripts/patch-android.js copies appId into the Android manifest at build time. */
+window.DD_ADS_CONFIG = {
+  appId: 'ca-app-pub-2728172646252789~8538967894',            // AdMob APP id: the real Driftless Drive app (copied into the Android manifest at build time)
+  interstitialId: 'ca-app-pub-2728172646252789/3419870135',   // interstitial AD UNIT id: the real (production) Driftless Drive unit
+  testInterstitialId: 'ca-app-pub-3940256099942544/1033173712', // Google's public TEST interstitial unit
+  USE_TEST_ADS: true,                                         // true = Google test ads (safe to tap while testing). false = real, paid ads from interstitialId.
+                                                              // Never tap your own live ads: AdMob bans accounts for invalid clicks.
+  TEST_DEVICE_IDS: [],                                        // your phone's AdMob test device id(s) (shown in logcat), so real ads on it count as test ads
+  childDirected: true,                                        // tagForChildDirectedTreatment
+  underAgeOfConsent: true,                                    // tagForUnderAgeOfConsent
+  maxAdContentRating: 'General',                              // G (General). Allowed: General, ParentalGuidance, Teen
+  minGapSec: 120,                                             // at most one ad per this many seconds
+  everyNthDeath: 2,                                           // an ad on every 2nd death (still subject to minGapSec)
+  startupAd: true,                                            // one ad after the player taps Start driving
+  // SHA-256 of the 'Remove ads' codes (upper case, letters and digits only). Never the codes themselves.
+  redeemHashes: [
+    "3bfa0093fc228c79568678025d211e92b4cb613f240e4616336d585347068003",
+    "9d934799773a200bb2d3cf4b179d47f6e3d9b89a83a597808fcb98b35e6f229b",
+    "b7b4ada18f63c661c5861211922566bcba29fe37b517a9834a1d4de3c0d348f7",
+    "a14e27feb3c0942102e53842f1e5e2b82b7b502a460cd136e96f3b643da8d5d8",
+    "661a0414ae74db484981708e9c90429e35bcfe2d912740f9d05908933cda2a7c"
+  ]
+};
+(() => {
+  'use strict';
+  const CFG = window.DD_ADS_CONFIG, CAP = window.Capacitor, $ = id => document.getElementById(id);
+  const rd = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const wr = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
+  const adFree = () => rd('dd-noads') === '1';               // device-local on purpose: not in the account sync or Import save lists
+  let NATIVE = false; try { NATIVE = !!(CAP && (typeof CAP.isNativePlatform === 'function' ? CAP.isNativePlatform() : CAP.getPlatform && CAP.getPlatform() !== 'web')); } catch (e) { NATIVE = false; }
+  const st = { native: NATIVE, inited: false, ready: false, showing: false, last: -1e12, deaths: 0, shown: 0, requests: 0, log: [] };
+  window.DDADS = { native: NATIVE, adFree, state: st, show: () => Promise.resolve(false), redeem: () => Promise.resolve(false) };
+  if (!NATIVE) return;                                       // the website: nothing changes
+
+  const AdMob = CAP.Plugins && CAP.Plugins.AdMob;
+  const note = t => { st.log.push(t); if (st.log.length > 30) st.log.shift(); };
+  const vis = id => { const el = $(id); if (!el || el.hidden) return false; const cs = getComputedStyle(el); return cs.display !== 'none' && cs.visibility !== 'hidden'; };
+  function busy() {                                          // never over the YouTube TV, a heist, the armored truck job or another timed screen
+    if (['tvFrame', 'tvRemote', 'heist', 'atkUI', 'atkP', 'mineUI', 'orb', 'plBar', 'impBox', 'servers', 'travel'].some(vis)) return true;
+    let A = null; try { A = window.__drive && window.__drive.ATK; } catch (e) { A = null; }
+    return !!(vis('atkHud') && A && (A.stop || A.game));      // the armored truck job is on (not just the truck driving its route)
+  }
+  function prepare() {
+    if (!AdMob || adFree() || st.ready) return;
+    st.requests++;
+    Promise.resolve(AdMob.prepareInterstitial({ adId: CFG.USE_TEST_ADS ? CFG.testInterstitialId : CFG.interstitialId, isTesting: !!CFG.USE_TEST_ADS }))
+      .then(() => { st.ready = true; note('loaded'); })
+      .catch(e => { st.ready = false; note('load failed'); setTimeout(prepare, 60000); });
+  }
+  function init() {
+    if (st.inited || !AdMob || adFree()) return; st.inited = true;
+    const done = () => {
+      try { AdMob.addListener('interstitialAdDismissed', () => { st.showing = false; st.ready = false; prepare(); }); } catch (e) { /* ignore */ }
+      try { AdMob.addListener('interstitialAdFailedToShow', () => { st.showing = false; st.ready = false; prepare(); }); } catch (e) { /* ignore */ }
+      prepare();
+    };
+    Promise.resolve(AdMob.initialize({ initializeForTesting: !!(CFG.USE_TEST_ADS || (CFG.TEST_DEVICE_IDS || []).length), testingDevices: (CFG.TEST_DEVICE_IDS || []).slice(), tagForChildDirectedTreatment: !!CFG.childDirected, tagForUnderAgeOfConsent: !!CFG.underAgeOfConsent, maxAdContentRating: CFG.maxAdContentRating }))
+      .then(done, () => { note('init failed'); done(); });
+  }
+  function canShow() { return AdMob && !adFree() && !st.showing && st.ready && Date.now() - st.last >= CFG.minGapSec * 1000 && !busy(); }
+  function show(why) {
+    if (!canShow()) return Promise.resolve(false);
+    st.showing = true; st.last = Date.now(); st.shown++; note('show ' + why);
+    return Promise.resolve(AdMob.showInterstitial()).then(() => true, () => { st.showing = false; st.ready = false; prepare(); return false; });
+  }
+  async function showSoon(why, waitMs) {                     // the ad may still be loading right after Start: wait a little, then give up
+    const t0 = Date.now(); while (!st.ready && Date.now() - t0 < waitMs) await new Promise(r => setTimeout(r, 250));
+    return show(why);
+  }
+  async function sha256(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+  async function redeem(code) {
+    const n = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (n.length < 6) return false;
+    let h = ''; try { h = await sha256(n); } catch (e) { return false; }
+    if (!CFG.redeemHashes.includes(h)) return false;
+    wr('dd-noads', '1'); st.ready = false; return true;
+  }
+  window.DDADS = { native: true, adFree, state: st, show, redeem, busy };
+
+  /* the menu: experimental note and the Remove ads code (native app only) */
+  const box = $('appBox'), msg = $('adsMsg'), row = $('adsRow');
+  const paint = () => { if (!box) return; box.hidden = false; const f = adFree(); if (row) row.hidden = f; if (msg && f) msg.textContent = 'Ads are off on this device.'; };
+  paint();
+  const go = async () => {
+    const inp = $('adsCode'); if (!inp) return; const ok = await redeem(inp.value);
+    if (ok) { inp.value = ''; paint(); if (msg) msg.textContent = 'Code accepted. Ads are off on this device.'; }
+    else if (msg) msg.textContent = 'That code did not work. Check it and try again.';
+  };
+  if ($('adsGo')) $('adsGo').addEventListener('click', e => { e.stopPropagation(); go(); });
+  if ($('adsCode')) $('adsCode').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') go(); });
+
+  /* Google sign in uses a popup, which an Android WebView does not support: explain instead of failing. The website is unchanged. */
+  document.addEventListener('click', e => {
+    const b = $('acctBtn'); if (!b || !(e.target === b || b.contains(e.target))) return;
+    e.stopPropagation(); e.preventDefault();
+    const n = $('acctNow'); if (n) n.textContent = 'Use the website to sign in; your saves can be imported with Import save.';
+  }, true);
+
+  /* when: once after Start driving, then on every Nth death, never more than one per minGapSec */
+  if ($('go')) $('go').addEventListener('click', () => { if (CFG.startupAd) setTimeout(() => showSoon('start', 8000), 600); });
+  let wasDead = false;
+  setInterval(() => {
+    const d = window.__drive; let dead = false; try { dead = !!(d && d.HP && d.HP.dead > 0); } catch (e) { dead = false; }
+    if (dead && !wasDead) { st.deaths++; if (st.deaths % Math.max(1, CFG.everyNthDeath) === 0) show('death'); }
+    wasDead = dead;
+  }, 300);
+  if (document.readyState === 'complete') setTimeout(init, 1500); else addEventListener('load', () => setTimeout(init, 1500));
 })();
 </script>
 

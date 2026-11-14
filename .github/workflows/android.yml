@@ -1,0 +1,134 @@
+# Experimental Android APK (Capacitor + AdMob test ads), published as a GitHub *pre*release. Nothing goes to Google Play.
+# Runs when a tag like v0.1.0-exp is pushed, or by hand (Actions -> Android APK -> Run workflow).
+# Signing: if the four ANDROID_* secrets below are set, the APK is signed with that keystore (updates install over each other).
+# Otherwise a throwaway keystore is generated in this run, so the APK installs, but each build has a different signature.
+name: Android APK
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to create or update (blank = v0.0.0-exp.<run number>)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag || format('v0.0.0-exp.{0}', github.run_number) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: package-lock.json
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Android SDK packages
+        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools" > /dev/null
+
+      - name: Install Capacitor (pinned by package-lock.json)
+        run: npm ci
+
+      - name: Build web assets into www/
+        run: node scripts/build-www.js
+
+      - name: Generate and patch the Android project
+        env:
+          DD_VERSION_NAME: ${{ env.TAG }}
+          DD_VERSION_CODE: ${{ github.run_number }}
+        run: |
+          rm -rf android
+          npx cap add android
+          npx cap sync android
+          node scripts/patch-android.js
+
+      - name: Keystore (secret, or a throwaway one)
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          KS="$RUNNER_TEMP/release.jks"
+          if [ -n "$KS_B64" ] && [ -n "$KS_PASS" ] && [ -n "$KEY_ALIAS" ]; then
+            echo "$KS_B64" | base64 -d > "$KS"
+            echo "SIGNING=your keystore (secrets)" >> "$GITHUB_ENV"
+            echo "DD_KS_PASS=$KS_PASS" >> "$GITHUB_ENV"
+            echo "DD_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
+            echo "DD_KEY_PASS=${KEY_PASS:-$KS_PASS}" >> "$GITHUB_ENV"
+          else
+            PASS="$(openssl rand -hex 16)"
+            echo "::add-mask::$PASS"
+            keytool -genkeypair -keystore "$KS" -alias experimental -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$PASS" -keypass "$PASS" -dname "CN=Driftless Drive Experimental" -noprompt
+            echo "SIGNING=a throwaway keystore made in this build (uninstall the old app before installing a newer build)" >> "$GITHUB_ENV"
+            echo "DD_KS_PASS=$PASS" >> "$GITHUB_ENV"
+            echo "DD_KEY_ALIAS=experimental" >> "$GITHUB_ENV"
+            echo "DD_KEY_PASS=$PASS" >> "$GITHUB_ENV"
+          fi
+          echo "DD_KS=$KS" >> "$GITHUB_ENV"
+
+      - name: Build signed release APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace \
+            -Pandroid.injected.signing.store.file="$DD_KS" \
+            -Pandroid.injected.signing.store.password="$DD_KS_PASS" \
+            -Pandroid.injected.signing.key.alias="$DD_KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$DD_KEY_PASS"
+
+      - name: Collect APK
+        run: |
+          APK="driftless-drive-${TAG}.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk "$APK"
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$APK" | head -3
+          sha256sum "$APK" | tee "$APK.sha256"
+          echo "APK=$APK" >> "$GITHUB_ENV"
+          rm -f "$DD_KS"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: driftless-drive-apk
+          path: driftless-drive-*.apk*
+
+      - name: Publish GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<NOTES
+          **Experimental Android build** of Driftless Drive (not on Google Play). Shows ads (AdMob, Google's test ids unless real ones were set in index.html).
+
+          Install: download \`${APK}\` on your Android phone, open it and allow *Install unknown apps* for your browser or file manager when asked.
+          See docs/ANDROID.md in the repository for details.
+
+          Signed with: ${SIGNING}.
+          SHA-256: \`$(cut -d' ' -f1 "$APK.sha256")\`
+          NOTES
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "$APK" "$APK.sha256" --clobber
+            gh release edit "$TAG" --prerelease --title "Experimental $TAG" --notes-file notes.md
+          else
+            gh release create "$TAG" "$APK" "$APK.sha256" --prerelease --title "Experimental $TAG" --notes-file notes.md --target "$GITHUB_SHA"
+          fi
