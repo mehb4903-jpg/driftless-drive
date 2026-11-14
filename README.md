@@ -41,3 +41,7 @@ Opening the file directly with `file://` also works.
   (`npx peerjs --port 9000`). Then add this line to `index.html` before the other scripts:
   `<script>window.DD_PEER_OPTIONS = { host: 'your.host', port: 443, path: '/', secure: true };</script>`
 - Room codes aren't secret. Anyone who knows or guesses a code can join that room.
+
+## Install on iPhone / iPad (fullscreen)
+
+Open the site in **Safari**, tap **Share**, then **Add to Home Screen**. Launch it from the new Driftless icon and it runs as a full-screen app with no browser bars (iPhones have no browser fullscreen button, so this is the way). On Android, Chrome's menu has **Install app** with the same effect.

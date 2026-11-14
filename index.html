@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Driftless Drive</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b2a38">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Driftless">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
 <style>/* base reset */
 :root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 </style>
@@ -5286,11 +5294,14 @@ $('bTime').addEventListener('click', e => { skipTime(); e.currentTarget.blur(); 
 $('bSound').addEventListener('click', e => { setSound(!soundOn); e.currentTarget.blur(); });
 /* fullscreen: must be asked for straight from the tap. Phones and some app views refuse it, so say so instead of failing silently */
 const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), STANDALONE = !!(navigator.standalone || (matchMedia && matchMedia('(display-mode: standalone)').matches));
+if (STANDALONE) { const b = $('bFull'); if (b) b.hidden = true; }   // installed to the home screen: the whole screen is already ours
+if ('serviceWorker' in navigator && /^https:/.test(location.protocol)) addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 function toggleFull() {
   const el = document.documentElement;
   try {
     if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
-    const req = el.requestFullscreen || el.webkitRequestFullscreen; if (!req) { toast('Fullscreen is not available in this browser'); return; }
+    const req = el.requestFullscreen || el.webkitRequestFullscreen; if (!req) { toast(IOS && !STANDALONE ? 'iPhone: tap Share, then Add to Home Screen, then open it from your home screen for fullscreen' : STANDALONE ? 'Already fullscreen' : 'Fullscreen is not available in this browser'); return; }
     const pr = req.call(el, { navigationUI: 'hide' });
     if (pr && pr.then) pr.then(() => { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) { /* optional */ } }).catch(() => toast('Fullscreen was blocked here. Try the browser, or add the page to your home screen'));
   } catch (e) { toast('Fullscreen is not available here'); }
