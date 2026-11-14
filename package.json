@@ -2,7 +2,7 @@
   "name": "driftless-drive-android",
   "version": "0.1.0",
   "private": true,
-  "description": "Experimental Android wrapper (Capacitor) for the Driftless Drive web game. The web game itself is index.html at the repo root.",
+  "description": "Experimental Android wrapper (Capacitor) for the Rampage Road web game. The web game itself is index.html at the repo root.",
   "scripts": {
     "build:www": "node scripts/build-www.js",
     "cap:sync": "npm run build:www && cap sync android",

@@ -1,6 +1,6 @@
 {
-  "name": "Driftless Drive",
-  "short_name": "Driftless",
+  "name": "Rampage Road",
+  "short_name": "Rampage",
   "description": "A multiplayer 3D open-world driving game.",
   "start_url": "./index.html",
   "scope": "./",

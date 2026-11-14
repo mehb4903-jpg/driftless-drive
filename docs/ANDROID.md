@@ -1,4 +1,4 @@
-# Driftless Drive for Android (experimental)
+# Rampage Road for Android (experimental)
 
 This is an **experimental** Android app. It is the same game as the website (`index.html`), wrapped with
 [Capacitor](https://capacitorjs.com/) 6, with AdMob interstitial ads. It is **not on Google Play**. GitHub Actions builds it
@@ -9,7 +9,7 @@ and publishes it as a GitHub **pre-release**.
 1. On your Android phone, open the repository's **Releases** page
    (https://github.com/mehb4903-jpg/driftless-drive/releases) and pick the newest release marked *Pre-release*,
    for example **Experimental v0.1.0-exp**.
-2. Under *Assets*, tap `driftless-drive-<version>.apk` to download it.
+2. Under *Assets*, tap `rampage-road-<version>.apk` to download it.
 3. Open the downloaded file. Android asks you to allow **Install unknown apps** for your browser or file manager.
    Tap **Settings**, turn on **Allow from this source**, go back, and tap **Install**.
    (You can also find this setting under *Settings → Apps → Special app access → Install unknown apps*.)
@@ -113,7 +113,7 @@ Android only installs signed APKs. The workflow signs the release APK like this:
 
 - `package.json` / `package-lock.json` pin Capacitor 6.2.1 and `@capacitor-community/admob` 6.2.0 (works with JDK 17,
   Android SDK 34).
-- `capacitor.config.json`: app id `com.driftless.drive`, name *Driftless Drive*, `webDir: www`, the CDN, Firebase, PeerJS and
+- `capacitor.config.json`: app id `com.driftless.drive`, name *Rampage Road*, `webDir: www`, the CDN, Firebase, PeerJS and
   YouTube hosts allowed for navigation, and `DriftlessDriveApp` added to the user agent.
 - `scripts/build-www.js` copies `index.html`, `manifest.webmanifest`, `sw.js` and `icons/` into `www/`. The repository root is
   still the GitHub Pages site; `www/`, `android/` and `node_modules/` are not committed.

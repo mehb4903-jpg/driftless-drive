@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Patches the Capacitor-generated android/ project (created in CI by `npx cap add android`) for Driftless Drive.
+/* Patches the Capacitor-generated android/ project (created in CI by `npx cap add android`) for Rampage Road.
    Idempotent: safe to run again after every `npx cap sync android`.
    - AdMob APPLICATION_ID meta-data, read from DD_ADS_CONFIG.appId in index.html (the one place for ad ids)
    - landscape only, fullscreen / immersive (status and navigation bars hidden), screen kept on
