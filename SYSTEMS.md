@@ -244,7 +244,10 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - Freeze missile -> `a.frozen = FREEZE_T` + 20 damage: `actorFx` returns true so `stepActor` skips moving and shooting; an ice block
   (`a.ice`, removed in dropActor) sits on them. They can still be shot.
 - Police cars: freeze missile sets `c.frozen` (stepPcar returns early, no driving, no unloading, ice box on the car); El Blick unchanged.
-- Local to the actor's owner: other players see the actor stop or slow and lose health, but not the ice or blood (not in presence).
+- Shared (V65): each `ac` entry has a 13th number, fx bits (1 frozen, 2 bleeding); other players' games draw the ice block and the
+  blood spurts/drips for that person (`remoteFx(e, dt)`, removed when the entry goes). Each `pc` entry has a 7th number, 1 = frozen
+  (`carIce(e, on)` on REMPC). The truck's `ak` may carry an 8th number, how it was stopped (1 freeze, 2 El Blick, 3 damage); receivers
+  set ATK.fx so they see the ice or the spin. Older 7-number `ak` arrays are still accepted. Test: scratchpad `fxsync.js`.
 - Test: scratchpad `bleed.js` (Hellhound oil on an armed NPC: 100 -> 70 hp over 5 s, ~2 m/s; heli freeze: stands still in ice; frozen police car).
 
 ## Armored truck heist (V60)
