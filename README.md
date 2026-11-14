@@ -44,4 +44,4 @@ Opening the file directly with `file://` also works.
 
 ## Install on iPhone / iPad (fullscreen)
 
-Open the site in **Safari**, tap **Share**, then **Add to Home Screen**. Launch it from the new Driftless icon and it runs as a full-screen app with no browser bars (iPhones have no browser fullscreen button, so this is the way). On Android, Chrome's menu has **Install app** with the same effect.
+Open the site in **Safari**, tap **Share**, then **Add to Home Screen**. Launch it from the new Driftless icon and it runs as a full-screen app with no browser bars (iPhones have no browser fullscreen button, so this is the way). On Android, tap the **Install app** button in the game's menu (or Chrome's menu, **Install app**) for the same effect.
