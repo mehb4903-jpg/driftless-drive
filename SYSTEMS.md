@@ -297,6 +297,39 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - Dying on foot is unchanged.
 - Backup before the graphics overhaul: `backups/rampage-road-v67-before-graphics.html` (artifact Version 67).
 
+## Ultra graphics (V68)
+- **Quality flag and switching:** `GFXQ` / `ULTRA` is read once at boot from localStorage `dd-gfx` ('ultra' by default, or 'classic'). The top-bar **Graphics** button (`#bGfx`) flips it and reloads.
+- **Classic path:** Classic is exactly the old renderer, materials and models. Every ultra change sits behind `ULTRA`, so later gameplay changes keep working in both modes.
+- **Rendering pipeline:**
+  - Ultra draws into an offscreen target: `makePost` / `POST`, multisampled on WebGL2, FXAA on WebGL1.
+  - The bright pass threshold is `POST.th` (0.9 by day, about 0.66 at night). It feeds a 5-level bloom chain.
+  - One composite pass applies the filmic ACES curve, slight saturation and S-curve, vignette and dither.
+  - Always draw through `present()`; `__drive.draw` does.
+  - `resize()` calls `POST.size()`.
+- **Reflections:**
+  - `ENVQ` holds a small copy of the sky (sharing `sky.material`) plus a ground disc. It's baked with `PMREMGenerator` into `scene.environment`.
+  - `envTick` re-bakes when the sky colours change, checked every 0.5 s.
+  - The sky fragment shader ends with `#include <encodings_fragment>`. PMREM renders into RGBE, and without that line everything goes black and white.
+- **Materials (`PBR(phong, std)`):**
+  - Terrain, props, roads and lines use MeshStandard. Car paint is MeshPhysical with clearcoat.
+  - Glass and water are reflective Standard.
+  - Walls, ground and roads keep their `envMapIntensity` low, or the scene washes out.
+- **Surface detail (`gfxPatch`):**
+  - Called from `nukeMat`'s shader hook through `material.userData.gfx`, using the world position `vNW`.
+  - 'road': asphalt grain, patches, and wet spots with lower roughness.
+  - 'terr': grass mottling, and rock on slopes using derivatives of `vNW`.
+  - 'prop': weathering.
+  - 'fac': procedural facade on city towers. A window grid of 2.7 m by 3.4 m floors starts above `uYS` + 3.25. It has frames and reflective glass, warm or cool lit windows driven by `GFXU.uNight`, ground-floor shopfront glass, and a darker base.
+  - In ultra, `bCity` puts tower bodies in their own `F` builder with `facadeMat`, and skips the old window-band boxes.
+- **Smooth cars:**
+  - `carParts` sends `SMOOTH` types (sedan, sport, roadster, suv, pickup, muscle) to `smoothCar`. Everything else, and Classic mode, uses `carPartsC` (the old builder).
+  - `smoothCar` lofts rounded cross-sections along z: raked windscreen, crowned roof, tumblehome cabin, wheel arches raised into the sills, rounded nose and tail caps. Glass is its own geometry when `sepGlass`, with a dash and seats for the cockpit view.
+  - It reuses the classic wheel positions and `halfLen`, so physics, hit boxes and multiplayer are unchanged.
+  - The `lo` flag gives a light version for the 300 instanced parked cars.
+  - `wheel()` in ultra builds a tread, a sidewall, a dark rim well, a hub and 5 spokes.
+- **Budget:** about 1.4M triangles in the city view (shadow pass included), against about 0.68M classic.
+- **Backup of the pre-graphics build:** `backups/rampage-road-v67-before-graphics.html`.
+
 ## Multiplayer (room presence)
 
 - `netSend()` builds one presence object ~18 Hz; `netUpdate()` reads peers. Fields: v n col rd w hp dm g c m p q vel bo beam frz oil pre
