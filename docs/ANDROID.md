@@ -8,7 +8,7 @@ and publishes it as a GitHub **pre-release**.
 
 1. On your Android phone, open the repository's **Releases** page
    (https://github.com/mehb4903-jpg/driftless-drive/releases) and pick the newest release marked *Pre-release*,
-   for example **Experimental v0.1.0-exp**.
+   for example **Experimental v0.2.0-exp**.
 2. Under *Assets*, tap `rampage-road-<version>.apk` to download it.
 3. Open the downloaded file. Android asks you to allow **Install unknown apps** for your browser or file manager.
    Tap **Settings**, turn on **Allow from this source**, go back, and tap **Install**.
@@ -24,13 +24,48 @@ first use **Import save → Copy my save** in the menu and keep the text somewhe
 - Ads are shown: one after you tap **Start driving**, then on every 2nd death, never more than one per 120 seconds. No ad is
   shown while the TV (YouTube) is on screen, during a heist or the armored truck job, while drilling, the orbital strike,
   placing furniture, or while the Import save, Servers or Fast travel windows are open.
-- **Google sign in does not work in the app.** Android WebViews block the Google sign-in popup. The button explains this.
-  Sign in on the website instead, then move your save into the app with **Import save** (*Copy my save* on the website,
-  paste in the app).
+- **Google sign in** opens in your phone's browser (see *Google sign in in the app* below) and then returns to the game.
+  It keeps your save in your Google account, the same as on the website.
 - The YouTube TV inside the game may refuse some videos in the app (YouTube treats an app WebView differently from a browser).
 - Multiplayer (PeerJS / WebRTC) works as on the website. The app does not ask for the microphone or camera.
 - Saves live inside the app, separate from the browser's saves.
 - The app keeps the screen on, runs landscape only, and hides the status and navigation bars (swipe from the edge to show them).
+
+## Google sign in in the app
+
+Google does not allow its sign-in popup inside an app's WebView, so the app signs in through the phone's browser:
+
+1. **Sign in with Google** in the app menu makes a random one-time code (the *nonce*, kept in memory and `sessionStorage`) and
+   opens `https://mehb4903-jpg.github.io/driftless-drive/native-auth.html?nonce=<code>` in a Chrome Custom Tab
+   (`@capacitor/browser`).
+2. That page (`native-auth.html` in the repository root, served by GitHub Pages, marked `noindex`) loads Firebase with the same
+   public config as `index.html`. You tap **Continue with Google** and sign in with the normal Google popup (if the popup is
+   blocked it falls back to a redirect). The page then reads the Google **id token** and **access token** from the result and
+   opens `com.driftless.drive://auth#id_token=…&access_token=…&nonce=<the same code>`. If Chrome does not switch to the app by
+   itself, tap **Return to the game**.
+3. Android hands that link to the app (an intent filter on `MainActivity`, added by `scripts/patch-android.js`; the activity
+   is `singleTask`, so the running game receives it). The app (`@capacitor/app`, `appUrlOpen`) only accepts it when the nonce
+   is exactly the one it made for this sign in, forgets the nonce (a link can be used once), closes the browser and calls
+   `firebase.auth().signInWithCredential(GoogleAuthProvider.credential(idToken, accessToken))`. From there everything is
+   the same as on the website: the cloud save merge, *Sign out*, autosave.
+4. Firebase keeps the sign in inside the app (IndexedDB, `LOCAL` persistence), so it survives closing and reopening the app.
+   The browser page signs itself out again straight away (session persistence), so nothing stays signed in in the browser.
+
+This does not depend on the app's signing key (no SHA-1 fingerprint in Firebase), so it works with the throwaway keystore.
+`signInWithCredential` does not need the app's own origin on Firebase's authorized domains; the hosted page runs on
+`mehb4903-jpg.github.io`, which is already authorized because the website's sign in works.
+
+**Privacy and limits:**
+
+- The Google tokens travel from the browser to the app only inside the `#fragment` of the `com.driftless.drive://` link
+  (a fragment is never sent to a server). They are not stored or sent anywhere else; the app gives them to Firebase once.
+  The id token expires after an hour.
+- The nonce check means the app ignores a sign-in link it did not ask for (for example one opened by a web page or another
+  app), so nobody can sign the app into *their* account behind your back.
+- A custom scheme is not owned by one app: another app installed on the same phone could in theory register
+  `com.driftless.drive://` too, and Android could then offer it the link (and the tokens). Only install apps you trust. A
+  verified App Link (`https://…` with `assetlinks.json`) would close this gap, but it needs a fixed signing key.
+- Sign in needs a browser with Custom Tabs (Chrome, or most other browsers); without one the link opens in the browser app.
 
 ## Ads: AdMob ids, test ads and real ads
 
@@ -111,14 +146,14 @@ Android only installs signed APKs. The workflow signs the release APK like this:
 
 ## How the build works
 
-- `package.json` / `package-lock.json` pin Capacitor 6.2.1 and `@capacitor-community/admob` 6.2.0 (works with JDK 17,
-  Android SDK 34).
+- `package.json` / `package-lock.json` pin Capacitor 6.2.1, `@capacitor-community/admob` 6.2.0, `@capacitor/browser` 6.0.6 and
+  `@capacitor/app` 6.0.3 (sign in; work with JDK 17, Android SDK 34). The app version is `version` in `package.json` (0.2.0).
 - `capacitor.config.json`: app id `com.driftless.drive`, name *Rampage Road*, `webDir: www`, the CDN, Firebase, PeerJS and
   YouTube hosts allowed for navigation, and `DriftlessDriveApp` added to the user agent.
 - `scripts/build-www.js` copies `index.html`, `manifest.webmanifest`, `sw.js` and `icons/` into `www/`. The repository root is
   still the GitHub Pages site; `www/`, `android/` and `node_modules/` are not committed.
 - In CI, `npx cap add android` generates the Android project, `npx cap sync android` copies the web files and the AdMob
-  plugin in, and `scripts/patch-android.js` adds the AdMob app id, landscape, fullscreen, keep-screen-on, autoplay,
+  plugins in, and `scripts/patch-android.js` adds the AdMob app id, the `com.driftless.drive://auth` sign-in link (singleTask), landscape, fullscreen, keep-screen-on, autoplay,
   third-party cookies (YouTube embed), the launcher icon and the version number. Then `./gradlew assembleRelease`.
 - `.github/workflows/android.yml` runs on every pushed tag that starts with `v` (for example `v0.1.0-exp`), on every push to
   the branch `android-release` (it then makes the tag itself: `v<version in package.json>-exp`, or with `.<run number>`

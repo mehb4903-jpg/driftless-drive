@@ -2,6 +2,7 @@
 /* Patches the Capacitor-generated android/ project (created in CI by `npx cap add android`) for Rampage Road.
    Idempotent: safe to run again after every `npx cap sync android`.
    - AdMob APPLICATION_ID meta-data, read from DD_ADS_CONFIG.appId in index.html (the one place for ad ids)
+   - Google sign in: intent filter for com.driftless.drive://auth on MainActivity (singleTask), see docs/ANDROID.md
    - landscape only, fullscreen / immersive (status and navigation bars hidden), screen kept on
    - WebView: audio and video play without a tap, third-party cookies for the YouTube embed
    - launcher icon from icons/icon-512.png
@@ -26,6 +27,26 @@ man = man.replace(/\s*<meta-data android:name="com\.google\.android\.gms\.ads\.A
 man = man.replace(/(<application\b[^>]*>)/, `$1\n        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="${ADMOB_APP_ID}"/>`);
 if (!/android:screenOrientation=/.test(man)) man = man.replace(/(android:name="\.MainActivity")/, '$1\n            android:screenOrientation="sensorLandscape"');
 if (!/android:hardwareAccelerated=/.test(man)) man = man.replace(/(<application\b)/, '$1\n        android:hardwareAccelerated="true"');
+/* Google sign in comes back from the browser (native-auth.html) through com.driftless.drive://auth#...: MainActivity handles that link.
+   singleTask keeps one game: the link returns to the running game (onNewIntent -> the App plugin's appUrlOpen) instead of starting a second one. */
+const AUTH_FILTER = `
+            <!-- rr-auth-link (scripts/patch-android.js): Google sign in returns here from native-auth.html -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.driftless.drive" android:host="auth" />
+            </intent-filter>`;
+man = man.replace(/\s*<!-- rr-auth-link[\s\S]*?<\/intent-filter>/g, '');
+{
+  const at = man.search(/<activity\b[^>]*android:name="\.MainActivity"/);
+  if (at < 0) { console.error('MainActivity not found in AndroidManifest.xml'); process.exit(1); }
+  const end = man.indexOf('</activity>', at);
+  let head = man.slice(at, end);
+  head = /android:launchMode=/.test(head) ? head.replace(/android:launchMode="[^"]*"/, 'android:launchMode="singleTask"') : head.replace(/<activity\b/, '<activity\n            android:launchMode="singleTask"');
+  if (!/android:exported=/.test(head)) head = head.replace(/<activity\b/, '<activity\n            android:exported="true"');
+  man = man.slice(0, at) + head.replace(/\s*$/, '') + AUTH_FILTER + '\n        ' + man.slice(end);
+}
 fs.writeFileSync(manPath, man);
 
 /* 3. MainActivity: immersive fullscreen, keep screen on, WebView media + cookies */

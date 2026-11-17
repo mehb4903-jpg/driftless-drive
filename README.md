@@ -60,5 +60,5 @@ whenever a tag like `v0.1.0-exp` is pushed (or `main` is pushed to the `android-
 - **Remove ads:** there is no $2.99 purchase yet, because Play Billing needs the app on Google Play (a Play Console account
   costs $25 once). Instead the app menu has a **Remove ads code** field; codes are checked against SHA-256 hashes, so the codes
   themselves are not in this repository.
-- **Google sign in** does not work inside the app. Sign in on the website and move your save with **Import save**.
+- **Google sign in** works in the app: it opens your phone's browser (`native-auth.html` on this site), then returns to the game through a `com.driftless.drive://auth` link checked with a one-time code. Details and privacy notes in docs/ANDROID.md.
 - Everything else (how the build works, signing, switching to real ads, YouTube and AdMob policy notes): [docs/ANDROID.md](docs/ANDROID.md).

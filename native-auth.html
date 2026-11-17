@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Rampage Road sign in</title>
+<style>
+:root{--bg:#1b2a38;--panel:#243749;--ink:#f3ead8;--dim:#b7c0c8;--amber:#f2a33a;--bad:#ff8a7a}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--ink);font:17px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+main{width:100%;max-width:420px;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:24px;text-align:center}
+h1{font-size:22px;margin:0 0 10px;letter-spacing:.04em;text-transform:uppercase}
+p{margin:8px 0;color:var(--dim)}
+#msg.bad{color:var(--bad)}
+.btn{display:block;width:100%;margin:14px 0 0;padding:13px 16px;border-radius:6px;border:1px solid var(--amber);background:var(--amber);color:#1b1b1b;font:600 17px system-ui,sans-serif;text-decoration:none;cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink);border-color:rgba(255,255,255,.3)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>Rampage Road</h1>
+  <p id="msg">Signing you in…</p>
+  <button id="go" class="btn" type="button" hidden>Continue with Google</button>
+  <a id="back" class="btn alt" href="com.driftless.drive://auth" hidden>Return to the game</a>
+</main>
+<script>
+/* Google sign in for the Rampage Road Android app (it is not used by the website).
+   The app opens this page in the phone's browser with ?nonce=<random>. Here the normal Firebase Google sign in runs (popup, or redirect
+   if the popup is blocked); then the Google id and access tokens go back to the app through the link
+   com.driftless.drive://auth#id_token=...&access_token=...&nonce=<the same nonce>. The app only accepts the link if the nonce is the one
+   it made, and signs in to Firebase with the tokens. The tokens are not stored or sent anywhere else. */
+window.DD_FIREBASE = {   // the same public web config as index.html
+  apiKey: "AIzaSyDqKFzkA7_VETetOL6-0wIwzYUH0p96osY",
+  authDomain: "driftless-drive-server-calls.firebaseapp.com",
+  projectId: "driftless-drive-server-calls",
+  storageBucket: "driftless-drive-server-calls.firebasestorage.app",
+  messagingSenderId: "474405628168",
+  appId: "1:474405628168:web:5984b11ec325bf738fa4bd"
+};
+(() => {
+  'use strict';
+  const LINK = 'com.driftless.drive://auth', $ = id => document.getElementById(id);
+  const okNonce = n => typeof n === 'string' && /^[A-Za-z0-9_-]{16,128}$/.test(n);
+  function returnUrl(o) {                        // the link back into the app; everything goes in the #fragment, never to a server
+    const q = [];
+    if (o.idToken) q.push('id_token=' + encodeURIComponent(o.idToken));
+    if (o.accessToken) q.push('access_token=' + encodeURIComponent(o.accessToken));
+    if (o.error) q.push('error=' + encodeURIComponent(o.error));
+    q.push('nonce=' + encodeURIComponent(o.nonce || ''));
+    return LINK + '#' + q.join('&');
+  }
+  window.__rrReturnUrl = returnUrl;              // for tests
+  const say = (t, bad) => { const m = $('msg'); m.textContent = t; m.className = bad ? 'bad' : ''; };
+  const back = href => { const b = $('back'); b.href = href; b.hidden = false; };
+
+  let nonce = new URLSearchParams(location.search).get('nonce');
+  if (okNonce(nonce)) { try { sessionStorage.setItem('rr-auth-nonce', nonce); } catch (e) { /* ignore */ } }
+  else { try { nonce = sessionStorage.getItem('rr-auth-nonce'); } catch (e) { nonce = null; } }
+  if (!okNonce(nonce)) { say('Open this page from the Rampage Road app: tap Sign in with Google in the game menu.', true); back(LINK); return; }
+
+  let done = false;
+  function finish(cred) {
+    const idToken = cred && cred.idToken, accessToken = cred && cred.accessToken;
+    if (!idToken && !accessToken) { fail('no-credential'); return; }
+    done = true; try { sessionStorage.removeItem('rr-auth-nonce'); } catch (e) { /* ignore */ }
+    const url = returnUrl({ idToken, accessToken, nonce });
+    $('go').hidden = true; say('Signed in. If the game does not open by itself, tap Return to the game.'); back(url); $('back').className = 'btn';
+    try { firebase.auth().signOut(); } catch (e) { /* the app has its own sign in; nothing is kept in this browser */ }
+    setTimeout(() => { location.href = url; }, 50);
+  }
+  function fail(code) {
+    if (done) return;
+    const cancelled = /popup-closed|cancelled|user-cancel/.test(code || '');
+    say(cancelled ? 'Sign in cancelled. Try again, or return to the game.' : 'Sign in did not work' + (code ? ' (' + code + ')' : '') + '. Try again, or return to the game.', !cancelled);
+    $('go').hidden = false; $('go').textContent = 'Try again'; back(returnUrl({ error: code || 'failed', nonce })); $('back').className = 'btn alt';
+  }
+
+  const V = '10.12.2', SDK = ['app', 'auth'].map(n => 'https://www.gstatic.com/firebasejs/' + V + '/firebase-' + n + '-compat.js');
+  const load = () => new Promise(res => {
+    let i = 0; const next = () => {
+      if (i >= SDK.length) { try { firebase.initializeApp(window.DD_FIREBASE); res(true); } catch (e) { res(false); } return; }
+      const s = document.createElement('script'); s.src = SDK[i++]; s.async = false; s.onload = next; s.onerror = () => res(false); document.head.appendChild(s);
+    }; next();
+  });
+  const provider = () => { const p = new firebase.auth.GoogleAuthProvider(); try { p.setCustomParameters({ prompt: 'select_account' }); } catch (e) { /* ignore */ } return p; };
+
+  async function signIn() {                      // from the button (a tap, so the browser allows the popup)
+    $('go').hidden = true; say('Opening Google sign in…');
+    const auth = firebase.auth();
+    try { finish((await auth.signInWithPopup(provider())).credential); }
+    catch (err) {
+      const c = err && err.code;
+      if (c === 'auth/popup-blocked' || c === 'auth/operation-not-supported-in-this-environment') {
+        try { await auth.signInWithRedirect(provider()); return; } catch (e2) { fail(e2 && e2.code); return; }
+      }
+      fail(c);
+    }
+  }
+
+  load().then(async ok => {
+    if (!ok) { say('Could not load Google sign in. Check your connection and try again.', true); back(returnUrl({ error: 'load-failed', nonce })); return; }
+    const auth = firebase.auth();
+    try { await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); } catch (e) { /* ignore */ }
+    let r = null; try { r = await auth.getRedirectResult(); } catch (err) { fail(err && err.code); return; }   // coming back from signInWithRedirect
+    if (r && r.credential) { finish(r.credential); return; }
+    say('Tap the button to sign in with your Google account. You then go back to the game.');
+    $('go').hidden = false; $('go').onclick = signIn;
+    back(returnUrl({ error: 'cancelled', nonce }));
+  });
+})();
+</script>
+</body>
+</html>

@@ -6169,6 +6169,8 @@ window.DD_FIREBASE = {
     return out;
   }
   let fb = null, auth = null, db = null, user = null, ref = null, lastRev = 0, lastSaved = '', saving = false, loading = null, bigNote = false;
+  const CAP = window.Capacitor, PLUG = (CAP && CAP.Plugins) || {}, AUTH_PAGE = 'https://mehb4903-jpg.github.io/driftless-drive/native-auth.html', AUTH_LINK = 'com.driftless.drive://auth';
+  let NATIVE = false, pending = null; try { NATIVE = !!(CAP && (typeof CAP.isNativePlatform === 'function' ? CAP.isNativePlatform() : CAP.getPlatform && CAP.getPlatform() !== 'web')); } catch (e) { NATIVE = false; }
   const load = () => loading || (loading = new Promise(res => {
     let i = 0; const next = () => {
       if (i >= SDK.length) { try { window.firebase.initializeApp(cfg); fb = window.firebase; auth = fb.auth(); db = fb.firestore(); res(true); } catch (e) { res(false); } return; }
@@ -6205,6 +6207,7 @@ window.DD_FIREBASE = {
     e.stopPropagation(); if (btn.disabled) return;
     if (!fb) { btn.disabled = true; say('Loading sign in...'); const ok = await load(); btn.disabled = false; if (!ok) { say('Could not load Google sign in. Check your connection and try again.'); return; } startAuth(); say('Click Sign in again.'); return; }
     if (user) { if (confirm('Sign out? Your progress stays saved to your account.')) { wr('dd-acct', '0'); try { await auth.signOut(); } catch (err) { /* ignore */ } } return; }
+    if (NATIVE) { nativeSignIn(); return; }            // the Android app: Google sign in in the system browser (below); the website goes on to the popup
     btn.disabled = true; say('Opening Google sign in...');
     try { await auth.signInWithPopup(new fb.auth.GoogleAuthProvider()); }
     catch (err) {
@@ -6215,6 +6218,42 @@ window.DD_FIREBASE = {
     btn.disabled = false;
   });
   let started = false; function startAuth() { if (started) return; started = true; auth.onAuthStateChanged(onUser, () => say('Could not check your sign in.')); }
+
+  /* The Android app (Capacitor). A WebView cannot show Google's sign in popup, so the app opens native-auth.html (on the GitHub Pages site,
+     an authorized Firebase domain) in the system browser (Chrome Custom Tab). That page signs in with the normal popup and sends the
+     Google id/access token back to the app through the link com.driftless.drive://auth#id_token=...&nonce=...; the app checks the
+     one-time nonce it made, closes the browser and signs in to Firebase with that credential. From there it is the same as the
+     website: onAuthStateChanged -> onUser -> cloud save merge. Firebase keeps the sign in (IndexedDB), so it survives restarts. */
+  async function nativeSignIn() {
+    const Browser = PLUG.Browser; if (!Browser) { say('Sign in is not available in this version of the app.'); return; }
+    const a = new Uint8Array(24); crypto.getRandomValues(a); const nonce = [...a].map(x => x.toString(16).padStart(2, '0')).join('');
+    pending = nonce; try { sessionStorage.setItem('dd-auth-nonce', nonce); } catch (e) { /* memory copy is enough */ }
+    btn.disabled = true; say('Opening Google sign in in your browser...');
+    try { await Browser.open({ url: AUTH_PAGE + '?nonce=' + nonce, presentationStyle: 'fullscreen', toolbarColor: '#1b2a38' }); say('Finish signing in in the browser. It comes back here by itself.'); }
+    catch (e) { say('Could not open the browser for sign in.'); }
+    btn.disabled = false;
+  }
+  async function nativeReturn(url) {
+    if (typeof url !== 'string' || url.indexOf(AUTH_LINK) !== 0) return;
+    const q = new URLSearchParams((url.split('#')[1] || url.split('?')[1] || '')), got = q.get('nonce') || '';
+    let want = pending; if (!want) { try { want = sessionStorage.getItem('dd-auth-nonce'); } catch (e) { want = null; } }
+    if (!want || got !== want) { say('That sign in link was not started here. Tap Sign in with Google again.'); return; }
+    pending = null; try { sessionStorage.removeItem('dd-auth-nonce'); } catch (e) { /* ignore */ }
+    try { await PLUG.Browser.close(); } catch (e) { /* already closed */ }
+    const idt = q.get('id_token'), at = q.get('access_token');
+    if (!idt && !at) { const c = q.get('error') || ''; say(/cancel|closed/.test(c) ? 'Sign in cancelled.' : 'Sign in did not work' + (c ? ' (' + c + ')' : '') + '.'); return; }
+    btn.disabled = true; say('Signing you in...');
+    if (!fb && !(await load())) { btn.disabled = false; say('Could not load Google sign in. Check your connection and try again.'); return; }
+    startAuth();
+    try { await auth.setPersistence(fb.auth.Auth.Persistence.LOCAL); } catch (e) { /* LOCAL is the default anyway */ }
+    try { await auth.signInWithCredential(fb.auth.GoogleAuthProvider.credential(idt || null, at || null)); }   // onAuthStateChanged then runs onUser, as on the website
+    catch (err) { const c = err && err.code; say('Sign in did not work' + (c ? ' (' + c + ')' : '') + '.'); }
+    btn.disabled = false;
+  }
+  if (NATIVE) {
+    try { PLUG.App && PLUG.App.addListener('appUrlOpen', ev => nativeReturn(ev && ev.url)); } catch (e) { /* no App plugin */ }
+    try { PLUG.App && Promise.resolve(PLUG.App.getLaunchUrl()).then(r => r && nativeReturn(r.url), () => {}); } catch (e) { /* ignore */ }
+  }
   say('Not signed in. Your progress saves on this device only.');
   setTimeout(() => load().then(ok => { if (ok) startAuth(); }), 1200);                    // preload, so the sign in popup opens straight from the click
   setInterval(() => save(false), 6000);
@@ -6317,12 +6356,7 @@ window.DD_ADS_CONFIG = {
   if ($('adsGo')) $('adsGo').addEventListener('click', e => { e.stopPropagation(); go(); });
   if ($('adsCode')) $('adsCode').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') go(); });
 
-  /* Google sign in uses a popup, which an Android WebView does not support: explain instead of failing. The website is unchanged. */
-  document.addEventListener('click', e => {
-    const b = $('acctBtn'); if (!b || !(e.target === b || b.contains(e.target))) return;
-    e.stopPropagation(); e.preventDefault();
-    const n = $('acctNow'); if (n) n.textContent = 'Use the website to sign in; your saves can be imported with Import save.';
-  }, true);
+  /* Google sign in: the accounts script above opens it in the system browser in the app (native-auth.html), not a popup. */
 
   /* when: once after Start driving, then on every Nth death, never more than one per minGapSec */
   if ($('go')) $('go').addEventListener('click', () => { if (CFG.startupAd) setTimeout(() => showSoon('start', 8000), 600); });
