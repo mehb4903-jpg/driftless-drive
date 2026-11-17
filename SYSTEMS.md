@@ -286,6 +286,17 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - Pitfalls met here: `ar` was already the armour presence key (so `ak`); a stop is set in `ATK.myStop` immediately but `ATK.stop` only
   next frame, so guards against repeat hits must check both.
 
+## Saucer beam on players and wrecks (V67)
+- Beam on a player: the saucer names its target in presence `beam` {targetId, point, strength 2}. The victim's own client does the pulling in `netBeamPull`: a spring of 9 with damping 4.5, clamped at ±130, plus gravity cancel. The hold point is never lower than ground + 1.4, so the car always loses traction.
+- Holding a target: the saucer grabs within 6.5 m horizontally when 0.5 m or more above them. It keeps the lock out to 45 m.
+- While held (`NET.wasPulled`): all drive, fly and run inputs are zeroed in `runFrame`, and `getOut` is refused. `stepFoot` also calls `netBeamPull`, so people on foot are lifted too, with their walking steer skipped.
+- Both players need the new version, because the victim's client does the pulling.
+- Wrecked car (`damage` → `wreckOut`): you're forced out with `getOut(true)` at 30 health, prone (POSE 2), and stars are kept. The car stays as `PARK.wreck` and smokes.
+- New car: `HP.carT` counts 10 s and the `#wreck.mini` banner shows the countdown. After that, Z (`getIn`) moves the same model to where you stand at full health and enters it with `enterPark`. Indoors and mid-air are refused, and the Garage is blocked during the countdown.
+- Still kills outright: damage of 5000 or more (orbital strike), and wrecks in space.
+- Dying on foot is unchanged.
+- Backup before the graphics overhaul: `backups/rampage-road-v67-before-graphics.html` (artifact Version 67).
+
 ## Multiplayer (room presence)
 
 - `netSend()` builds one presence object ~18 Hz; `netUpdate()` reads peers. Fields: v n col rd w hp dm g c m p q vel bo beam frz oil pre
