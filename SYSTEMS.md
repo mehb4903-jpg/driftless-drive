@@ -327,6 +327,13 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   - It reuses the classic wheel positions and `halfLen`, so physics, hit boxes and multiplayer are unchanged.
   - The `lo` flag gives a light version for the 300 instanced parked cars.
   - `wheel()` in ultra builds a tread, a sidewall, a dark rim well, a hub and 5 spokes.
+- **V69 additions:**
+  - **FPS readout:** `#fps`, under the minimap, also showing the quality level.
+  - **Auto step-down:** if Ultra still runs under 25 fps for 4 s at the lowest pixel ratio, `POST.lvl` turns glow off, then drops to 1024 shadows, then turns the effects off. Each step shows a toast.
+  - **Graphics switch:** refuses with a toast when storage can't save the setting.
+  - **Env re-bakes:** at most every 3 s unless the sky jumps.
+  - **Model fixes:** the Jet Roadster gets its pods and nozzle back, and the Hellhound gets its red rocker stripe. The parked-car LOD is lighter.
+  - **Testing:** headless tests must start with `document.getElementById('go').click()` inside `evaluate`. Playwright's `click()` times out because Ultra frames are slow on swiftshader.
 - **Budget:** about 1.4M triangles in the city view (shadow pass included), against about 0.68M classic.
 - **Backup of the pre-graphics build:** `backups/rampage-road-v67-before-graphics.html`.
 
