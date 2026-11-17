@@ -337,6 +337,29 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
 - **Budget:** about 1.4M triangles in the city view (shadow pass included), against about 0.68M classic.
 - **Backup of the pre-graphics build:** `backups/rampage-road-v67-before-graphics.html`.
 
+## Map revamp, same in both modes (V70)
+- **Graphics setting:** Classic and Ultra now differ only in rendering (materials, reflections, post, grass). The map geometry is identical in both, and no POI or footprint moved.
+- **City towers (`bCity`):**
+  - Lots within 520 m of the centre, over 36 m tall and over 22 m wide, get a setback. The full footprint goes up to `H1` (55–75 % of the height), with a cornice there. Above that, a tier inset 3 m on each side.
+  - Collision pushes the inset box first and the full footprint at `H1` second. `groundAt` takes the first match, so you can stand on the setback ledge.
+  - Every tower inside 820 m gets a band over the shopfronts and a ledge every other floor. Columns stop at `H1`.
+  - The old window-band boxes are gone. All tower bodies use `facadeMat`: Phong in Classic, Standard in Ultra, both with `userData.gfx = 'fac'` and flatShading (needed for the dFdx calls in WebGL1).
+- **Facade styles:** chosen in the shader by wall colour.
+  - Blue-grey: glass curtain wall.
+  - Warm red: brick with mortar lines (faded out at distance with `fwidth`) and narrower windows.
+  - Everything else: stone with punched windows.
+  - Lit windows are emissive at night in both modes.
+- **Smooth cars and the 5-spoke wheels:** used in both modes too (`SMOOTH`, `wheel()`).
+- **Pitched roofs are solid:**
+  - `gable()` calls `addRoof`, which stores the slope (eave y, rise, overhang bounds) in `ROOFG`, a 40 m cell grid.
+  - `groundAt` asks `roofAt` and lands you on the slope when you're within 1.4 m above it.
+  - Covers every gable roof: suburbs, homes, barns, the harbour cottage.
+- **Grass (Ultra, not phones):**
+  - `GRASS`: crossed-blade tufts instanced on 6 m tiles in a 15×15 ring, with slots reused as you move.
+  - Only on open terrain: not in the city, on roads, under anything built, below 0.6 m, or off the mainland.
+  - Wind sway in the vertex shader. Normals point up, and each blade is doubled so both faces are front faces.
+- **Night glow lowered:** bloom 0.2 + 0.12 × night, threshold 0.9 − 0.1 × night, window emissive 0.45–0.9.
+
 ## Multiplayer (room presence)
 
 - `netSend()` builds one presence object ~18 Hz; `netUpdate()` reads peers. Fields: v n col rd w hp dm g c m p q vel bo beam frz oil pre
