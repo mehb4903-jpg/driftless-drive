@@ -31,6 +31,24 @@ first use **Import save → Copy my save** in the menu and keep the text somewhe
 - Saves live inside the app, separate from the browser's saves.
 - The app keeps the screen on, runs landscape only, and hides the status and navigation bars (swipe from the edge to show them).
 
+## Graphics: Ultra, Classic and Ultralight
+
+The game has three graphics modes. The **Graphics** button in the **Menu** shows the current one and cycles through them
+(Ultra → Classic → Ultralight → Ultra; each tap reloads the game).
+
+- **Ultra:** physically based materials with sky reflections, bloom, a filmic colour grade, anti-aliasing through an
+  off-screen render target, bigger shadow maps and swaying grass (grass only with a mouse). It costs by far the most GPU time.
+- **Classic:** the older renderer (no post-processing, simpler materials) with the newer smooth car bodies and city facades.
+- **Ultralight:** the lightest mode, the look of the game before the graphics update (simpler cars and buildings too).
+- **The app starts in Ultralight.** The app adds `DriftlessDriveApp` to its user agent, and the game picks Ultralight when no
+  choice has been saved yet (the website does the same on touch screens and low-spec machines; other desktops start in Ultra).
+- Your choice is saved in the app's storage as `dd-gfx` (`ultra`, `classic` or `light`) and the game reloads to apply it (your save is kept; it lives in
+  the same storage). The choice is kept across app restarts and updates.
+- If Ultra is too slow, the game steps down on its own after a few seconds of slow frames (bloom off, then smaller shadows,
+  then no post-processing). That step-down is not saved and on phones it rarely kicks in, so pick a lighter mode in the
+  Menu if Ultra stutters or the phone gets hot. The small FPS readout on the left shows the frame rate.
+- No new network hosts are needed: all modes use only three.js r128 from cdnjs, which the app already allows.
+
 ## Google sign in in the app
 
 Google does not allow its sign-in popup inside an app's WebView, so the app signs in through the phone's browser:
@@ -147,7 +165,7 @@ Android only installs signed APKs. The workflow signs the release APK like this:
 ## How the build works
 
 - `package.json` / `package-lock.json` pin Capacitor 6.2.1, `@capacitor-community/admob` 6.2.0, `@capacitor/browser` 6.0.6 and
-  `@capacitor/app` 6.0.3 (sign in; work with JDK 17, Android SDK 34). The app version is `version` in `package.json` (0.2.0).
+  `@capacitor/app` 6.0.3 (sign in; work with JDK 17, Android SDK 34). The app version is `version` in `package.json` (0.4.0).
 - `capacitor.config.json`: app id `com.driftless.drive`, name *Rampage Road*, `webDir: www`, the CDN, Firebase, PeerJS and
   YouTube hosts allowed for navigation, and `DriftlessDriveApp` added to the user agent.
 - `scripts/build-www.js` copies `index.html`, `manifest.webmanifest`, `sw.js` and `icons/` into `www/`. The repository root is

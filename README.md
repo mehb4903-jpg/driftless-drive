@@ -61,4 +61,5 @@ whenever a tag like `v0.1.0-exp` is pushed (or `main` is pushed to the `android-
   costs $25 once). Instead the app menu has a **Remove ads code** field; codes are checked against SHA-256 hashes, so the codes
   themselves are not in this repository.
 - **Google sign in** works in the app: it opens your phone's browser (`native-auth.html` on this site), then returns to the game through a `com.driftless.drive://auth` link checked with a one-time code. Details and privacy notes in docs/ANDROID.md.
+- **Graphics:** the app starts in the light **Ultralight** mode to save battery; Menu → **Graphics** cycles Ultra / Classic / Ultralight (the game reloads, your choice is saved as `dd-gfx`).
 - Everything else (how the build works, signing, switching to real ads, YouTube and AdMob policy notes): [docs/ANDROID.md](docs/ANDROID.md).
