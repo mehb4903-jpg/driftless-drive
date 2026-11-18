@@ -104,6 +104,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .is-touch .tools{position:relative;z-index:5}
 .is-touch .tools button{min-height:44px;padding:9px 14px}
 .is-touch .tmenu{display:none}
+.is-touch #bExit{display:none}   /* on phones Get out / in is its own button beside Menu, not inside it */
 .is-touch .tools.open .tmenu{display:grid;grid-template-columns:1fr 1fr;gap:6px;position:absolute;right:0;top:calc(100% + 6px);
   width:min(300px,calc(100vw - 32px));padding:8px;background:rgba(14,22,30,.92);border:1px solid var(--line);border-radius:8px}
 .is-touch .tools.open #bMenu{border-color:var(--amber);color:var(--amber)}
@@ -459,6 +460,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
     <div class="tools" id="tools">
       <button id="bFull" type="button" aria-pressed="false">Fullscreen</button>
       <button id="bInstall" type="button" hidden>Install app</button>
+      <button id="tExit" type="button" class="touch-only">Get out / in</button>
       <button id="bMenu" type="button" class="touch-only" aria-expanded="false" aria-controls="tMenu">Menu</button>
       <div class="tmenu" id="tMenu">   <!-- display:contents on desktop, a drop-down panel in touch mode -->
       <button id="bMap" type="button">Map</button>
@@ -4746,6 +4748,7 @@ bindTouch('tN', 's'); bindTouch('tFF', 'f'); bindTouch('tFJ', 'j'); $('tFS').add
 $('tFR').addEventListener('pointerdown', e => { e.preventDefault(); reloadGun(); });
 $('tFA').addEventListener('pointerdown', e => { e.preventDefault(); GUN.ads = !GUN.ads; e.currentTarget.setAttribute('aria-pressed', GUN.ads); });
 $('bExit').addEventListener('click', e => { toggleFoot(); e.currentTarget.blur(); });
+$('tExit').addEventListener('click', e => { toggleFoot(); e.currentTarget.blur(); });
 $('c').addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && e.button === 0) mfire = true; });
 { const cvs = $('c'); let lookId = null, lx = 0, ly = 0;                                         // look around: captured mouse where the browser allows it, otherwise drag (mouse or finger)
   const lookBy = (mx, my) => { const k = GUN.scoped ? 0.22 : GUN.ads ? 0.7 : 1; AIM.yaw -= mx * 0.0026 * k; AIM.pitch = clamp(AIM.pitch - my * 0.0022 * k, -0.95, 1.05); };
