@@ -360,6 +360,47 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   - Wind sway in the vertex shader. Normals point up, and each blade is doubled so both faces are front faces.
 - **Night glow lowered:** bloom 0.2 + 0.12 × night, threshold 0.9 − 0.1 × night, window emissive 0.45–0.9.
 
+## Energy Weapons Update (V71-V73)
+- **Guns and saving:**
+  - `GUNS` 10-17 are, in order: Quackzooka, Disco Detonator, Tesla Tickler, Sawmerang, Swapshot, Snowglobe Singularity, Shrinkinator, Yeet Beam. `XG` maps names to indexes.
+  - Each has `exp`, `ven` (unlock venue) and `hint`. Models are appended to `GM`. `GUNSLOT` has 18 entries; Shift+1-8 selects 10-17, and the wheel, gamepad and phone Gun button cycle through all of them.
+  - Saved keys: `dd-xam` (ducks, coil packs, globes), `dd-xunlock` (venue id -> 1), `dd-xheists` (completed heists, for Frostbank). Owned guns stay in `dd-guns`.
+- **Shop:** the Iron Works category is "Experimental". Locked guns show their hint until the venue is won.
+- **Firing:** experimental guns never go through `fireGun`. `footFrame` calls `xTrig(trig, dt)`, which handles press, hold and release through `XWEAP[exp]`.
+  - Charges: `XC` (disco 2/30 s, swap 3/4 s, yeet 3/12 s, saw 1, shrink 1/6 s).
+  - Ammo pools: `XAM`. Snowglobe cooldown: `XCOOL.hole`.
+- **Network:**
+  - One presence key `xw: {f, s, sc}` via `xwOut()` / `xwIn()`.
+  - `f`: up to 4 cosmetic events `[type, seq, t0, ...nums, targetId?]`, replayed by every client through `xPlay` (the same code path for your own shots). Types: 1 yeet, 2 hole, 3 zap, 4 duck, 5 swap, 6 disco, 7 shrink, 8 saw.
+  - `s`: up to 3 statuses `[toId, seq, kind, t0, a, b, c]`, applied only by the target's own client (`xStIn`). Checks: kind known, age under 4 s, shooter within `XRANGE`, shooter's `g` equals `XNEEDG`, per-sender cooldown, and `xCan()`.
+  - `sc`: shrink scale, which remote clients apply to that player's mesh.
+  - The first presence seen from a peer only records its seq (late joiners skip old events).
+  - Counters: `XNET.sent`, `applied`, `rejected`, `log`.
+- **Statuses on your own player (`XS`):**
+  - Kinds: float (15 s, straight up about 2 m/s, then fall), stun, dance (then 18 s immune), stall, slow, shrink (30 %), yeet (impulse plus input lock, landing damage), swap (teleport via `xFreeSpot`).
+  - Input locks are in `xInput()`, called after `readInput`.
+  - Yeet Beam holding a player reuses the UFO path: `NET.beam = XHOLD.beam`.
+- **Traffic cars:** npc mode 9 with `n.xs`, stepped by `xNpcStep` from `updateHeld`. The `nq` list carries positions to other clients.
+- **People:** actors use `a.xs`, stepped by `xActorStep` from `actorFx`. Kinds: duck/fall, dance, stun, yeet.
+- **Police cars:** `c.xst` (stalled), `c.xl` (lift), `c.xf` (flung), `c.xsh` (shrunk).
+- **Armored truck:** every truck effect goes through `atkHit(d, kind)`.
+  - Damage: duck 100 after 4 ducks, zap 60, saw 40, hole 30/s.
+  - Disco, yeet, swap and shrink are 0-damage involvement hits only. The truck's position is clock-driven and can't be paused.
+- **Effects (`XFX`, `xAdd`, `xFxFrame`):** pooled meshes, culled past 160 m, capped at 40, all removed when they end. Nothing stays in the world.
+- **Venues (`XVEN`, `VEN`, `VCH`):**
+  - `pier`: Quacker Pier Carnival, a `ven` POI over the water east of the South Harbour, with `DECKS`.
+  - `club`: Club Mirrorball, which takes lot (0, 0) of block [9,12] in `bCity`.
+  - `volt`: Voltridge Substation, a hill POI on the north coast.
+  - `sky`: Skyhook crane beside the tallest tower. Its rungs are floors in `SKYG` (checked in `groundAt`, not city boxes, which act as walls). The platform and plank are `DECKS`.
+  - `grav`: Gravity Lab, 70 m east of `LSTN`.
+  - `frost`: Frostbank, by the bank; `xHeistDone()` is called from the heist payout.
+  - `ufo`: UFO site, a hill POI at (-1900, 200).
+  - `scrap`: Scrapyard, a hill POI at (-300, 3170).
+  - The pedestal prompt is `#venP` (F, D-pad up or tap), handled by `venKey()`. Challenge state is per player and never synced.
+- **City ground:** `groundAt` now takes the highest valid city box instead of the first match, so you can stand on the setback ledges.
+- **On foot:** no engine, wind or skid sound; footsteps instead (`footStep` in `updateAudio`).
+- **Shared lines touched (merge hotspots):** the presence line (`xw: xwOut()`), `netUpdate` (`xwIn`), the `runFrame` list (`xFrame`), `xInput()` after readInput, the KeyF and gamepad interact chains (`venKey`), the keydown top (dance arrows), `fireGun` (`exp` return, shrink damage, `hit.ven`), `footFrame` trigger and reload lines, `reloadGun`, `setGun`, `cycleGun`, the digit keys, the ammo HUD, `actorFx`, `updateHeld`, `stepPcar`, the POI defs and `ven` kind, the `bCity` lot loop, `nukeMat`'s beam else, the heist payout, and `__drive`.
+
 ## Multiplayer (room presence)
 
 - `netSend()` builds one presence object ~18 Hz; `netUpdate()` reads peers. Fields: v n col rd w hp dm g c m p q vel bo beam frz oil pre
