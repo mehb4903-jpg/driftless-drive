@@ -3090,6 +3090,9 @@ function travelTo(p) {
   else if (p.kind === 'air') { teleport(hcWX(0, 190), hcWZ(0, 190), HC.yaw); P.onHC = true; }          // on the stern end of the flight deck, facing the bow
   else if (HDEF[p.id]) { const h = HOUSES.find(q => q.id === p.id); teleport(h.ring[0] + 0.5, h.ring[1] + 4, 0); }
   else if (p.kind === 'abs') teleport(p.x + 26, p.z - 30, Math.PI / 2);
+  else if (p.id === 'pier') teleport(p.x, 3190, Math.PI);                                // the shore end of the boardwalk, facing the pier
+  else if (p.id === 'scrap' || p.id === 'ufo2' || p.id === 'volt') teleport(p.x - 40, p.z - (p.id === 'scrap' ? 30 : 0), -Math.PI / 2);   // just outside, on dry land
+  else if (p.id === 'sky' && SKY.full) teleport(SKY.full[0] - 11, SKY.cz + 3, -Math.PI / 2);   // the foot of the crane
   else teleport(p.x + 30, p.z + 60 - 3.5, Math.PI / 2);          // the street along the south side of its block, heading west
   toggleTravel(false); toast(p.name);
 }
@@ -6241,7 +6244,7 @@ function xDiscoFx(px, py, pz, ox, oy, oz, seed, t0, mine) {
 }
 function xDiscoArea(px, pz, age, mine) {             // every client applies the dance to itself and to its own NPCs; nothing per hit goes over the wire
   if (age < 0 || age > DISCO_T) return; const inR = (x, z) => Math.hypot(x - px, z - pz) < DISCO_R;
-  if (inR(P.x, P.z) && !XS.dance && !XS.stall && !(XS.danceImm > 0)) xSelf('dance');
+  if (!mine && inR(P.x, P.z) && !XS.dance && !XS.stall && !(XS.danceImm > 0)) xSelf('dance');   // the thrower is immune to their own floor
   for (const a of ACT) if (a.st !== 2 && inR(a.x, a.z) && !(a.xs && a.xs.k === 'dance')) xActor(a, 'dance', DISCO_T - age);
   for (const v of [...PEOPLE.vis.values()]) if (inR(v.x, v.z) && ACT.length < 14) { const a = spawnActor(v.key, v.x, v.y, v.z, v.yaw, v.seed, { st: 1, hp: 50 }); if (a) xActor(a, 'dance', DISCO_T - age); }
   for (const c of PCARS) if (c.st !== 'parked' && c.st !== 'gone' && c.st !== 'wreck' && inR(c.x, c.z)) c.xst = Math.max(c.xst || 0, 0.5);
