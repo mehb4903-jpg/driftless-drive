@@ -35,6 +35,7 @@ html,body{height:100%;overscroll-behavior:none}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidden;touch-action:none;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #c{position:fixed;inset:0;width:100%;height:100%;display:block}
+html.lite{--panel:rgba(14,22,30,.6)}html.lite *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}   /* GitHub-only (perf): Ultralight draws no blur behind the HUD panels (a blur re-samples the 3D view under each panel every frame) */
 #hud{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   padding-block:calc(14px + env(safe-area-inset-top,0px)) calc(14px + env(safe-area-inset-bottom,0px));
@@ -1154,8 +1155,10 @@ const root = document.documentElement, mq = q => { try { return matchMedia(q).ma
 const hasTouch = (navigator.maxTouchPoints || 0) > 0 || 'ontouchstart' in window;
 let touchMode = mq('(pointer:coarse)') || (hasTouch && !mq('(hover:hover) and (pointer:fine)'));
 root.classList.toggle('is-touch', touchMode);
+if (LIGHT) root.classList.add('lite');   // GitHub-only (perf): see html.lite in the style sheet
 const coarse = touchMode || (hasTouch && mq('(any-pointer:coarse)') && Math.min(screen.width, screen.height) < 820);
 let prCap = coarse ? 1.5 : 2, slowT = 0, gSlowT = 0, fpsN = 0, fpsT = 0;              // prCap steps down to 1 on phones that cannot hold the frame rate
+prCap = LIGHT ? 1 : Math.min(prCap, 1.5); let ftA = 16;   // GitHub-only (perf): render at most 1.5x (Ultralight 1x) the CSS resolution; ftA = smoothed frame time for the adaptive resolution below
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, prCap));
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
 const scene = new T.Scene();
@@ -6224,11 +6227,11 @@ function runFrame(now, dt, last0, draw) {
   readInput(dt); if (auto && !CAR.foot) autoInput();
   if (NET.wasPulled) { inp.steer = inp.thr = inp.brk = inp.jump = inp.boost = inp.hb = inp.pitch = 0; }   // held in a saucer beam: no way to drive, fly or run off
   if (HP.dead > 0) { inp.steer = inp.thr = inp.jump = inp.roll = inp.pitch = 0; inp.brk = 0; inp.hb = 1; inp.boost = CAR.heli || CAR.ufo ? 1 : 0; if (CAR.plane) P.throttle = 0; }   // wrecked: no control until the respawn
-  if (coarse && started && prCap > 1 && !document.hidden) {   // phones: under about 25 fps for 3 s in a row, render at a lower resolution
-    slowT = now - last0 > 40 && now - last0 < 500 ? slowT + (now - last0) : 0;
-    if (slowT > 3000) { slowT = 0; prCap = Math.max(1, prCap - 0.25); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, prCap)); resize(); }
+  if (started && prCap > 1 && !document.hidden && Math.min(devicePixelRatio || 1, prCap) > 1) {   // GitHub-only (perf): every device, every mode: averaging under about 28 fps for 1.5 s, render at a lower resolution
+    const ft = now - last0; if (ft < 500) { ftA += (ft - ftA) * 0.08; slowT = ftA > 36 ? slowT + ft : Math.max(0, slowT - ft); }
+    if (slowT > 1500) { slowT = 0; prCap = Math.max(1, prCap - 0.25); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, prCap)); resize(); }
   }
-  if (POST && started && !document.hidden && (!coarse || prCap <= 1)) {   // ultra still too slow at the lowest resolution: shed the expensive effects one at a time
+  if (POST && started && !document.hidden && (prCap <= 1 || (devicePixelRatio || 1) <= 1)) {   // ultra still too slow at the lowest resolution: shed the expensive effects one at a time
     gSlowT = now - last0 > 40 && now - last0 < 500 ? gSlowT + (now - last0) : 0;
     if (gSlowT > 4000) { gSlowT = 0; POST.lvl++;
       if (POST.lvl === 1) toast('Graphics: glow off to keep the frame rate up');
