@@ -322,7 +322,13 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .orbBtns button{font:700 16px var(--display);letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:6px;padding:10px 18px;cursor:pointer;background:#2b3038;color:#e9e6dc}
 .orbBtns #orbFire{background:#e2483a;color:#fff}
 .orbHint{font:13px var(--body,sans-serif);color:#b9b5aa;text-align:center}
-#atkP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#e2b33c;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
+#venHud{position:fixed;left:50%;top:calc(140px + env(safe-area-inset-top,0px));transform:translateX(-50%);font:600 14px var(--display);letter-spacing:.06em;text-transform:uppercase;color:#ffe08a;background:rgba(14,22,30,.82);border:1px solid #c9a24a;border-radius:6px;padding:6px 12px;pointer-events:none;z-index:6}
+#venGame{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:7}
+#venGame[hidden]{display:none}
+#venArrow{font-size:clamp(64px,14vw,120px);line-height:1;text-shadow:0 0 18px currentColor}
+#venBar{width:220px;height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}#venBar i{display:block;height:100%;width:100%;background:#ff3ea5}
+.venPad{display:flex;gap:10px}.venPad button{width:58px;height:58px;font-size:24px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(14,22,30,.8);color:#fff}
+#venP,#atkP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#e2b33c;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
 #atkHud{position:fixed;left:50%;top:calc(104px + env(safe-area-inset-top,0px));transform:translateX(-50%);font:600 14px var(--display);letter-spacing:.06em;text-transform:uppercase;color:#ffe08a;background:rgba(14,22,30,.82);border:1px solid #c9a23a;border-radius:6px;padding:5px 12px;white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis;pointer-events:none;z-index:20}
 #atkUI{position:fixed;left:50%;bottom:18%;transform:translateX(-50%);width:min(380px,calc(100vw - 32px));background:rgba(14,22,30,.92);border:1px solid #e2b33c;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:auto;z-index:31}
 #atkUI[hidden]{display:none}
@@ -365,7 +371,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 #plBar #plOk{background:#2f9a52;color:#06110c}
 #safeP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#e9c86a;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
 #gateP{position:fixed;left:50%;bottom:26%;transform:translateX(-50%);pointer-events:auto;font:600 17px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#0e161e;background:#e9c86a;border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
-#wbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;pointer-events:auto;z-index:20;max-width:calc(100vw - 32px);flex-wrap:wrap;justify-content:center}
+#wbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;max-height:40vh;overflow-y:auto;pointer-events:auto;z-index:20;max-width:calc(100vw - 32px);flex-wrap:wrap;justify-content:center}
 #wbar[hidden]{display:none}
 .wslot{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;padding:5px 9px;background:var(--panel);border:1px solid var(--line);border-radius:7px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--display);line-height:1.1;cursor:pointer;color:var(--ink)}
 .wslot i{font-style:normal;font-size:11px;color:var(--ink-dim);letter-spacing:.08em}
@@ -374,7 +380,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .wslot.on{border-color:var(--amber);background:rgba(255,196,77,.18)}
 .wslot.on b{color:var(--amber)}
 .wslot.empty span{color:var(--road)}
-.is-touch #wbar{bottom:calc(150px + env(safe-area-inset-bottom,0px));background:rgba(14,22,30,.92);padding:8px;border:1px solid var(--line);border-radius:10px;max-width:min(430px,calc(100vw - 32px))}
+.is-touch #wbar{bottom:calc(150px + env(safe-area-inset-bottom,0px));max-height:calc(100vh - 230px);overflow-y:auto;touch-action:pan-y;overscroll-behavior:contain;background:rgba(14,22,30,.92);padding:8px;border:1px solid var(--line);border-radius:10px;max-width:min(430px,calc(100vw - 32px))}
 .is-touch .wslot{min-width:64px;min-height:48px}
 .is-touch #ammo.tap{pointer-events:auto;border:1px solid var(--line);border-radius:6px;padding:4px 10px;background:var(--panel)}
 #xhair{position:fixed;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;pointer-events:none}
@@ -493,7 +499,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
       <b class="foot-only" hidden>On foot</b><span class="foot-only" hidden>W A S D move, mouse looks (click to capture it), Q E turn, Shift run, Space jump</span>
       <b class="foot-only" hidden>X</b><span class="foot-only" hidden>Shoot or punch (or left mouse). Right mouse or V aims; with the rifle it scopes in. R reloads</span>
       <b class="foot-only" hidden>Ctrl</b><span class="foot-only" hidden>Crouch (tap); hold to go prone. Tap again or jump to stand</span>
-      <b class="foot-only" hidden>1 &ndash; 0</b><span class="foot-only" hidden>Fists, Pistol, SMG, Shotgun, Rifle, then what you buy at Iron Works. The mouse wheel or the weapon bar switches too</span>
+      <b class="foot-only" hidden>1 &ndash; 0</b><span class="foot-only" hidden>Fists, Pistol, SMG, Shotgun, Rifle, then what you buy at Iron Works. Shift + 1 &ndash; 8 the experimental guns. The mouse wheel or the weapon bar switches too</span>
       <b class="jet-only" hidden>Shift</b><span class="jet-only" hidden>Rear jet boost</span>
       <b class="jet-only" hidden>Space</b><span class="jet-only" hidden>Jump, hold in the air to hover</span>
       <b class="jet-only" hidden>In air</b><span class="jet-only" hidden>W S pitch, A D yaw, Q E roll</span>
@@ -594,6 +600,7 @@ button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 <div id="nflash"></div>
 <button id="moonP" type="button" hidden>Moon</button>
 <button id="atkP" type="button" hidden>Crack the doors</button>
+<button id="venP" type="button" hidden></button>
 <div id="atkHud" hidden></div>
 <div id="atkUI" hidden><div class="mnT">Cracking the rear doors</div><canvas id="atkCv" width="330" height="120"></canvas><div id="atkInfo" class="mnHint"></div><button id="atkHit" type="button">Set pin</button><div class="mnHint">Set each pin when the needle crosses the green. Three pins per dial. Five misses sets off the alarm. Esc or B cancels.</div></div>
 <button id="drillB" type="button" hidden>Drill</button>
@@ -1121,9 +1128,10 @@ function groundAt(x, z, y) {
     const mx = ((x + CITY.E) % CITY.P + CITY.P) % CITY.P, mz = ((z + CITY.E) % CITY.P + CITY.P) % CITY.P, kd = Math.min(mx - 8, 112 - mx, mz - 8, 112 - mz), cg = CITY.y + 0.18 * sstep(-0.4, 3.0, kd);   // the kerb is a short ramp for the physics, so crossing it never launches the car
     if (cg > g) g = cg;
     const bi = Math.floor((x + CITY.E) / CITY.P), bj = Math.floor((z + CITY.E) / CITY.P), arr = bi >= 0 && bj >= 0 && bi < 20 && bj < 20 ? CITY.boxes[bi * 20 + bj] : null;
-    if (arr) for (let i = 0; i < arr.length; i++) { const q = arr[i]; if (x > q[0] && x < q[1] && z > q[2] && z < q[3] && y > q[4] - 1.2) { if (q[4] + 0.5 > g) g = q[4] + 0.5; break; } }   // rooftops are solid ground: anything coming down onto a building lands on it
+    if (arr) for (let i = 0; i < arr.length; i++) { const q = arr[i]; if (x > q[0] && x < q[1] && z > q[2] && z < q[3] && y > q[4] - 1.2 && q[4] + 0.5 > g) g = q[4] + 0.5; }   // the highest surface you are on or just above   // rooftops are solid ground: anything coming down onto a building lands on it
   }
   for (let i = 0; i < BOXES.length; i++) { const q = BOXES[i]; if (x > q[0] && x < q[1] && z > q[2] && z < q[3] && y > q[4] - 1.2 && q[1] - q[0] > 2 && q[3] - q[2] > 2 && q[4] > g) { g = q[4]; break; } }   // the same for landmark buildings
+  if (SKYG && Math.abs(x - SKYG.x) < 4 && Math.abs(z - SKYG.z) < 4) for (const q of SKYG.steps) if (x > q[0] && x < q[1] && z > q[2] && z < q[3] && y > q[4] - 0.6 && q[4] > g) g = q[4];
   if (ROOFG.size) { const r = roofAt(x, z, y); if (r !== null && r > g) g = r; }                   // pitched roofs: land on the slope, not inside it
   if (y > HC.y - 1.6 && HC.y > g && onDeck(x, z)) g = HC.y;          // the carrier's flight deck
   for (let i = 0; i < DECKS.length; i++) {
@@ -1159,10 +1167,10 @@ const root = document.documentElement, mq = q => { try { return matchMedia(q).ma
 const hasTouch = (navigator.maxTouchPoints || 0) > 0 || 'ontouchstart' in window;
 let touchMode = mq('(pointer:coarse)') || (hasTouch && !mq('(hover:hover) and (pointer:fine)'));
 root.classList.toggle('is-touch', touchMode);
-if (LIGHT) root.classList.add('lite');   // GitHub-only (perf): see html.lite in the style sheet
 const coarse = touchMode || (hasTouch && mq('(any-pointer:coarse)') && Math.min(screen.width, screen.height) < 820);
-let prCap = coarse ? 1.5 : 2, slowT = 0, gSlowT = 0, fpsN = 0, fpsT = 0;              // prCap steps down to 1 on phones that cannot hold the frame rate
-prCap = LIGHT ? 1 : Math.min(prCap, 1.5); let ftA = 16;   // GitHub-only (perf): render at most 1.5x (Ultralight 1x) the CSS resolution; ftA = smoothed frame time for the adaptive resolution below
+root.classList.toggle('lite', coarse || LIGHT);   // phones and Ultralight skip the blurred glass behind HUD panels (see html.lite in the style sheet)
+let prCap = coarse ? 1.25 : 1.5, slowT = 0, ftAvg = 16, shN = 0, gSlowT = 0, fpsN = 0, fpsT = 0;              // prCap steps down to 1 on devices that cannot hold the frame rate
+if (LIGHT) prCap = 1;   // GitHub-only (perf): Ultralight renders at 1x the CSS resolution
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, prCap));
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
 const scene = new T.Scene();
@@ -1176,7 +1184,7 @@ const sun = new T.DirectionalLight(0xffffff, 0.9); sun.castShadow = true;
 sun.shadow.mapSize.set(coarse ? 1024 : 2048, coarse ? 1024 : 2048);
 Object.assign(sun.shadow.camera, { left: -95, right: 95, top: 95, bottom: -95, near: 1, far: 700 });
 sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.5;
-if (ULTRA) sun.shadow.mapSize.set(coarse ? 2048 : 4096, coarse ? 2048 : 4096);
+if (ULTRA) sun.shadow.mapSize.set(2048, 2048);
 if (LIGHT) { sun.shadow.mapSize.set(1024, 1024); renderer.shadowMap.type = T.PCFShadowMap; }   // GitHub-only: Ultralight, cheap shadows
 scene.add(sun, sun.target);
 /* ultra: everything renders into an offscreen target, then a bloom chain and one composite pass (anti-aliasing, filmic tone curve, grade, vignette) */
@@ -1826,7 +1834,7 @@ const GRASS = ULTRA && !coarse ? (() => {
   let ci = 1e9, cj = 1e9;
   const fill = (slot, ti, tj) => { for (let k = 0; k < PER; k++) { const i = slot * PER + k, h1 = rnd2(ti * 7919 + tj, k * 3 + 1), h2 = rnd2(ti * 7919 + tj, k * 3 + 2), h3 = rnd2(ti * 7919 + tj, k * 3 + 3), x = (ti + h1) * TS, z = (tj + h2) * TS;
       const t = terrainH(x, z, 5); let ok = t > 0.6 && !inCity(x, z, 12) && Math.abs(x) < 11000 && Math.abs(x - roadX(z)) > halfOf(hwAt(z)) + 5;
-      if (ok) { const gr = groundAt(x, z, t + 0.5); ok = Math.abs(gr - t) < 0.12; }
+      if (ok) { const gr = groundAt(x, z, t + 0.5); ok = Math.abs(gr - t) < 0.12 && !POI.some(q => q.kind !== 'blk' && Math.abs(q.x - x) < q.r && Math.abs(q.z - z) < q.r); }
       if (!ok) { mesh.setMatrixAt(i, hide); continue; }
       const s1 = 0.55 + h3 * 0.6; e.set(0, h3 * 6.28, 0); q.setFromEuler(e); m4.compose(v.set(x, t - 0.03, z), q, sc.set(s1, s1 * (0.8 + h1 * 0.6), s1)); mesh.setMatrixAt(i, m4); } };
   return { frame(dt) {
@@ -2141,7 +2149,7 @@ function bunkInside(p) {                               // inside (its own region
 }
 const SHOPDEF = {
   0: { id: 'clothes', name: 'Threads', kind: 'Clothing', col: '#c8463a', seed: 9101, hi: 'Looking sharp. What are we trying on?', cats: ['Hats', 'Shirts', 'Jackets', 'Pants', 'Glasses', 'Chains'] },
-  1: { id: 'guns', name: 'Iron Works', kind: 'Gun shop', col: '#3a3d44', seed: 9207, hi: 'Licensed and loaded. Take a look.', cats: ['Pistols', 'SMGs', 'Shotguns', 'Rifles', 'Heavy', 'Ammo', 'Body armour'] },
+  1: { id: 'guns', name: 'Iron Works', kind: 'Gun shop', col: '#3a3d44', seed: 9207, hi: 'Licensed and loaded. Take a look.', cats: ['Pistols', 'SMGs', 'Shotguns', 'Rifles', 'Heavy', 'Experimental', 'Ammo', 'Body armour'] },
   2: { id: 'mods', name: 'Tactical Bench', kind: 'Gun attachments', col: '#5b4a8a', seed: 9311, hi: 'Bring me a gun, I will make it better.', cats: ['Scopes', 'Suppressors', 'Extended mags', 'Grips', 'Lasers', 'Finishes'] },
   3: { id: 'shoes', name: 'Sole Search', kind: 'Shoes', col: '#d9783a', seed: 9419, hi: 'Fresh pairs just came in.', cats: ['Sneakers', 'Boots', 'Slides', 'Laces'] },
   5: { id: 'decals', name: 'Wrap City', kind: 'Car decals', col: '#5aa7c4', seed: 9523, hi: 'Pick a look, we wrap it while you wait.', cats: ['Stripes', 'Flames', 'Numbers', 'Liveries', 'Window tint', 'Full wraps'] },
@@ -2615,6 +2623,7 @@ function bCity(p, b, ln, gl) {
     }
     const rad = Math.hypot(x0 + 52, z0 + 52);
     for (let li = 0; li < 2; li++) for (let lj = 0; lj < 2; lj++) {
+      if (bi === XV_CLUB.bi && bj === XV_CLUB.bj && li === 0 && lj === 0) { bClub(B, G, x0, z0, ys, boxes); continue; }   // Club Mirrorball takes this lot
       const id = (bi * 2 + li) * 131 + (bj * 2 + lj), r1 = rnd2(id, 601), r2 = rnd2(id, 733), r3 = rnd2(id, 877);
       if (r1 < 0.07) continue;                                                                   // an empty lot now and then
       const inA = 3 + r2 * 4, inB = 1.5, bx0 = x0 + li * 52 + (li ? inB : inA), bx1 = x0 + li * 52 + 52 - (li ? inA : inB), bz0 = z0 + lj * 52 + (lj ? inB : inA), bz1 = z0 + lj * 52 + 52 - (lj ? inA : inB);
@@ -2784,6 +2793,7 @@ const beamMesh = new T.Mesh(new T.CylinderGeometry(0.8, 5.2, 1, 22, 1, true).tra
 beamMesh.visible = false; beamMesh.renderOrder = 3; scene.add(beamMesh);
 function setBeam(v) { beamOn = v && CAR.ufo; if (!beamOn && held) { held.mode = 5; held.vyF = 0; held = null; } }
 function updateHeld(n, dt) {                        // mode 4 held in the beam, 5 falling after release, 6 settling before it is cleared away
+  if (n.mode === 9) { xNpcStep(n, dt); return; }      // an experimental weapon has this car
   if (n.mode === 4) {
     if (!beamOn || !CAR.ufo || held !== n) { n.mode = 5; n.vyF = 0; if (held === n) held = null; }
     else { const k = 1 - Math.exp(-4 * dt); n.x += (P.x - n.x) * k; n.wz += (P.z - n.wz) * k; n.y += (P.y - 4.6 - n.halfLen * 0.2 - n.y) * k; n.yaw += dt * 0.7; n.speed = 0; }
@@ -2806,9 +2816,86 @@ function updateSignals(dt) {
 }
 /* how fast a car may go given the light at the junction ahead: d = metres to the stop line */
 function sigLimit(target, st, d) { return st !== 2 && d > (st === 1 ? 5 : -1.5) && d < 20 ? Math.min(target, Math.max(0, d * 1.3 - 0.5)) : target; }
+/* ── unlock venues, static scenery (built with the other landmarks at load) ── */
+const XV_PIER = (() => { const hx = roadX(REND); return [hx + 140, 3290, 3]; })(), XV_VOLT = (() => { const hx = roadX(-REND); return [hx + 260, -3130]; })();
+const XV_CLUB = { bi: 9, bj: 12 };                    // the corner lot across the street from the bank
+function bQuackPier(p, b, ln, gl) {                  // a carnival pier over the water: 70 x 25 m deck, boardwalk to the shore
+  const x = p.x, z = p.z, y = p.h, wood = C('#a8784a'), woodD = C('#7a5433'), red = C('#d8333a'), wht = C('#f4f1e6'), blu = C('#2f7fd0'), grn = C('#3fae5a'), yel = C('#ffd23a');
+  b.box(x - 35, x + 35, y - 0.45, y, z - 12.5, z + 12.5, wood); DECKS.push({ x0: x - 35, x1: x + 35, z0: z - 12.5, z1: z + 12.5, y });
+  const z0 = 3203; b.box(x - 3, x + 3, y - 0.4, y, z0, z - 12.5, wood); DECKS.push({ x0: x - 3, x1: x + 3, z0, z1: z - 12.5, y });
+  for (let i = -34; i <= 34; i += 6.8) for (const zz of [z - 12, z, z + 12]) b.box(x + i - 0.25, x + i + 0.25, -14, y - 0.45, zz - 0.25, zz + 0.25, woodD);
+  for (let zz = z0 + 6; zz < z - 12; zz += 8) for (const g of [-1, 1]) b.box(x + g * 2.7 - 0.2, x + g * 2.7 + 0.2, -14, y - 0.4, zz - 0.2, zz + 0.2, woodD);
+  for (const [a0, a1, c0, c1] of [[x - 35, x + 35, z + 12.3, z + 12.5], [x - 35, x - 34.8, z - 12.5, z + 12.5], [x + 34.8, x + 35, z - 12.5, z + 12.5], [x - 35, x - 3, z - 12.5, z - 12.3], [x + 3, x + 35, z - 12.5, z - 12.3]]) { b.box(a0, a1, y + 0.95, y + 1.05, c0, c1, wht); for (let q = a0; q <= a1 + 0.01; q += Math.max(0.2, (a1 - a0) / Math.max(1, Math.round((a1 - a0) / 3)))) for (let r = c0; r <= c1 + 0.01; r += Math.max(0.2, (c1 - c0) / Math.max(1, Math.round((c1 - c0) / 3)))) b.box(q - 0.05, q + 0.05, y, y + 1, r - 0.05, r + 0.05, wht); }
+  const cols = [red, blu, grn, yel];                   // four striped booths along the back of the deck
+  for (let k = 0; k < 4; k++) { const bx = x - 26 + k * 8.5, bz = z + 8; b.box(bx - 3.4, bx + 3.4, y, y + 2.6, bz - 2, bz + 2, wht); b.box(bx - 3.3, bx + 3.3, y + 1.0, y + 1.1, bz - 2.3, bz - 2, woodD);
+    for (let s = 0; s < 7; s++) b.box(bx - 3.6 + s * 1.03, bx - 3.6 + (s + 1) * 1.03, y + 2.6, y + 3.0, bz - 2.6, bz + 2.2, s % 2 ? wht : cols[k]); BOXES.push([bx - 3.4, bx + 3.4, bz - 2, bz + 2, y + 3]);
+    for (let s = 0; s < 6; s++) gl.box(bx - 3.2 + s * 1.25, bx - 3.0 + s * 1.25, y + 3.0, y + 3.2, bz - 2.65, bz - 2.55, cWhite); }
+  { const gx = x + 12, gz = z + 7; b.box(gx - 6, gx + 6, y, y + 1.1, gz - 3.4, gz - 3, red); b.box(gx - 6, gx + 6, y, y + 4, gz + 2.6, gz + 3, C('#2a3a6a')); b.box(gx - 6.2, gx - 5.8, y, y + 4, gz - 3.4, gz + 3, red); b.box(gx + 5.8, gx + 6.2, y, y + 4, gz - 3.4, gz + 3, red);   // the duck shooting gallery
+    for (let s = 0; s < 12; s++) b.box(gx - 6.3 + s * 1.05, gx - 6.3 + (s + 1) * 1.05, y + 4, y + 4.5, gz - 3.8, gz + 3.2, s % 2 ? wht : red); b.box(gx - 5.8, gx + 5.8, y + 1.45, y + 1.55, gz + 0.8, gz + 1, C('#c9ced6'));
+    BOXES.push([gx - 6.2, gx + 6.2, gz + 2.6, gz + 3, y + 4.5]); }
+  { const dx = x - 6, dz = z - 5, s = 1; b.box(dx - 2.4 * s, dx + 2.4 * s, y, y + 3.2, dz - 1.8, dz + 1.8, yel); b.box(dx - 1.4, dx + 1.4, y + 2.6, y + 5.0, dz - 2.6, dz - 0.2, yel); b.box(dx - 0.8, dx + 0.8, y + 3.4, y + 3.9, dz - 3.4, dz - 2.6, C('#ff8a1e'));   // giant rubber duck
+    b.box(dx - 1.45, dx - 1.35, y + 4.0, y + 4.4, dz - 2.3, dz - 2.0, C('#16171a')); b.box(dx + 1.35, dx + 1.45, y + 4.0, y + 4.4, dz - 2.3, dz - 2.0, C('#16171a')); b.box(dx + 2.4, dx + 3.2, y + 1.6, y + 2.8, dz - 0.6, dz + 0.6, yel); SOLIDS.push([dx, dz, 2.6, y + 5]); }
+  { const wx = x + 27, wz = z - 4; for (const g of [-1, 1]) { b.obox(wx + g * 1.6, y, y + 14.5, wz + 2.6, 0, 1, 0.2, 0.2, C('#c9ced6')); b.obox(wx + g * 1.6, y, y + 14.5, wz - 2.6, 0, 1, 0.2, 0.2, C('#c9ced6')); } SOLIDS.push([wx, wz, 3.2, y + 3]); }   // ferris wheel legs (the wheel turns)
+  for (let i = 0; i < 18; i++) { const a = i / 18 * TAU; gl.box(x - 33 + i * 3.9 - 0.08, x - 33 + i * 3.9 + 0.08, y + 2.2 + Math.sin(a * 2) * 0.2, y + 2.4 + Math.sin(a * 2) * 0.2, z - 12.45, z - 12.3, cWhite); }
+  b.box(x - 2.2, x + 2.2, y, y + 0.6, z - 2.2, z + 2.2, C('#22252b'));   // pedestal base (the glowing top and the gun are added at run time)
+}
+function bVolt(p, b, ln, gl) {                        // Voltridge Substation: cooling tower, five transformers, pylons, a fenced yard
+  const x = p.x, z = p.z, y = p.h, conc = C('#c9c6bd'), steel = C('#8c949c'), grn = C('#5f7a68'), dk = C('#2a2d31'), wht = C('#e8e6dd');
+  b.box(x - 30, x + 30, y - 0.5, y + 0.05, z - 20, z + 20, C('#8a8a84'));
+  for (let q = -30; q <= 30; q += 3) for (const zz of [z - 20, z + 20]) b.box(x + q - 0.06, x + q + 0.06, y, y + 2.4, zz - 0.06, zz + 0.06, steel);
+  for (let q = -20; q <= 20; q += 3) for (const xx of [x - 30, x + 30]) if (!(xx > x && Math.abs(q) < 3.5)) b.box(xx - 0.06, xx + 0.06, y, y + 2.4, z + q - 0.06, z + q + 0.06, steel);
+  for (const zz of [z - 20, z + 20]) for (const h of [0.8, 1.6, 2.35]) b.box(x - 30, x + 30, y + h, y + h + 0.05, zz - 0.03, zz + 0.03, steel);
+  for (const xx of [x - 30, x + 30]) for (const h of [0.8, 1.6, 2.35]) { b.box(xx - 0.03, xx + 0.03, y + h, y + h + 0.05, z - 20, xx > x ? z - 3.5 : z + 20, steel); if (xx > x) b.box(xx - 0.03, xx + 0.03, y + h, y + h + 0.05, z + 3.5, z + 20, steel); }
+  { const tx = x - 18, tz = z - 6; prism(b, tx, tz, y, y + 12, 9, 6.4, 18, conc); prism(b, tx, tz, y + 12, y + 24, 6.4, 7.2, 18, conc); prism(b, tx, tz, y + 23.6, y + 24.2, 7.3, 7.3, 18, C('#a8a59c')); SOLIDS.push([tx, tz, 9, y + 24]); }
+  for (let k = 0; k < 5; k++) { const bx = x - 2 + k * 6.5, bz = z + 6; b.box(bx - 1.6, bx + 1.6, y, y + 2.8, bz - 1.4, bz + 1.4, grn); b.box(bx - 1.8, bx + 1.8, y + 0.4, y + 2.2, bz - 0.3, bz + 0.3, dk);
+    for (const g of [-0.9, 0, 0.9]) { prism(b, bx + g, bz, y + 2.8, y + 4.0, 0.22, 0.16, 6, wht); prism(b, bx + g, bz, y + 4.0, y + 4.2, 0.12, 0.12, 6, C('#c47a2c')); } BOXES.push([bx - 1.6, bx + 1.6, bz - 1.4, bz + 1.4, y + 2.8]); }
+  for (const px of [x + 5, x + 24]) { const pz = z - 12; for (const [ax, az] of [[-1.5, -1.5], [1.5, -1.5], [-1.5, 1.5], [1.5, 1.5]]) b.hex([[px + ax - 0.12, y, pz + az - 0.12], [px + ax + 0.12, y, pz + az - 0.12], [px + ax + 0.12, y, pz + az + 0.12], [px + ax - 0.12, y, pz + az + 0.12], [px + ax * 0.2 - 0.08, y + 18, pz + az * 0.2 - 0.08], [px + ax * 0.2 + 0.08, y + 18, pz + az * 0.2 - 0.08], [px + ax * 0.2 + 0.08, y + 18, pz + az * 0.2 + 0.08], [px + ax * 0.2 - 0.08, y + 18, pz + az * 0.2 + 0.08]], steel);
+    for (const h of [11, 15]) b.box(px - 3.5, px + 3.5, y + h, y + h + 0.2, pz - 0.1, pz + 0.1, steel); SOLIDS.push([px, pz, 2, y + 18]); }
+  for (const h of [11.1, 15.1]) for (const g of [-3.3, 3.3]) b.box(x + 5 + g - 0.03, x + 24 + g + 0.03, y + h - 0.6, y + h - 0.56, z - 12.03, z - 11.97, dk);
+  b.box(x + 18, x + 26, y, y + 3.2, z - 2, z + 3, wht); b.box(x + 17.8, x + 26.2, y + 3.2, y + 3.5, z - 2.2, z + 3.2, dk); BOXES.push([x + 18, x + 26, z - 2, z + 3, y + 3.2]);
+  gl.box(x + 18.2, x + 25.8, y + 2.6, y + 2.8, z - 2.05, z - 2.0, cWhite);
+  b.box(x - 26, x - 21.6, y, y + 0.6, z + 13, z + 17.4, C('#22252b'));   // pedestal base
+}
+function bClub(B, G, x0, z0, ys, boxes) {            // Club Mirrorball on its corner lot: a dark box with a neon front facing the bank
+  const bx0 = x0 + 4, bx1 = x0 + 32, bz0 = z0 + 4, bz1 = z0 + 26, top = ys + 10, dk = C('#1c1a24'), pk = C('#ff3ea5');
+  B.box(bx0, bx1, ys - 0.2, top, bz0, bz1, dk); B.box(bx0 - 0.3, bx1 + 0.3, top, top + 0.6, bz0 - 0.3, bz1 + 0.3, C('#2a2730'));
+  B.box(bx0 - 0.15, bx0, ys, ys + 3.2, bz0 + 9, bz0 + 13, C('#ff8ad0'));                                   // the pink door
+  for (let k = 0; k < 6; k++) { const qz = bz0 + 3 + k * 1.6; B.box(bx0 - 3.2 - 0.06, bx0 - 3.2 + 0.06, ys, ys + 1.0, qz - 0.06, qz + 0.06, C('#d9b64a')); }   // queue rope posts
+  B.box(bx0 - 3.25, bx0 - 3.15, ys + 0.85, ys + 0.9, bz0 + 3, bz0 + 11, C('#b5382c'));
+  B.box(x0 + 34, x0 + 52, ys - 0.2, ys + 7, z0 + 4, z0 + 26, C('#5a4a6a')); boxes.push([x0 + 34, x0 + 52, z0 + 4, z0 + 26, ys + 7]);   // a low annexe fills the rest of the lot
+  B.box(x0 + 4, x0 + 52, ys - 0.2, ys + 6, z0 + 30, z0 + 52, C('#6f6a78')); boxes.push([x0 + 4, x0 + 52, z0 + 30, z0 + 52, ys + 6]);
+  boxes.push([bx0, bx1, bz0, bz1, top]);
+  B.box(bx0 - 3.4, bx0 - 1.2, ys, ys + 0.5, bz0 + 14, bz0 + 16.2, C('#22252b'));                                // pedestal base, by the door
+}
+const XV_UFO = [-1900, 200], XV_SCRAP = [-300, 3170]; let SKYG = null;   // the Skyhook crane's steps: floors, not walls
+function bUfoSite(p, b, ln, gl) {                     // a scorched crater, scattered wreckage, caution tape and tiny toy cars
+  const x = p.x, z = p.z, y = p.h, dirt = C('#6a5038'), dk = C('#3a2c20'), tape = C('#ffd23a'), wht = C('#e8e6dd');
+  for (let k = 0; k < 18; k++) { const a = k / 18 * TAU, r0 = 17 + (k % 3); b.hex([[x + Math.cos(a) * r0, y + 0.02, z + Math.sin(a) * r0], [x + Math.cos(a + 0.36) * r0, y + 0.02, z + Math.sin(a + 0.36) * r0], [x + Math.cos(a + 0.36) * (r0 + 3), y + 0.02, z + Math.sin(a + 0.36) * (r0 + 3)], [x + Math.cos(a) * (r0 + 3), y + 0.02, z + Math.sin(a) * (r0 + 3)], [x + Math.cos(a) * r0, y + 1.0 + (k % 2) * 0.5, z + Math.sin(a) * r0], [x + Math.cos(a + 0.36) * r0, y + 1.1, z + Math.sin(a + 0.36) * r0], [x + Math.cos(a + 0.36) * (r0 + 3), y + 0.05, z + Math.sin(a + 0.36) * (r0 + 3)], [x + Math.cos(a) * (r0 + 3), y + 0.05, z + Math.sin(a) * (r0 + 3)]], k % 2 ? dirt : dk); }
+  b.box(x - 16, x + 16, y - 0.4, y + 0.03, z - 16, z + 16, dk);
+  for (let k = 0; k < 10; k++) { const a = k * 2.4, r = 8 + (k % 4) * 2; b.obox(x + Math.cos(a) * r, y, y + 0.35, z + Math.sin(a) * r, Math.cos(a * 1.7), Math.sin(a * 1.7), 1.6, 0.4, C('#8a7a5a')); }
+  for (let k = 0; k < 16; k++) { const a = k / 16 * TAU, px = x + Math.cos(a) * 24, pz = z + Math.sin(a) * 24, a2 = (k + 1) / 16 * TAU, qx = x + Math.cos(a2) * 24, qz = z + Math.sin(a2) * 24; b.box(px - 0.06, px + 0.06, y, y + 1.1, pz - 0.06, pz + 0.06, wht);
+    const mx = (px + qx) / 2, mz = (pz + qz) / 2, len = Math.hypot(qx - px, qz - pz); b.obox(mx, y + 0.85, y + 0.95, mz, (qx - px) / len, (qz - pz) / len, len / 2, 0.02, tape); }
+  for (const [tx, tz, c] of [[x + 20, z - 6, '#d8333a'], [x + 21.5, z - 4.5, '#2f7fd0'], [x + 19.2, z - 3.6, '#3fae5a']]) { b.box(tx - 0.25, tx + 0.25, y, y + 0.2, tz - 0.45, tz + 0.45, C(c)); b.box(tx - 0.2, tx + 0.2, y + 0.2, y + 0.34, tz - 0.2, tz + 0.15, C('#1d2630')); }
+  b.box(x - 26.2, x - 23.8, y, y + 0.6, z - 1.2, z + 1.2, C('#22252b'));   // pedestal base
+}
+function bScrap(p, b, ln, gl) {                       // stacks of crushed cars, a magnet crane, the sawmill shed with its giant saw sign
+  const x = p.x, z = p.z, y = p.h, dirt = C('#6f6a5a'), cols = ['#c8463a', '#2f7fd0', '#3fae5a', '#d9a23a', '#8a4fe0', '#c9ced6', '#e2b33c'].map(C), rust = C('#7a4a2a'), dk = C('#2a2d31');
+  b.box(x - 30, x + 30, y - 0.4, y + 0.04, z - 20, z + 20, dirt);
+  for (let q = -30; q <= 30; q += 4) for (const zz of [z - 20, z + 20]) b.box(x + q - 0.07, x + q + 0.07, y, y + 2.2, zz - 0.07, zz + 0.07, C('#8c949c'));
+  for (const zz of [z - 20, z + 20]) b.box(x - 30, x + 30, y + 2.0, y + 2.1, zz - 0.04, zz + 0.04, C('#8c949c'));
+  for (let s = 0; s < 3; s++) { const sx = x - 24 + s * 6.5, sz = z - 14; for (let k = 0; k < 4 + (s % 2); k++) b.box(sx - 2.1, sx + 2.1, y + k * 0.95, y + k * 0.95 + 0.9, sz - 1.4 + (k % 2) * 0.2, sz + 1.4 + (k % 2) * 0.2, cols[(s * 3 + k) % cols.length]); BOXES.push([sx - 2.1, sx + 2.1, sz - 1.4, sz + 1.6, y + (4 + (s % 2)) * 0.95]); }
+  { const cx = x + 2, cz = z - 12; b.box(cx - 0.4, cx + 0.4, y, y + 16, cz - 0.4, cz + 0.4, C('#e2b33c')); b.box(cx - 1, cx + 14, y + 15.5, y + 16.3, cz - 0.4, cz + 0.4, C('#e2b33c')); b.box(cx + 10.5, cx + 10.6, y + 10, y + 15.5, cz - 0.02, cz + 0.02, dk); prism(b, cx + 10.55, cz, y + 9.4, y + 10, 1.1, 1.1, 10, dk); SOLIDS.push([cx, cz, 0.8, y + 16]); }
+  { const sx = x + 18, sz = z + 2; b.box(sx - 8, sx + 8, y, y + 7, sz - 6, sz + 6, rust); b.box(sx - 8.3, sx + 8.3, y + 7, y + 7.5, sz - 6.3, sz + 6.3, dk); b.box(sx - 8.05, sx - 7.95, y, y + 4, sz - 2.5, sz + 2.5, C('#16171a'));   // the intake is the dark opening on the west face
+    BOXES.push([sx - 8, sx + 8, sz - 6, sz - 2.5, y + 7]); BOXES.push([sx - 8, sx + 8, sz + 2.5, sz + 6, y + 7]); BOXES.push([sx - 7.6, sx + 8, sz - 2.5, sz + 2.5, y + 7]); }
+  { const dx = x - 8, dz = z + 12; b.box(dx - 0.6, dx + 0.6, y + 0.4, y + 0.9, dz - 0.25, dz + 0.25, C('#5a3a20')); b.box(dx + 0.5, dx + 0.95, y + 0.75, y + 1.15, dz - 0.2, dz + 0.2, C('#5a3a20')); for (const [ax, az] of [[-0.45, -0.15], [-0.45, 0.15], [0.4, -0.15], [0.4, 0.15]]) b.box(dx + ax - 0.06, dx + ax + 0.06, y, y + 0.4, dz + az - 0.06, dz + az + 0.06, C('#4a2e18')); }   // guard dog
+  b.box(x - 26.2, x - 23.8, y, y + 0.6, z + 13.8, z + 16.2, C('#22252b'));   // pedestal base
+}
+const XV_CLUBP = [-CITY.E + XV_CLUB.bi * CITY.P + 34, -CITY.E + XV_CLUB.bj * CITY.P + 34, CITY.y + 0.18];
+function bNone() {}
 const POI = [];
 (() => {
   const defs = [                                   // id, name, placement, where, find radius, builder
+    ['pier', 'Quacker Pier Carnival', 'ven', [XV_PIER[0], XV_PIER[1], XV_PIER[2]], 40, bQuackPier], ['volt', 'Voltridge Substation', 'hill', XV_VOLT, 40, bVolt], ['club', 'Club Mirrorball', 'ven', XV_CLUBP, 30, bNone], ['sky', 'The Skyhook Rooftop', 'ven', [0, 0, CITY.y], 20, bNone], ['ufo2', 'UFO Crash Site', 'hill', XV_UFO, 32, bUfoSite], ['scrap', 'Sawtooth Scrapyard', 'hill', XV_SCRAP, 32, bScrap],
     ['harbourN', 'North Harbour', 'road', -REND, 46, bHarbour], ['windmills', 'Windmill Hill', 'abs', -2300, 45, bWindmills],
     ['diner', 'Halfway Diner', 'blk', 0, 45, bDiner], ['observatory', 'City Observatory', 'blk', 0, 45, bObservatory],
     ['raceway', 'Chaos Speedway', 'fix', [-1500, -240], 230, bRaceway], ['city', 'Downtown', 'blk', 0, 55, bCity],
@@ -2819,9 +2906,9 @@ const POI = [];
   ];
   let found = []; try { found = JSON.parse(localStorage.getItem('dd-poi') || '[]'); } catch (e) { /* storage unavailable */ }
   for (const [id, name, kind, a, r, build] of defs) {
-    let q = kind === 'road' ? [roadX(a), a] : kind === 'blk' ? blkC(CITY_RES[id]) : a;
+    let q = kind === 'ven' ? a : kind === 'road' ? [roadX(a), a] : kind === 'blk' ? blkC(CITY_RES[id]) : a;
     if (kind === 'abs') { let bz = 0, bd = 1e9; for (let z = -500; z <= 900; z += 3) { const d = trailDist(a, z); if (d < bd) { bd = d; bz = z; } } q = [a, bz + 66]; }   // just off the trail through the pass
-    POI.push({ id, name, kind, x: q[0], z: q[1], r, build, h: kind === 'road' ? roadY(a) - 0.3 : kind === 'blk' ? CITY.y + 0.18 : kind === 'abs' ? Math.max(terrainH(q[0], q[1], 5), 6) : kind === 'hill' ? Math.max(terrainH(q[0], q[1], 5), 4) : id === 'raceway' ? terrainH(q[0], q[1], 5) : CITYH, found: found.includes(id), grp: new T.Group(), always: id === 'city' || kind === 'air', minY: kind === 'air' ? HC.y - 40 : -1e9 });
+    POI.push({ id, name, kind, x: q[0], z: q[1], r, build, h: kind === 'ven' ? a[2] : kind === 'road' ? roadY(a) - 0.3 : kind === 'blk' ? CITY.y + 0.18 : kind === 'abs' ? Math.max(terrainH(q[0], q[1], 5), 6) : kind === 'hill' ? Math.max(terrainH(q[0], q[1], 5), 4) : id === 'raceway' ? terrainH(q[0], q[1], 5) : CITYH, found: found.includes(id), grp: new T.Group(), always: id === 'city' || kind === 'air', minY: kind === 'air' ? HC.y - 40 : -1e9 });
   }
   for (const p of POI) if (p.kind === 'road' || p.kind === 'abs' || p.kind === 'hill') PADS.push({ x: p.x, z: p.z, r: p.r, R: p.r + 40, h: p.h });      // only the harbours need levelling
   for (const p of POI) {
@@ -3701,8 +3788,10 @@ function shopStock(d, cat) {                          // what each counter sells
   if (d.id === 'clothes' || d.id === 'shoes') return wearStock(cat); if (d.id === 'mods') return modStock(cat); if (d.id === 'decals') return decalStock(cat); if (d.id === 'tune') return tuneStock(cat);
   if (d.id !== 'guns') return [{ name: 'Coming soon', right: '', dim: true }];
   const stats = g => (g.n > 1 ? g.n + ' pellets × ' + g.dmg : g.dmg + ' damage') + ' · ' + g.mag + ' rounds · ' + Math.round(1 / g.rate * 60) + ' a minute';
-  const gunRow = i => { const g = GUNS[i], own = OWN.has(i); return { name: g.name, right: own ? (GUN.i === i ? 'Equipped' : 'Owned') : $$(g.price), blurb: (g.blurb || 'Standard issue. Yours already.') + (g.rocket ? '' : ' ' + stats(g)) + (own ? ' Select it to equip.' : ''),
-    buy: () => { if (own) { setGun(i); toast(g.name + ' equipped'); return; } if (!pay(g.price, g.name)) return; OWN.add(i); if (g.rocket) { ROCK.v += 2; GUN.ammo[i] = 1; } else GUN.ammo[i] = g.mag; saveKit(); setGun(i); toast('Bought the ' + g.name); } }; };
+  const gunRow = i => { const g = GUNS[i], own = OWN.has(i); if (g.exp && !own && !XUN[g.ven]) return { name: g.name, right: 'Locked', dim: true, blurb: 'Locked. ' + g.hint + '. ' + g.blurb, buy: () => toast('Locked: ' + g.hint) }; return { name: g.name, right: own ? (GUN.i === i ? 'Equipped' : 'Owned') : $$(g.price), blurb: (g.blurb || 'Standard issue. Yours already.') + (g.rocket || g.exp ? '' : ' ' + stats(g)) + (own ? ' Select it to equip.' : ''),
+    buy: () => { if (own) { setGun(i); toast(g.name + ' equipped'); return; } if (!pay(g.price, g.name)) return; OWN.add(i); if (g.rocket) { ROCK.v += 2; GUN.ammo[i] = 1; } else GUN.ammo[i] = g.mag; if (g.exp) xBought(i); saveKit(); setGun(i); toast('Bought the ' + g.name); } }; };
+  if (cat === 'Experimental') { const am = (n, k, cnt, p, what) => ({ name: n, right: $$(p), blurb: what + ' You carry ' + XAM[k] + '.', buy: () => { if (pay(p, n)) { XAM[k] += cnt; xSave(); toast('+' + cnt + ' ' + n.toLowerCase()); } } });
+    return [10, 11, 12, 13, 14, 15, 16, 17].map(gunRow).concat([am('Rubber ducks', 'duck', 6, 500, 'Six ducks for the Quackzooka.'), am('Coil pack', 'coil', 1, 300, 'Eight Tesla Tickler shots.'), am('Snowglobe', 'globe', 1, 900, 'One Snowglobe Singularity.')]); }
   if (cat === 'Pistols') return [gunRow(0), gunRow(5)]; if (cat === 'SMGs') return [gunRow(1), gunRow(6)]; if (cat === 'Shotguns') return [gunRow(2), gunRow(7)]; if (cat === 'Rifles') return [gunRow(3), gunRow(8)]; if (cat === 'Heavy') return [gunRow(9)];
   if (cat === 'Ammo') { const rk = (n, p) => ({ name: n + (n === 1 ? ' rocket' : ' rockets'), right: $$(p), blurb: 'Bazooka rockets. You carry ' + ROCK.v + '.' + (OWN.has(9) ? '' : ' You will need the bazooka to fire them.'), buy: () => { if (pay(p, 'rockets')) { ROCK.v += n; saveKit(); toast('+' + n + (n === 1 ? ' rocket' : ' rockets')); } } });
     return [rk(1, 150), rk(5, 650), { name: 'Refill magazines', right: 'Free', blurb: 'Tops up every gun you own. Bullets are on the house; rockets are not.', buy: () => { for (const i of OWN) if (!GUNS[i].melee && !GUNS[i].rocket) GUN.ammo[i] = magOf(i); GUN.rl = 0; toast('Magazines full'); } }]; }
@@ -3886,6 +3975,7 @@ function unloadCar(c) {                                // officers jump out besi
   c.crew = 0; c.st = 'stop'; c.sp = 0;
 }
 function stepPcar(c, dt) {
+  if (c.xst > 0 && c.st !== 'wreck') { c.xst -= dt; c.sp = 0; if (c.xl) c.xl = Math.min(4, c.xl + dt * 2); c.m.position.set(c.x, c.y + (c.xl || 0), c.z); return; }   // stalled, zapped or lifted by an experimental weapon
   if (c.st === 'wreck') { if (Math.random() < dt * 6) puffAt(c.x, c.y + 1.2, c.z); c.m.userData.lbar.red.color.setHex(0x2a0808); c.m.userData.lbar.blu.color.setHex(0x080d2a); return; }
   if (c.frozen > 0) { c.frozen -= dt; c.sp = 0; if (!c.ice) { c.ice = new T.Mesh(new T.BoxGeometry(2.6, 2.1, 5.2), iceMat); c.ice.position.y = 1; c.ice.renderOrder = 2; c.m.add(c.ice); } c.ice.visible = c.frozen > 0; c.y = groundAt(c.x, c.z, c.y + 2); c.m.position.set(c.x, c.y, c.z); return; }   // frozen solid: no driving, nobody gets out
   const lit = c.st !== 'parked' && WANTED.lv > 0, ph = Math.floor(NET.now() / 180) & 1; c.m.userData.lbar.red.color.setHex(lit && ph ? 0xff2020 : 0x5a1010); c.m.userData.lbar.blu.color.setHex(lit && !ph ? 0x3060ff : 0x101a5a);
@@ -4488,6 +4578,7 @@ function remoteFx(e, dt) {                             // another player's perso
 }
 function carIce(e, on) { if (on && !e.ice) { e.ice = new T.Mesh(new T.BoxGeometry(2.6, 2.1, 5.2), iceMat); e.ice.position.y = 1; e.ice.renderOrder = 2; e.m.add(e.ice); } if (e.ice) e.ice.visible = !!on; }
 function actorFx(a, dt) {                              // returns true while frozen: the actor does nothing else this frame
+  if (a.xs && xActorStep(a, dt)) return true;
   if (a.bleed) { const b = a.bleed, d = a.max * BLEED_F / BLEED_T * Math.min(dt, b.t); b.t -= dt; a.hp -= d;
     if ((b.sp -= dt) <= 0) { b.sp = 0.18; npcSpurt(a.x, a.y + b.h, a.z, 2); } if ((b.tr -= dt) <= 0) { b.tr = 0.25; bloodDrip(a.x, a.y, a.z); }
     if (a.hp <= 0) { a.hp = 0.01; a.bleed = null; MYHIT = performance.now(); hurtActor(a, 1, a.x + 0.5, a.z); return true; } if (b.t <= 0) a.bleed = null; }
@@ -4646,6 +4737,7 @@ function atkBlips(g, k) {
 }
 $('atkHit').addEventListener('click', e => { e.stopPropagation(); atkPress(); });
 $('atkP').addEventListener('click', e => { e.stopPropagation(); atkKey(); e.currentTarget.blur(); });
+$('venP').addEventListener('click', e => { e.stopPropagation(); venKey(); e.currentTarget.blur(); });
 $('c').addEventListener('pointerdown', e => { if (ATK.game) { e.stopPropagation(); atkPress(); } }, true);
 for (const ev of ['pointerdown', 'keydown']) $('atkUI').addEventListener(ev, e => e.stopPropagation());
 
@@ -4791,7 +4883,7 @@ function heistFrame(dt) {
     if (H.on && H.stage < 6 && now - H.t0 > 12 * 60000) heistStage(7);
     if (H.stage >= 6) { H.on = false; for (const a of ACT) if (a.heist) a.st = 3; }
   }
-  if (H.stage === 6 && H.crew.includes(me) && !H.paid.has(H.id)) { H.paid.add(H.id); const cut = Math.round(HEIST_PAY / H.crew.length); addCash(cut); toast('Bank job done. Your cut: $' + cut.toLocaleString('en-US')); personSound(P.x, P.z, 0.5, 2600); }
+  if (H.stage === 6 && H.crew.includes(me) && !H.paid.has(H.id)) { H.paid.add(H.id); const cut = Math.round(HEIST_PAY / H.crew.length); addCash(cut); xHeistDone(); toast('Bank job done. Your cut: $' + cut.toLocaleString('en-US')); personSound(P.x, P.z, 0.5, 2600); }
   if (H.stage === 7 && H.crew.includes(me) && !H.paid.has(H.id)) { H.paid.add(H.id); toast('The bank job fell apart. Nobody gets paid'); }
   if (H.hk && H.stage !== 2) H.hk = null;
   /* the bank's doors and the vault */
@@ -4918,6 +5010,7 @@ addEventListener('keydown', e => {
   if (ATK.game) { e.preventDefault(); if (e.repeat) return; if (e.code === 'Escape') atkCancel(); else if (['KeyF', 'Space', 'Enter', 'KeyX'].includes(e.code)) atkPress(); return; }
   if (MINE.game) { e.preventDefault(); if (e.repeat) return; if (e.code === 'Escape') mineCancel(); else if (['KeyF', 'Space', 'Enter', 'KeyX'].includes(e.code)) mineStrike(); return; }
   if (SIT.on && !e.repeat && tvKey(e)) { e.preventDefault(); return; }
+  if (VCH.on && VCH.on.id === 'club') { const m = { ArrowLeft: 0, KeyA: 0, ArrowUp: 1, KeyW: 1, ArrowDown: 2, KeyS: 2, ArrowRight: 3, KeyD: 3 }[e.code]; if (m !== undefined) { e.preventDefault(); if (!e.repeat) venArrow(m); return; } if (e.code === 'Escape') { venEnd(false); return; } }
   if (ORB.on) { e.preventDefault(); if (e.code === 'Escape') orbClose(); else if (!e.repeat && (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyF')) orbFire(); else keys[e.code] = true; return; }
   if (SHOP.on) { e.preventDefault(); if (e.repeat) return; if (e.code === 'ArrowUp' || e.code === 'KeyW') shopMove(-1); else if (e.code === 'ArrowDown' || e.code === 'KeyS') shopMove(1); else if (e.code === 'Enter' || e.code === 'Space' || e.code === 'NumpadEnter') shopPick(); else if (e.code === 'Backspace' || e.code === 'Escape' || e.code === 'KeyF') shopBack(); return; }   // the shop menu has the keyboard while it is open
   if (HACK.on) { e.preventDefault(); if (e.repeat) return; const m = /^(?:Digit|Numpad)(\d)$/.exec(e.code); if (m) hackKey(m[1]); else if (e.code === 'Backspace') hackKey('del'); else if (e.code === 'Enter' || e.code === 'NumpadEnter') hackKey('ok'); else if (e.code === 'Escape') closeHack('You walked away from the ATM'); return; }   // the keypad has the keyboard while it is open
@@ -4927,7 +5020,7 @@ addEventListener('keydown', e => {
   if (DRIVE_KEYS.includes(e.code) || e.code === 'Enter') e.preventDefault();
   if (!started) { if (e.code === 'Enter' || DRIVE_KEYS.includes(e.code)) begin(); return; }
   if (DRIVE_KEYS.includes(e.code) && auto) setAuto(false);
-  if (e.code === 'KeyF') { if (CAR.foot && (homeKey() || moonKey() || atkKey())) {} else if (CAR.foot && GS.camNear) coverCam(); else if (CAR.foot && GS.near) crackSafe(); else if (CAR.foot && GATENEAR) hackGate(); else if (CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (CAR.foot && ATMNEAR) tryRob(); else setAuto(!auto); }
+  if (e.code === 'KeyF') { if (CAR.foot && (homeKey() || moonKey() || atkKey() || venKey())) {} else if (CAR.foot && GS.camNear) coverCam(); else if (CAR.foot && GS.near) crackSafe(); else if (CAR.foot && GATENEAR) hackGate(); else if (CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (CAR.foot && ATMNEAR) tryRob(); else setAuto(!auto); }
   if (e.code === 'KeyC') nextCam();
   if (e.code === 'KeyT') skipTime();
   if (e.code === 'KeyR') { if (CAR.foot) reloadGun(); else respawn(); }
@@ -4937,7 +5030,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyX' && (CAR.heli || CAR.blick)) fireMissile();
   if (e.code === 'KeyZ') toggleFoot();
   if (e.code === 'KeyV' && CAR.foot && !e.repeat) GUN.ads = true;       // hold V to aim, like the right mouse button
-  if (CAR.foot && /^Digit\d$/.test(e.code)) { const d = +e.code.slice(5), i = GUNSLOT[(d + 9) % 10]; if (OWN.has(i)) setGun(i); else toast(GUNS[i].name + ': buy it at Iron Works in the mall'); }
+  if (CAR.foot && /^Digit\d$/.test(e.code)) { const d = +e.code.slice(5), i = (e.shiftKey && d >= 1 && d <= 8) ? 9 + d : GUNSLOT[(d + 9) % 10]; if (OWN.has(i)) setGun(i); else toast(GUNS[i].name + ': buy it at Iron Works in the mall'); }
   if (e.code === 'KeyB' && CAR.foot) homeStore();
   if (e.code === 'KeyY' && CAR.foot) drillToggle();
   if (e.code === 'KeyB' && CAR.ufo) { setBeam(!beamOn); toast(beamOn ? 'Stasis beam on' : 'Beam off'); }
@@ -5076,7 +5169,8 @@ function readInput(dt) {
       gpBoost = B(10) || (B(2) && !armed && !CAR.ufo);                // click the left stick to sprint or boost; X boosts anything unarmed
       if (CAR.foot && !PLACE.on) { if (edge(4) || edge(14)) cycleGun(-1); if (edge(5) || edge(15)) cycleGun(1); if (edge(11)) reloadGun(); }
       else gpRoll = (B(4) ? 1 : 0) - (B(5) ? 1 : 0);
-      if (edge(8)) toggleMap(); if (edge(9)) toggleTravel(); if (edge(13) && CAR.foot && !PLACE.on) drillToggle(); if (edge(12) && CAR.foot && (homeKey() || moonKey() || atkKey())) {} else if (edge(12) && CAR.foot && GS.camNear) coverCam(); else if (edge(12) && CAR.foot && GS.near) crackSafe(); else if (edge(12) && CAR.foot && GATENEAR) hackGate(); else if (edge(12) && CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (edge(12) && CAR.foot && ATMNEAR) tryRob(); else if (edge(12) && !CAR.plane) setAuto(!auto); if (edge(13) && !CAR.plane && !CAR.foot) respawn(); if (CAR.foot) { if (edge(13)) poseKey(true); else if (!B(13) && gpPrev[13]) poseKey(false); }
+      if (VCH.on && VCH.on.id === 'club') { if (edge(14)) venArrow(0); if (edge(12)) venArrow(1); if (edge(13)) venArrow(2); if (edge(15)) venArrow(3); } else
+      if (edge(8)) toggleMap(); if (edge(9)) toggleTravel(); if (edge(13) && CAR.foot && !PLACE.on) drillToggle(); if (edge(12) && CAR.foot && (homeKey() || moonKey() || atkKey() || venKey())) {} else if (edge(12) && CAR.foot && GS.camNear) coverCam(); else if (edge(12) && CAR.foot && GS.near) crackSafe(); else if (edge(12) && CAR.foot && GATENEAR) hackGate(); else if (edge(12) && CAR.foot && SHOPNEAR) openShop(SHOPNEAR); else if (edge(12) && CAR.foot && ATMNEAR) tryRob(); else if (edge(12) && !CAR.plane) setAuto(!auto); if (edge(13) && !CAR.plane && !CAR.foot) respawn(); if (CAR.foot) { if (edge(13)) poseKey(true); else if (!B(13) && gpPrev[13]) poseKey(false); }
       if (rx || ry) { const k = GUN.scoped ? 0.22 : GUN.ads ? 0.65 : 1; AIM.yaw -= rx * 2.9 * dt * k; AIM.pitch = clamp(AIM.pitch - ry * 2.0 * dt * k, -0.95, 1.05); }
     }
     gpPrev = gp.buttons.map((q, i) => B(i));
@@ -5533,8 +5627,16 @@ function initAudio() {
     src.start();
   } catch (e) { AC = null; }
 }
+let stepAcc = 0, stepLast = 0;
+function footStep(v) {                                 // a soft scuff of noise each stride
+  if (!AC || !soundOn) return; const t = AC.currentTime, src = AC.createBufferSource(); src.buffer = noiseBuf; const f = AC.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 700 + Math.random() * 500; f.Q.value = 1.2;
+  const g = AC.createGain(); g.gain.setValueAtTime(0.05 + Math.min(0.06, v * 0.006), t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.09); src.connect(f); f.connect(g); g.connect(master); src.start(t, Math.random() * 0.5); src.stop(t + 0.1);
+}
 function updateAudio() {
   if (!AC) return; const v = Math.abs(P.vf), t = AC.currentTime;
+  if (CAR.foot && !RIDE) { engG.gain.setTargetAtTime(0, t, 0.05); windG.gain.setTargetAtTime(0, t, 0.2); skidG.gain.setTargetAtTime(0, t, 0.05);   // on foot: no engine, just your steps
+    const sp = Math.hypot(P.vx, P.vz), dt = Math.min(0.1, Math.max(0, t - (stepLast || t))); stepLast = t; if (P.grounded && sp > 0.8 && !SIT.on) { stepAcc += sp * dt; if (stepAcc > (sp > 7 ? 2.1 : 1.45)) { stepAcc = 0; footStep(sp); } } else stepAcc = 0.9; return; }
+  stepLast = t;
   eng.frequency.setTargetAtTime(P.burn ? 150 + Math.sin(t * 9) * 12 : 42 + v * 2.6 + inp.thr * 14, t, 0.08); engF.frequency.setTargetAtTime(260 + v * 9 + inp.thr * 220, t, 0.1);
   engG.gain.setTargetAtTime(0.045 + inp.thr * 0.03, t, 0.1); windG.gain.setTargetAtTime(Math.min(0.16, v * v * 0.00009), t, 0.2);
   skidG.gain.setTargetAtTime(P.burn ? 0.24 : P.grounded ? Math.min(0.22, P.drift * P.slip * 0.6) : 0, t, 0.05);
@@ -5674,7 +5776,7 @@ const netVel = () => P.onHC ? [P.vx + HC.vx, P.vy, P.vz + HC.vz] : [P.vx, P.vy, 
 function netSend() {
   const now = NET.now(), gap = now - NET.sendT; if (!NET.room || (gap >= 0 && gap < 55)) return; NET.sendT = now;   // (the room clock can step when we first meet the others, so a negative gap sends)
   const q = playerMesh.quaternion, v = netVel();
-  NET.room.presence({ v: 1, n: NET.name, col: NET.color, rd: RIDE ? 1 : 0, w: HP.dead > 0 ? 1 : 0, hp: Math.round((CAR.foot ? PH.v / PH.max : HP.v / HP.max) * 100), dm: [...NET.dm].slice(-6), g: GUN.i, bl: LB.mine.length ? LB.mine[0].t : 0, c: CAR.id, m: CAR.mass, p: [r2(P.x), r2(P.y), r2(P.z)], q: [r4(q.x), r4(q.y), r4(q.z), r4(q.w)], vel: [r2(v[0]), r2(v[1]), r2(v[2])],
+  NET.room.presence({ v: 1, xw: xwOut(), n: NET.name, col: NET.color, rd: RIDE ? 1 : 0, w: HP.dead > 0 ? 1 : 0, hp: Math.round((CAR.foot ? PH.v / PH.max : HP.v / HP.max) * 100), dm: [...NET.dm].slice(-6), g: GUN.i, bl: LB.mine.length ? LB.mine[0].t : 0, c: CAR.id, m: CAR.mass, p: [r2(P.x), r2(P.y), r2(P.z)], q: [r4(q.x), r4(q.y), r4(q.z), r4(q.w)], vel: [r2(v[0]), r2(v[1]), r2(v[2])],
     bo: beamOn && CAR.ufo ? 1 : 0, beam: NET.beam, frz: NET.frz, oil: NET.oil || null, pre: NET.pre, ice: P.frozenT > 0 ? 1 : 0, bd: P.bleed ? P.bleed.hit.map(r2) : null, ts: NET.ts, os: netOs(), om: netOm(), ak: netAk(), tl: MINE.tool && CAR.foot ? 1 : 0, nq: netNq(), ac: netAc(), adm: netAdm(), cd: netCd(), wl: WANTED.lv ? [WANTED.lv, Math.round(WANTED.last.x), Math.round(WANTED.last.z)] : 0, rw: RIDE ? RIDE.id : null, ga: gaKey(GUN.i), pc: netPc(), gs: GS.regUntil > NET.now() || GS.safeUntil > NET.now() || GS.camBroke > NET.now() || GS.camCover > NET.now() ? [Math.round(GS.regUntil), Math.round(GS.safeUntil), Math.round(GS.camBroke), Math.round(GS.camCover)] : null, hl: H.lobby, hs: H.lead && (H.on || NET.now() - H.endT < 15000) ? heistSnap() : null, hk: H.hk || null, bk: H.closed || null, ft: FIT, cv: CAR.foot ? null : carLook(CAR.id), bx: NET.bx.length ? NET.bx : null, ar: Math.round(ARM.v), cg: NET.cg.length ? NET.cg.slice(-20) : null, at: netAt(), pu: GUN.punch > 0.1 ? 1 : 0, cr: CAR.foot ? POSE.v : 0 }).catch(() => {});
 }
 function netTag(r) {                                // name tag: text drawn to a canvas, never markup
@@ -5733,6 +5835,7 @@ function netUpdate(dt) {
     if (Array.isArray(s.at)) for (const q of s.at.slice(0, 30)) if (Array.isArray(q) && num(q[0]) && num(q[1]) && ATMS[q[0]]) ATMS[q[0]].until = Math.max(ATMS[q[0]].until, Math.min(q[1], NET.clk() / 1000 + 600));   // ATMs other players emptied
     if (Array.isArray(s.adm)) for (const q of s.adm) if (Array.isArray(q) && q[0] === NET.me && typeof q[1] === 'string' && num(q[2])) { const k = pr.peer + '|' + q[1], was = NET.admSeen.get(k) || 0; if (q[2] > was) { NET.admSeen.set(k, q[2]); const a = ACT.find(x => x.src === q[1]); if (a) { hurtActor(a, Math.min(200, q[2] - was), r.pos.x, r.pos.z); if (a.st !== 2 && a.st !== 1) { a.st = 0; a.tgtId = pr.peer; } } } }   // other players hitting the people this game runs
     if (num(s.ts) && s.ts > NET.ts && s.ts < 1e4) NET.ts = s.ts; r.nq = Array.isArray(s.nq) && s.nq.length <= 8 ? s.nq : null;
+    xwIn(r, s.xw, pr.peer, now);
     const fz = s.frz; if (fz && fz.targetId === NET.me && num(fz.seq) && NET.frzSeen.get(pr.peer) !== fz.seq) { NET.frzSeen.set(pr.peer, fz.seq); if (num(fz.at) && now - fz.at < 4000) { P.frozenT = FREEZE_T; toast('Frozen by ' + r.name); crashSound(0.5); } }   // a freeze missile from that player hit us
     const far = r.pos.distanceToSquared(playerMesh.position) > 1400 * 1400; r.mesh.visible = r.tag.visible = !far; if (s.rd === 1) r.mesh.visible = r.tag.visible = false; if (RIDE === r && camMode === 2) r.mesh.visible = false;
     r.bm.visible = !far && r.car.ufo && s.bo === 1; if (r.bm.visible) { r.bm.position.set(r.pos.x, r.pos.y + 0.1, r.pos.z); r.bm.scale.y = clamp(r.pos.y - Math.max(groundAt(r.pos.x, r.pos.z, r.pos.y), 0) + 0.4, 2, 70); }
@@ -5742,7 +5845,7 @@ function netUpdate(dt) {
   let tgt = null;
   if (beamOn && CAR.ufo && !held) { let bd = 6.5; for (const r of NET.rem.values()) { if (!r.init) continue; const d = Math.hypot(r.pred.x - P.x, r.pred.z - P.z), dy = P.y - r.pred.y; if (d < bd && dy > 0.5 && dy < 70 || (NET.beam && NET.beam.targetId === r.id && d < 45 && dy > -10)) { bd = d; tgt = r; } } }
   if (tgt) { if (!NET.beam || NET.beam.targetId !== tgt.id) { NET.seq++; toast(tgt.name + ' is caught in the beam'); } NET.beam = { targetId: tgt.id, point: [r2(P.x), r2(P.y - 4.8), r2(P.z)], strength: 2, seq: NET.seq }; }
-  else NET.beam = null;
+  else NET.beam = XHOLD.beam || null;                // the Yeet Beam holding a player rides the same beam record
   NET.listT -= dt; if (NET.listT <= 0) { NET.listT = 0.5; netList(); }
 }
 function netList() {                                // player list: you first, then everyone else by distance
@@ -5854,7 +5957,17 @@ const GUNS = [{ name: 'Pistol', dmg: 14, rate: 0.2, spread: 0.012, range: 130, n
   { name: 'Sawed-off', dmg: 15, rate: 0.5, spread: 0.13, range: 26, n: 9, mag: 2, rl: 2.0, kick: 0.1, len: 0.7, price: 900, cat: 'Shotguns', blurb: 'Two barrels, nine pellets each. Devastating up close, useless at range.' },
   { name: 'Assault Rifle', dmg: 14, rate: 0.11, spread: 0.011, range: 220, n: 1, mag: 30, rl: 2.0, kick: 0.014, len: 0.92, auto: true, price: 2400, cat: 'Rifles', blurb: 'Fully automatic and accurate. Thirty rounds a magazine.' },
   { name: 'Bazooka', dmg: 0, rate: 1.2, spread: 0.004, range: 300, n: 1, mag: 1, rl: 2.4, kick: 0.12, len: 1.15, rocket: true, price: 5000, cat: 'Heavy', blurb: 'Fires rockets that explode on contact. Comes with three rockets.' }];
-const GUNSLOT = [4, 0, 1, 2, 3, 5, 6, 7, 8, 9];             // number keys 1-0 -> weapon
+/* the Energy Weapons Update: eight experimental guns, unlocked at their venues (see the experimental weapons block) */
+GUNS.push({ name: 'Quackzooka', dmg: 0, rate: 1.8, spread: 0.01, range: 120, n: 1, mag: 1, rl: 1.8, kick: 0.06, len: 0.95, exp: 'duck', price: 4500, cat: 'Experimental', ven: 'pier', hint: 'Win the duck shooting gallery at Quacker Pier Carnival (harbour)', blurb: 'Rubber-duck rockets. Every hit ties on a duck balloon and floats it away; four lift the armored truck. Ducks are sold 6 for $500.' },
+  { name: 'Disco Detonator', dmg: 0, rate: 0.8, spread: 0.01, range: 30, n: 1, mag: 1, rl: 0, kick: 0.02, len: 0.5, exp: 'disco', price: 5500, cat: 'Experimental', ven: 'club', hint: 'Get past the bouncer at Club Mirrorball (downtown, by the bank)', blurb: 'A lobbed mirror ball. 8 s of dance floor: people dance, engines stall, police lose you. Two balls, each refills in 30 s.' },
+  { name: 'Tesla Tickler', dmg: 30, rate: 0.9, spread: 0.01, range: 90, n: 1, mag: 8, rl: 2.6, kick: 0.03, len: 0.8, exp: 'zap', price: 6000, cat: 'Experimental', ven: 'volt', hint: 'Restore power at Voltridge Substation (north coast)', blurb: 'Chain lightning. One shot hops through up to five targets, 70% each hop, and tickles them stiff. 8 shots a coil; coil packs $300.' },
+  { name: 'Sawmerang', dmg: 35, rate: 0.5, spread: 0.01, range: 25, n: 1, mag: 1, rl: 0, kick: 0.03, len: 0.5, exp: 'saw', price: 4000, cat: 'Experimental', ven: 'scrap', hint: 'Finish the sawmill job at Sawtooth Scrapyard (harbour docks)', blurb: 'A boomerang buzzsaw. Loops out 25 m and comes home, slicing tyres, roofs and anyone in the way.' },
+  { name: 'Swapshot', dmg: 0, rate: 0.4, spread: 0.004, range: 120, n: 1, mag: 1, rl: 0, kick: 0.03, len: 0.55, exp: 'swap', price: 3500, cat: 'Experimental', ven: 'sky', hint: 'Reach the Skyhook Rooftop on foot (the tallest tower downtown)', blurb: 'Teleport pistol. Whatever you hit, you trade places with. Three charges, 4 s each.' },
+  { name: 'Snowglobe Singularity', dmg: 0, rate: 1.0, spread: 0.01, range: 30, n: 1, mag: 1, rl: 0, kick: 0.02, len: 0.4, exp: 'hole', price: 9000, cat: 'Experimental', ven: 'frost', hint: 'Complete three heists at Chaos Savings', blurb: 'Throw the globe; it shatters into a 6 s black hole that swallows the street. Carry one; refills $900.' },
+  { name: 'Shrinkinator', dmg: 0, rate: 0.8, spread: 0.004, range: 70, n: 1, mag: 1, rl: 0, kick: 0.03, len: 0.7, exp: 'shrink', price: 8000, cat: 'Experimental', ven: 'ufo', hint: 'Search the UFO crash site past the speedway between midnight and 4 am', blurb: 'Hold to charge, release a shrink ray. People and cars go toy-sized for 10 s. 6 s to recharge.' },
+  { name: 'Yeet Beam', dmg: 0, rate: 0.5, spread: 0.004, range: 40, n: 1, mag: 1, rl: 0, kick: 0.04, len: 0.85, exp: 'yeet', price: 7500, cat: 'Experimental', ven: 'grav', hint: 'Pass the low-gravity car test at the Moon Base Gravity Lab', blurb: 'Grav gun. Hold to lift a car or a person, release to fling it a city block. Three charges, 12 s each.' });
+GUN.ammo.push(1, 1, 8, 1, 1, 1, 1, 1);
+const GUNSLOT = [4, 0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];   // number keys 1-0 -> the first ten; Shift + 1-8 -> the experimental guns
 const OWN = new Set([0, 1, 2, 3, 4]); try { for (const i of JSON.parse(localStorage.getItem('dd-guns') || '[]')) if (GUNS[i]) OWN.add(i); } catch (e) { /* storage unavailable */ }
 const ROCK = { v: 0 }, ARM = { v: 0 }; try { ROCK.v = Math.max(0, parseInt(localStorage.getItem('dd-rockets') || '0', 10) || 0); ARM.v = clamp(parseInt(localStorage.getItem('dd-armour') || '0', 10) || 0, 0, 100); } catch (e) { /* storage unavailable */ }
 function saveKit() { try { localStorage.setItem('dd-guns', JSON.stringify([...OWN])); localStorage.setItem('dd-rockets', String(ROCK.v)); localStorage.setItem('dd-armour', String(Math.round(ARM.v))); } catch (e) { /* storage unavailable */ } }   // fists are slot 4, and what you start with
@@ -5870,6 +5983,657 @@ const GM = (() => { const d = '#16171a', d2 = '#2a2d31', st = '#8a9098', wd = '#
   [[-0.032, 0.032, -0.7, -0.3, -0.112, -0.06, st], [-0.022, 0.022, -0.36, -0.1, -0.1, -0.03, wd], [-0.022, 0.022, -0.36, -0.3, -0.03, 0.06, wd]],
   [[-0.024, 0.024, -0.6, -0.25, -0.12, -0.05, d], [-0.012, 0.012, -0.92, -0.6, -0.1, -0.08, d2], [-0.02, 0.02, -0.8, -0.6, -0.112, -0.062, d2], [-0.016, 0.016, -0.52, -0.44, -0.05, 0.11, d2], [-0.02, 0.02, -0.25, -0.02, -0.11, -0.04, d], [-0.01, 0.01, -0.5, -0.4, -0.142, -0.12, d], [-0.018, 0.018, -0.38, -0.32, -0.05, 0.05, d]],
   [[-0.07, 0.07, -1.05, 0.35, -0.29, -0.15, '#4f5a3a'], [-0.08, 0.08, -1.12, -1.03, -0.3, -0.14, d], [-0.08, 0.08, 0.3, 0.38, -0.3, -0.14, d], [-0.02, 0.02, -0.4, -0.32, -0.15, -0.02, d], [-0.02, 0.02, -0.62, -0.55, -0.15, -0.05, d], [-0.015, 0.015, -0.72, -0.6, -0.33, -0.29, d]]]; })();
+GM.push(
+  [[-0.07, 0.07, -0.95, 0.2, -0.28, -0.14, '#ff6fb0'], [-0.085, 0.085, -1.0, -0.92, -0.29, -0.13, '#ffd23a'], [-0.02, 0.02, -0.36, -0.28, -0.14, -0.02, '#16171a'], [-0.03, 0.03, -0.62, -0.5, -0.32, -0.28, '#ffd23a']],
+  [[-0.06, 0.06, -0.52, -0.38, -0.17, -0.04, '#dfe6ee'], [-0.025, 0.025, -0.38, -0.2, -0.12, -0.06, '#2a2d31'], [-0.02, 0.02, -0.3, -0.24, -0.06, 0.06, '#ff3ea5']],
+  [[-0.024, 0.024, -0.72, -0.25, -0.12, -0.05, '#2a2d31'], [-0.042, 0.042, -0.56, -0.36, -0.17, -0.1, '#c47a2c'], [-0.03, 0.03, -0.8, -0.72, -0.11, -0.06, '#7fe8ff'], [-0.022, 0.022, -0.25, -0.02, -0.11, -0.04, '#7a5433'], [-0.02, 0.02, -0.4, -0.34, -0.05, 0.07, '#16171a']],
+  [[-0.012, 0.012, -0.5, -0.16, -0.27, 0.06, '#b9bec4'], [-0.025, 0.025, -0.38, -0.26, -0.08, 0.05, '#ff6a2a'], [-0.03, 0.03, -0.36, -0.3, -0.12, -0.08, '#16171a']],
+  [[-0.022, 0.022, -0.5, -0.28, -0.12, -0.05, '#eef1f4'], [-0.04, 0.04, -0.57, -0.5, -0.16, -0.01, '#ff4fd0'], [-0.02, 0.02, -0.36, -0.3, -0.05, 0.07, '#3ee8c8']],
+  [[-0.065, 0.065, -0.47, -0.33, -0.18, -0.04, '#bfe9ff'], [-0.05, 0.05, -0.34, -0.3, -0.16, -0.06, '#7a5433'], [-0.02, 0.02, -0.3, -0.24, -0.06, 0.05, '#2a2d31']],
+  [[-0.03, 0.03, -0.68, -0.28, -0.13, -0.05, '#6a3fb0'], [-0.05, 0.05, -0.62, -0.58, -0.15, -0.03, '#ffa02a'], [-0.05, 0.05, -0.52, -0.48, -0.15, -0.03, '#ffa02a'], [-0.02, 0.02, -0.36, -0.3, -0.05, 0.07, '#16171a'], [-0.025, 0.025, -0.74, -0.68, -0.11, -0.07, '#6dff5a']],
+  [[-0.035, 0.035, -0.86, -0.25, -0.14, -0.05, '#8f4fe0'], [-0.06, 0.06, -0.9, -0.84, -0.16, -0.03, '#2a2d31'], [-0.008, 0.008, -0.7, -0.4, -0.2, -0.14, '#eef1f4'], [-0.02, 0.02, -0.38, -0.32, -0.05, 0.07, '#16171a']]);
+/* ───────────── experimental weapons: the Energy Weapons Update (GUNS 10-17) ─────────────
+   One presence key per player, xw = { f: [...events], s: [...statuses] }, both pruned after 6 s.
+   f: cosmetic events every client replays itself, [type, seq, t0, ...numbers, targetId?]. Types: 1 yeet, 2 hole, 3 zap, 4 duck, 5 swap, 6 disco, 7 shrink, 8 saw.
+   s: statuses for one player, [toId, seq, kind, t0, a, b, c], applied only by that player's own client after range, weapon, seq and age checks.
+   Traffic cars hit by these weapons go to npc mode 9 (n.xs), which the existing traffic-hit list carries to the other clients as positions. */
+const XG = { duck: 10, disco: 11, zap: 12, saw: 13, swap: 14, hole: 15, shrink: 16, yeet: 17 }, XK = { float: 1, stun: 2, dance: 3, stall: 4, shrink: 5, swap: 6, yeet: 7, pull: 8, saw: 9 };
+const XKN = Object.fromEntries(Object.entries(XK).map(([k, v]) => [v, k]));
+const XNET = { f: [], s: [], seq: 0, seenF: new Map(), seenS: new Map(), lastAt: new Map(), sent: 0, applied: 0, rejected: 0, log: [] };
+const XS = {};                                      // statuses on our own player or car: kind -> { t, ... }
+const XAM = { duck: 0, coil: 0, globe: 0 }; try { const o = JSON.parse(localStorage.getItem('dd-xam') || '{}'); for (const k in XAM) if (num(o[k]) && o[k] >= 0) XAM[k] = Math.min(999, Math.floor(o[k])); } catch (e) { /* storage unavailable */ }
+const XUN = {}; try { const o = JSON.parse(localStorage.getItem('dd-xunlock') || '{}'); if (o && typeof o === 'object') for (const k in o) if (o[k] === 1) XUN[k] = 1; } catch (e) { /* storage unavailable */ }
+function xSave() { try { localStorage.setItem('dd-xam', JSON.stringify(XAM)); localStorage.setItem('dd-xunlock', JSON.stringify(XUN)); } catch (e) { /* storage unavailable */ } }
+const XC = {};                                      // charges that come back on their own: gun index -> { n, max, rt, t }
+const xCharge = (i, max, rt) => { XC[i] = { n: max, max, rt, t: 0 }; };
+xCharge(XG.disco, 2, 30); xCharge(XG.swap, 3, 4); xCharge(XG.yeet, 3, 12); xCharge(XG.saw, 1, 0); xCharge(XG.shrink, 1, 6);
+const XCOOL = { hole: 0 };                          // the snowglobe's 20 s between throws
+function xUnlock(id, quiet) { if (XUN[id]) return; XUN[id] = 1; xSave(); if (!quiet) { const g = XGUNS.find(q => q.ven === id); toast((g ? g.name : 'Weapon') + ' unlocked. Iron Works has it under Experimental'); alarmSound(); } }
+const XGUNS = GUNS.slice(10), VEN = {};
+const xNow = () => NET.now();
+const xIsX = i => !!(GUNS[i] && GUNS[i].exp);
+
+/* ── who can be affected right now (our own client decides for itself) ── */
+function xCan() {
+  if (!started || HP.dead > 0 || RIDE || SIT.on || respawning) return false;
+  if (inMall(P.x) || inSpace(P.x) || inBunk(P.x, P.z) || (ORB && ORB.on) || (H.on && H.crew && H.crew.includes(myId()) && H.stage >= 1 && H.stage < 6)) return false;
+  return true;
+}
+
+/* ── network: send ── */
+function xFx(type, nums, id) { const e = [type, ++XNET.seq, Math.round(xNow())].concat(nums.map(v => Math.round(v * 100) / 100)); if (id) e.push(String(id)); XNET.f.push(e); if (XNET.f.length > 4) XNET.f.shift(); XNET.sent++; xPlay(e, null, true); return e; }
+function xSt(to, kind, a, b, c) { if (!to) return; XNET.s.push([String(to), ++XNET.seq, XK[kind], Math.round(xNow()), +(a || 0), +(b || 0), +(c || 0)]); if (XNET.s.length > 3) XNET.s.shift(); XNET.sent++; }
+function xwOut() { const now = xNow(); XNET.f = XNET.f.filter(e => now - e[2] < 6000); XNET.s = XNET.s.filter(e => now - e[3] < 6000); const sc = XS.shrink ? XS.shrink.s : 0; return XNET.f.length || XNET.s.length || sc ? { f: XNET.f, s: XNET.s, sc } : null; }
+
+/* ── network: receive, once per peer per frame ── */
+function xwIn(r, w, peer, now) {
+  { const sc = w && num(w.sc) && w.sc > 0 ? clamp(w.sc, 0.25, 1) : 1; if (r.mesh && Math.abs(r.mesh.scale.x - sc) > 0.001) r.mesh.scale.setScalar(sc); }
+  if (!w || typeof w !== 'object') { if (!XNET.seenF.has(peer)) { XNET.seenF.set(peer, 0); XNET.seenS.set(peer, 0); } return; } const f = Array.isArray(w.f) ? w.f.slice(-4) : [], s = Array.isArray(w.s) ? w.s.slice(-3) : [];
+  const first = !XNET.seenF.has(peer); let mf = XNET.seenF.get(peer) || 0, ms = XNET.seenS.get(peer) || 0;
+  for (const e of f) { if (!Array.isArray(e) || e.length < 3 || e.length > 26 || !num(e[1]) || !num(e[2])) continue; if (e[1] <= mf) continue; mf = Math.max(mf, e[1]); if (first) continue;
+    if (now - e[2] > 6000 || e.slice(0, 24).some((v, i) => i < e.length - (typeof e[e.length - 1] === 'string' ? 1 : 0) && !num(v))) { XNET.rejected++; continue; } xPlay(e, r, false); }
+  for (const e of s) { if (!Array.isArray(e) || e.length !== 7 || !num(e[1])) continue; if (e[1] <= ms) continue; ms = Math.max(ms, e[1]); if (first || e[0] !== String(NET.me)) continue; xStIn(r, e, now); }
+  XNET.seenF.set(peer, mf); XNET.seenS.set(peer, ms);
+}
+const XRANGE = { 1: 18, 2: 95, 3: 30, 4: 30, 5: 75, 6: 125, 7: 45, 8: 45, 9: 30 };      // status kind -> how far the shooter may be (plus margin)
+const XNEEDG = { 1: XG.duck, 2: XG.zap, 5: XG.shrink, 6: XG.swap, 7: XG.yeet, 8: XG.yeet, 9: XG.saw };
+function xStIn(r, e, now) {
+  const kind = e[2], t0 = e[3], ok = num(kind) && XKN[kind] && num(t0) && Math.abs(now - t0) < 4000 && [e[4], e[5], e[6]].every(num);
+  const d = Math.hypot(r.pred.x - P.x, r.pred.z - P.z), rng = (XRANGE[kind] || 30) + 12, gOK = !XNEEDG[kind] || r.pres.g === XNEEDG[kind] || (kind === 1 && r.pres.g === XG.duck);
+  const last = XNET.lastAt.get(r.id + ':' + kind) || 0, cool = kind === 2 ? 500 : kind === 6 ? 900 : 250;
+  if (!ok || d > rng * (kind === 1 ? 4 : 1) || !gOK || now - last < cool || !xCan()) { XNET.rejected++; XNET.log.push(['rej', XKN[kind], Math.round(d), r.pres.g]); return; }
+  XNET.lastAt.set(r.id + ':' + kind, now); XNET.applied++; XNET.log.push(['ok', XKN[kind]]); xSelf(XKN[kind], e[4], e[5], e[6], r.name);
+}
+
+/* ── statuses on our own player/car ── */
+const XCAP = { float: 15, stun: 1.5, dance: 3, stall: 8, shrink: 12, swap: 0, yeet: 2.5, pull: 3, saw: 0 };
+function xSelf(kind, a, b, c, who) {
+  if (!xCan()) return false; who = who || 'Someone';
+  if (kind === 'float') { const h = clamp(a || 6, 2, 25), cur = XS.float; if (cur) { cur.t = XCAP.float; } else XS.float = { t: XCAP.float, h, y0: P.gy, hp: CAR.foot ? PH.v : HP.v, car: !CAR.foot }; toast(CAR.foot ? 'Ducked! You are floating away' : 'Ducks are lifting your car'); return true; }
+  if (kind === 'stun') { XS.stun = { t: Math.min(XCAP.stun, a || 0.6) }; if (!CAR.foot) XS.slow = { t: 2 }; shake = Math.min(1, shake + 0.3); toast('Zapped by ' + who); return true; }
+  if (kind === 'dance') { if (XS.danceImm > 0) return false; if (CAR.foot) { XS.dance = { t: 3 }; XS.danceImm = 18; toast('The beat drops. You cannot help dancing'); } else if (!CAR.ufo) { XS.stall = { t: 6 }; XS.danceImm = 18; toast('Your engine stalled'); } return true; }
+  if (kind === 'stall') { if (CAR.foot || CAR.ufo) return false; XS.stall = { t: Math.min(XCAP.stall, a || 6) }; toast('Your engine stalled'); return true; }
+  return xSelfB(kind, a, b, c, who);
+}
+function xLocked() { return !!(XS.stun || XS.dance || XS.float || XS.yeet || XS.pull); }
+function xNoFire() { return !!(XS.stun || XS.dance); }
+function xInput() {                                 // called from runFrame after input is read
+  if (XS.stun || XS.dance || XS.yeet || XS.pull) { inp.steer = inp.thr = inp.brk = inp.jump = inp.boost = 0; }
+  if (XS.float) { inp.thr = inp.brk = inp.steer = inp.jump = inp.boost = 0; }
+  if (XS.stall) { inp.thr = 0; inp.boost = 0; inp.jump = 0; }
+  if (XS.shrink) { if (CAR.foot) { inp.thr *= 0.6; inp.brk *= 0.6; inp.steer *= 0.6; inp.boost = 0; } else { const sp = Math.hypot(P.vx, P.vz), cap = (CAR.vmax || 50) * 0.6; if (sp > cap) { P.vx *= cap / sp; P.vz *= cap / sp; } } }
+  if (XS.slow && !CAR.foot) { const sp = Math.hypot(P.vx, P.vz), cap = (CAR.vmax || 50) * 0.5; if (sp > cap) { P.vx *= cap / sp; P.vz *= cap / sp; } }
+}
+function xSelfFrame(dt) {
+  for (const k in XS) { const s = XS[k]; if (typeof s === 'number') { XS[k] = s - dt; if (XS[k] <= 0) delete XS[k]; continue; } s.t -= dt; if (s.t <= 0) { xEnd(k, s); delete XS[k]; } }
+  if (HP.dead > 0 || !started) { for (const k in XS) if (typeof XS[k] === 'object') { xEnd(k, XS[k]); delete XS[k]; } return; }
+  const f = XS.float; if (f) {
+    if ((f.car ? HP.v : PH.v) < f.hp - 0.5) { toast('Your ducks popped'); f.t = 0; xEnd('float', f); delete XS.float; }
+    else { const ty = f.y0 + 1.2 + 2 * (f.t0 = (f.t0 || 0) + dt); P.y += (ty - P.y) * (1 - Math.exp(-4 * dt)); P.vy = 0; P.vx = 0; P.vz = 0; P.grounded = false; P.air = !CAR.foot; if (f.car && playerModel.userData.wheels) for (const w of playerModel.userData.wheels) w.m.rotation.x -= dt * 14; }
+  }
+  if (XS.dance && CAR.foot && playerModel) playerModel.rotation.y = Math.sin(time * 9) * 0.6;
+  const y = XS.yeet; if (y) { y.flying += dt; if (y.flying > 0.35 && (CAR.foot ? P.grounded : !P.air)) { const sp = Math.abs(P.vy) + 8; delete XS.yeet; damage(y.car ? HP.max * 0.35 : Math.min(40, sp * 2)); toast('You landed hard'); } }
+}
+function xEnd(k, s) {
+  if (k === 'float' && s.car && HP.dead <= 0) { XS.dropDmg = { t: 4, d: HP.max * 0.2 }; }
+  if (k === 'dance' && playerModel) playerModel.rotation.y = 0;
+}
+function xLanded() { if (XS.dropDmg && P.grounded !== false && !P.air && P.y - P.gy < 0.4) { const d = XS.dropDmg.d; delete XS.dropDmg; damage(d); toast('Your car hit the ground hard'); } }
+
+/* ── targets: everything a shot can hit, in one list ── */
+function xTargets(withMe) {
+  const tg = []; for (const n of npcs) if (n.live && n.mode !== 6) tg.push({ n, x: n.x, y: n.y + 0.85, z: n.wz, R: n.type === 'truck' ? 2.3 : 1.6 });
+  if (ATK.vis) tg.push({ atk: 1, x: ATK.x, y: ATK.y + 1.3, z: ATK.z, R: 2.6 });
+  const pp = []; peopleTargets(pp, 0.5); for (const t of pp) if (!t.head && !t.pp.cam && !t.pp.cashier && !t.pp.keep) tg.push(t);
+  for (const c of PCARS) if (c.st !== 'parked' && c.st !== 'gone' && c.st !== 'wreck') tg.push({ pc: c, x: c.x, y: c.y + 0.8, z: c.z, R: 1.8 });
+  for (const r of NET.rem.values()) if (r.init && r !== RIDE && r.pres.rd !== 1 && r.pres.w !== 1) tg.push({ r, x: r.pred.x, y: r.pred.y + (r.car.foot ? 1 : 0.85), z: r.pred.z, R: r.car.foot ? 0.6 : 1.8 });
+  if (VEN.tg) VEN.tg(tg);
+  return tg;
+}
+function xAim() { const cp = Math.cos(AIM.pitch), fx = -Math.sin(AIM.yaw) * cp, fy = Math.sin(AIM.pitch), fz = -Math.cos(AIM.yaw) * cp, cm = camera.position, t0 = Math.max(0.3, (P.x - cm.x) * fx + (P.y + 1.4 - cm.y) * fy + (P.z - cm.z) * fz + 0.7);
+  return { ox: cm.x + fx * t0, oy: cm.y + fy * t0, oz: cm.z + fz * t0, fx, fy, fz, mx: P.x + fx * 0.9 + Math.cos(AIM.yaw) * 0.3, my: P.y + 1.43 + fy * 0.9, mz: P.z + fz * 0.9 - Math.sin(AIM.yaw) * 0.3 }; }
+function xRay(range, R) {                            // the nearest target along the crosshair, with a little extra radius for slow weapons
+  const a = xAim(), tg = xTargets(); let best = null, bt = range;
+  for (const t of tg) { const cx = t.x - a.ox, cy = t.y - a.oy, cz = t.z - a.oz, tt = cx * a.fx + cy * a.fy + cz * a.fz; if (tt <= 0 || tt > bt) continue; const rr = t.R + (R || 0); if (cx * cx + cy * cy + cz * cz - tt * tt < rr * rr) { bt = tt; best = t; } }
+  let end = bt; if (!best) { for (let s = 2; s < range; s += 2) if (worldHit(a.ox + a.fx * s, a.oy + a.fy * s, a.oz + a.fz * s)) { end = s; break; } }
+  return { a, hit: best, x: a.ox + a.fx * end, y: a.oy + a.fy * end, z: a.oz + a.fz * end, d: end };
+}
+const xIdOf = t => t.r ? t.r.id : null;
+function xActorOf(t) {                              // turn a person in the target list into a live actor we can move
+  const pp = t.pp; if (!pp) return null; if (pp.a) return pp.a; if (pp.off) return activateOfficer(pp.off);
+  if (pp.ped) { const q = pp.ped; return spawnActor(q.key, q.x, q.y, q.z, q.yaw, q.seed, { st: 1, hp: 50 }); } return null;
+}
+function xCrime(t) { if (t.pc || (t.pp && (t.pp.off || (t.pp.a && t.pp.a.police)))) wantedAtLeast(2); else if (!inMall(P.x) && witnessed(P.x, P.z)) wantedAtLeast(1); }
+
+/* ── traffic cars under an experimental effect: npc mode 9 ── */
+function xNpc(n, k, o) {
+  if (!n || !n.live || n.mode === 6) return; if (held === n) held = null; if (!n.driverOut && n.rc && k !== 'zap') { /* the driver stays in */ }
+  const cur = n.mode === 9 && n.xs; n.mode = 9; n.marker.visible = false;
+  if (k === 'duck') { if (cur && cur.k === 'duck') { cur.t = 15; return; } n.xs = { k, t: 15, y0: n.y, tt: 0 }; }
+  else if (k === 'stall') n.xs = { k, t: o || 6, y0: n.y, tt: 0 };
+  else if (k === 'zap') { n.xs = { k, t: 2, y0: n.y, tt: 0 }; }
+  else n.xs = Object.assign({ k, t: 3, y0: n.y, tt: 0 }, o || {});
+  n.speed = 0;
+}
+function xNpcStep(n, dt) {
+  const s = n.xs; if (!s) { n.mode = 5; n.vyF = 0; return; } s.t -= dt; s.tt += dt;
+  if (s.k === 'duck') { const ty = s.y0 + 1 + 2 * s.tt; n.y += (ty - n.y) * (1 - Math.exp(-4 * dt)); if (s.t <= 0) { n.xs = null; n.mode = 5; n.vyF = 0; dmgNpc(n, (n.type === 'truck' ? 180 : 100) * 0.2); } }
+  else if (s.k === 'stall' || s.k === 'zap') { n.speed = 0; if (s.k === 'zap' && Math.random() < dt * 8) puffAt(n.x, n.y + 1.2, n.wz, 0x9fe8ff); if (s.t <= 0) { n.xs = null; n.mode = 2; n.stun = 0.3; n.kx = n.kz = n.kvx = n.kvz = n.spin = n.spinV = 0; } }
+  else if (s.f) { if (s.f(n, dt, s)) return; }
+  if (s.t <= 0 && n.mode === 9) { n.xs = null; n.mode = 5; n.vyF = 0; }
+  n.z = n.wz; n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(s.k === 'duck' ? Math.sin(time * 1.3) * 0.08 : 0, n.yaw, s.k === 'zap' ? (Math.random() - 0.5) * 0.06 : 0);
+}
+
+/* ── people under an effect: a.xs on actors (local to each client) ── */
+function xActor(a, k, o) {
+  if (!a || a.st === 2) return; const cur = a.xs;
+  if (k === 'duck') { if (cur && cur.k === 'duck') { cur.t = 15; return; } a.xs = { k, t: 15, y0: a.y, tt: 0 }; }
+  else if (k === 'dance') { if (cur && cur.k === 'dance') return; a.xs = { k, t: o || 8, tt: 0, yaw: a.yaw }; }
+  else if (k === 'stun') a.xs = { k, t: o || 0.6, tt: 0 };
+  else a.xs = Object.assign({ k, t: 3, tt: 0 }, o || {});
+  a.vx = a.vz = 0;
+}
+function xActorStep(a, dt) {                         // true while the effect holds the actor
+  const s = a.xs; if (!s) return false; s.t -= dt; s.tt += dt;
+  if (s.k === 'fall') { s.v -= GRAV * dt; a.y += s.v * dt; const g = groundAt(a.x, a.z, a.y + 1); if (a.y <= g) { a.y = g; a.xs = null; MYHIT = performance.now(); hurtActor(a, Math.min(200, Math.max(0, -s.v - 8) * 6), a.x + 0.3, a.z); return false; } a.m.position.set(a.x, a.y, a.z); return true; }
+  if (s.k === 'duck') { if (a.hp < (s.hp0 = s.hp0 || a.hp)) { a.xs = { k: 'fall', v: 0, t: 30, tt: 0 }; return true; } const ty = s.y0 + 1.2 + 2 * s.tt; a.y += (ty - a.y) * (1 - Math.exp(-4 * dt)); a.vy = 0; a.vx = a.vz = 0; a.air = true; }
+  else if (s.k === 'dance') { a.yaw = (s.yaw || 0) + Math.sin(s.tt * 9) * 0.7; a.y = groundAt(a.x, a.z, a.y + 1) + Math.abs(Math.sin(s.tt * 9)) * 0.18; }
+  else if (s.k === 'stun') { a.x += (Math.random() - 0.5) * 0.04; if (Math.random() < dt * 10) puffAt(a.x, a.y + 1.4, a.z, 0x9fe8ff); }
+  else if (s.f && s.f(a, dt, s)) return true;
+  if (s.t <= 0) { a.xs = s.k === 'duck' ? { k: 'fall', v: 0, t: 30, tt: 0 } : null; return !!a.xs; }
+  a.m.position.set(a.x, a.y, a.z); a.m.rotation.y = a.yaw; return true;
+}
+
+/* ── effect renderer: pooled meshes, nothing collides, nothing outlives its effect ── */
+const XFX = [];                                     // live cosmetic effects { t, dur, step(dt, age) -> false when done, kill() }
+const xMat = (col, add) => new T.MeshBasicMaterial({ color: col, transparent: true, opacity: 1, depthWrite: !add, blending: add ? T.AdditiveBlending : T.NormalBlending });
+const xLam = col => new T.MeshLambertMaterial({ color: col });
+function xAdd(fx) { XFX.push(fx); if (XFX.length > 40) { const o = XFX.shift(); if (o.kill) o.kill(); } return fx; }
+function xFxFrame(dt) {
+  for (let i = XFX.length - 1; i >= 0; i--) { const f = XFX[i]; f.age = (f.age || 0) + dt; const far = f.at && Math.hypot(f.at[0] - P.x, f.at[2] - P.z) > 160; if (f.root) f.root.visible = !far;
+    if (f.step(dt, f.age) === false || f.age > (f.max || 20)) { if (f.kill) f.kill(); XFX.splice(i, 1); } }
+}
+/* duck balloons tied to something: anchor() gives the knot, or null when the thing is gone */
+const duckGeo = (() => { const b = new GB(); b.cylX(0, 0, 0, 0.42, 0.34, 10, C('#ffd23a')); b.box(-0.2, 0.2, 0.22, 0.62, -0.42, -0.06, C('#ffd23a')); b.box(-0.08, 0.08, 0.36, 0.46, -0.62, -0.42, C('#ff8a1e')); b.box(-0.21, -0.17, 0.46, 0.52, -0.3, -0.24, C('#16171a')); b.box(0.17, 0.21, 0.46, 0.52, -0.3, -0.24, C('#16171a')); const g = b.geo(); g.rotateY(Math.PI / 2); return g; })();
+const duckMat = new T.MeshLambertMaterial({ vertexColors: true });
+function xBalloons(anchor, n, dur, seed) {
+  const root = new T.Group(); scene.add(root); const items = [], lg = new T.BufferGeometry(), lp = new Float32Array(54); lg.setAttribute('position', new T.BufferAttribute(lp, 3));
+  const line = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0xf2f2ee })); line.frustumCulled = false; root.add(line);
+  for (let k = 0; k < n; k++) { const m = new T.Mesh(duckGeo, duckMat); root.add(m); items.push({ m, a: k / n * TAU + seed, r: 0.5 + 0.35 * (k % 2), h: 2.3 + 0.5 * k }); }
+  let last = null;
+  return xAdd({ root, max: dur + 3, kill: () => { scene.remove(root); lg.dispose(); line.material.dispose(); }, add(k) { for (let i = 0; i < k && items.length < 9; i++) { const m = new T.Mesh(duckGeo, duckMat); root.add(m); items.push({ m, a: Math.random() * TAU, r: 0.6, h: 2.6 + 0.5 * items.length }); } },
+    step(dt, age) { const p = anchor() || last; if (!p) return false; last = p; this.at = p; const gone = age > dur, up = gone ? (age - dur) * 9 : 0;
+      for (let i = 0; i < items.length; i++) { const q = items[i], bx = p[0] + Math.cos(q.a + age * 0.8) * q.r, by = p[1] + q.h + Math.sin(age * 2 + i) * 0.15 + up, bz = p[2] + Math.sin(q.a + age * 0.8) * q.r; q.m.position.set(bx, by, bz); q.m.rotation.y = q.a + age;
+        if (i * 6 + 5 < lp.length) { lp[i * 6] = p[0]; lp[i * 6 + 1] = gone ? by : p[1] + 0.2; lp[i * 6 + 2] = p[2]; lp[i * 6 + 3] = bx; lp[i * 6 + 4] = by - 0.4; lp[i * 6 + 5] = bz; } }
+      lg.attributes.position.needsUpdate = true; return !(gone && age > dur + 2.5); } });
+}
+
+/* ── firing: each experimental gun decides what a press, a hold and a release do ── */
+const XP = [];                                      // duck projectiles in flight
+let xHoldT = 0;
+function xTrig(trig, dt) {
+  const i = GUN.i, g = GUNS[i]; if (!g || !g.exp) return; const press = trig && !GUN.trig;
+  if (!trig || !started || HP.dead > 0 || xNoFire() || RIDE) { xHoldT = 0; if (XHOLD.on) XHOLD.release(); return; }
+  if (g.exp === 'duck' && press) xFireDuck();
+  else if (g.exp === 'disco' && press) xFireDisco();
+  else if (g.exp === 'zap' && press) xFireZap();
+  else if (XWEAP[g.exp]) XWEAP[g.exp](press, trig, dt);
+}
+const XWEAP = {};                                   // later weapons register their own trigger handler here
+const XHOLD = { on: false, release() { this.on = false; } };
+function xNeed(i, msg) { const c = XC[i]; if (c && c.n < 1) { toast(msg || (GUNS[i].name + ' is recharging')); return false; } if (c) c.n--; return true; }
+
+/* Quackzooka: an arcing rubber duck. No blast; whatever it hits gets a duck balloon */
+function xFireDuck() {
+  if (GUN.cool > 0 || GUN.rl > 0) return; if (XAM.duck <= 0) { toast('Out of ducks. Iron Works sells them under Experimental'); GUN.cool = 0.5; return; }
+  XAM.duck--; xSave(); GUN.cool = 1.8; GUN.shots++; const a = xAim(), sp = 35;
+  const m = new T.Mesh(duckGeo, duckMat); m.scale.setScalar(0.7); scene.add(m);
+  XP.push({ x: a.mx, y: a.my, z: a.mz, vx: a.fx * sp, vy: a.fy * sp + 3, vz: a.fz * sp, t: 0, m });
+  AIM.pitch = Math.min(1.05, AIM.pitch + 0.06); personSound(P.x, P.z, 0.4, 900); xCrimeShot();
+}
+function xBought(i) { const e = GUNS[i].exp; if (e === 'duck') XAM.duck += 6; if (e === 'zap') { XAM.coil += 1; GUN.ammo[i] = 8; } if (e === 'hole') XAM.globe += 1; xSave(); }
+function xCrimeShot() { if (!inMall(P.x) && witnessed(P.x, P.z)) wantedAtLeast(1); }
+function xStepDucks(dt) {
+  for (let i = XP.length - 1; i >= 0; i--) { const d = XP[i]; d.t += dt; let hit = null, stop = d.t > 4;
+    const n = Math.max(1, Math.ceil(Math.hypot(d.vx, d.vy, d.vz) * dt / 0.7));
+    for (let k = 0; k < n && !hit && !stop; k++) { d.x += d.vx * dt / n; d.y += d.vy * dt / n; d.z += d.vz * dt / n; d.vy -= 9 * dt / n;
+      for (const t of xTargets()) if (Math.hypot(t.x - d.x, (t.y - d.y) * 0.8, t.z - d.z) < t.R + 0.45) { hit = t; break; }
+      if (!hit && d.t > 0.05 && worldHit(d.x, d.y, d.z)) stop = true; }
+    d.m.position.set(d.x, d.y, d.z); d.m.rotation.set(0, Math.atan2(d.vx, d.vz), d.t * 6);
+    if (hit || stop) { scene.remove(d.m); XP.splice(i, 1); if (hit) xDuckHit(hit); else { puffAt(d.x, d.y, d.z, 0xffd23a); personSound(d.x, d.z, 0.3, 1400); } } }
+}
+function xDuckHit(t) {
+  personSound(t.x, t.z, 0.5, 1600); xCrime(t);
+  if (t.r) { xSt(t.r.id, 'float', 6); xFx(4, [t.x, t.y, t.z, 1, 1], t.r.id); return; }
+  if (t.n) { xNpc(t.n, 'duck'); xFx(4, [t.x, t.y, t.z, 2, t.n.rc ? t.n.rc.id : -1]); return; }
+  if (t.atk) { ATK.ducks = (ATK.ducks || 0) + 1; atkHit(0, 'duck'); xFx(4, [t.x, t.y, t.z, 3, ATK.ducks]); if (ATK.ducks >= 4 && !ATK.duckT) { ATK.duckT = 5; toast('Four ducks. The armored truck is lifting'); } else toast('Duck ' + ATK.ducks + ' of 4 on the armored truck'); return; }
+  if (t.pc) { const c = t.pc; c.xst = 5; c.xl = 0.01; xFx(4, [t.x, t.y, t.z, 4, PCARS.indexOf(c)]); return; }
+  const a = xActorOf(t); if (a) { xActor(a, 'duck'); xFx(4, [a.x, a.y, a.z, 5, 0]); xLocalDuck(a); }
+}
+const XDUCKREF = new Map();                          // ducks we tied to our own local actors, so the balloons follow them
+function xLocalDuck(a) { XDUCKREF.set('a', a); }
+
+/* Disco Detonator: a lobbed mirror ball, 8 s of dance floor in an 18 m circle */
+const DISCO_R = 18, DISCO_T = 8;
+function xFireDisco() {
+  if (GUN.cool > 0) return; if (!xNeed(XG.disco, 'Both disco balls are recharging')) return; GUN.cool = 0.8;
+  const a = xAim(); let px = P.x + a.fx * 20, pz = P.z + a.fz * 20; const r = xRay(30); if (r.d < 30) { px = r.x; pz = r.z; }
+  const py = groundAt(px, pz, P.y + 4); xFx(6, [px, py, pz, P.x, P.y + 1.4, P.z, Math.floor(Math.random() * 1000)]); XNET.myDisco = { x: px, z: pz, t0: xNow() + 600, drop: false }; xCrimeShot();
+}
+const discoTileGeo = new T.BoxGeometry(2.4, 0.06, 2.4), discoBallGeo = new T.IcosahedronGeometry(0.75, 1);
+const discoBallMat = new T.MeshLambertMaterial({ color: 0xdfe6ee, emissive: 0x2a2a33 });
+const DISCO_COLS = [0xff3ea5, 0x3edcff, 0xffe23e, 0x6dff5a, 0xb05aff, 0xff8a3e];
+function xDiscoFx(px, py, pz, ox, oy, oz, seed, t0, mine) {
+  const root = new T.Group(); scene.add(root); const N = 37, tiles = new T.InstancedMesh(discoTileGeo, new T.MeshBasicMaterial({ transparent: true, opacity: 0.55, depthWrite: false }), N); tiles.frustumCulled = false; root.add(tiles);
+  const slots = []; for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) if (i * i + j * j <= 12) slots.push([i * 2.5, j * 2.5]); const m4 = new T.Matrix4(), col = new T.Color();
+  const ball = new T.Mesh(discoBallGeo, discoBallMat); root.add(ball); const beams = [];
+  for (let k = 0; k < 8; k++) { const b = new T.Mesh(new T.CylinderGeometry(0.05, 0.5, 1, 6, 1, true).translate(0, -0.5, 0), xMat(DISCO_COLS[k % 6], true)); b.material.opacity = 0.18; root.add(b); beams.push(b); }
+  const off = Math.max(0, Math.min(0.7, (xNow() - t0) / 1000)); let fx = null;
+  return xAdd({ root, max: 12, at: [px, py, pz], kill: () => { scene.remove(root); tiles.material.dispose(); for (const b of beams) { b.geometry.dispose(); b.material.dispose(); } },
+    step(dt, fa) { const age = fa + off - 0.6;                                         // 0.6 s of flight first
+      if (age < 0) { const k = 1 + age / 0.6; ball.position.set(ox + (px - ox) * k, oy + (py + 6 - oy) * k + Math.sin(k * Math.PI) * 4, oz + (pz - oz) * k); tiles.visible = false; for (const b of beams) b.visible = false; return true; }
+      const fade = age > DISCO_T ? 1 - (age - DISCO_T) / 1.5 : 1; if (fade <= 0) return false; tiles.visible = true;
+      ball.position.set(px, py + 6, pz); ball.rotation.y += dt * 1.6;
+      for (let i = 0; i < slots.length && i < N; i++) { const on = ((Math.floor(age * 2) + i * 7 + seed) % 5) < 3 && Math.random() < 0.6 + 0.4 * fade; m4.makeTranslation(px + slots[i][0], groundAt(px + slots[i][0], pz + slots[i][1], py + 3) + 0.06, pz + slots[i][1]); tiles.setMatrixAt(i, m4); tiles.setColorAt(i, col.setHex(on ? DISCO_COLS[(i + Math.floor(age * 2)) % 6] : 0x15151c)); }
+      tiles.instanceMatrix.needsUpdate = true; if (tiles.instanceColor) tiles.instanceColor.needsUpdate = true; tiles.material.opacity = 0.55 * fade;
+      for (let k = 0; k < beams.length; k++) { const b = beams[k], a = age * 0.9 + k / beams.length * TAU, rr = 6 + 5 * Math.sin(age * 0.7 + k); b.position.copy(ball.position); const tx = px + Math.cos(a) * rr, tz = pz + Math.sin(a) * rr, dy = ball.position.y - py; const len = Math.hypot(tx - px, dy, tz - pz); b.scale.set(1, len, 1); b.lookAt(tx, py, tz); b.rotateX(-Math.PI / 2); b.visible = true; b.material.opacity = 0.16 * fade; }
+      xDiscoArea(px, pz, age, mine); return true; } });
+}
+function xDiscoArea(px, pz, age, mine) {             // every client applies the dance to itself and to its own NPCs; nothing per hit goes over the wire
+  if (age < 0 || age > DISCO_T) return; const inR = (x, z) => Math.hypot(x - px, z - pz) < DISCO_R;
+  if (inR(P.x, P.z) && !XS.dance && !XS.stall && !(XS.danceImm > 0)) xSelf('dance');
+  for (const a of ACT) if (a.st !== 2 && inR(a.x, a.z) && !(a.xs && a.xs.k === 'dance')) xActor(a, 'dance', DISCO_T - age);
+  for (const v of [...PEOPLE.vis.values()]) if (inR(v.x, v.z) && ACT.length < 14) { const a = spawnActor(v.key, v.x, v.y, v.z, v.yaw, v.seed, { st: 1, hp: 50 }); if (a) xActor(a, 'dance', DISCO_T - age); }
+  for (const c of PCARS) if (c.st !== 'parked' && c.st !== 'gone' && c.st !== 'wreck' && inR(c.x, c.z)) c.xst = Math.max(c.xst || 0, 0.5);
+  if (mine) { for (const n of npcs) if (n.live && n.mode !== 6 && n.mode !== 9 && n.mode !== 7 && inR(n.x, n.wz)) xNpc(n, 'stall', 6);
+    if (ATK.vis && inR(ATK.x, ATK.z) && !ATK.discoT) { ATK.discoT = 1; atkHit(0, 'disco'); toast('The armored truck crew is dancing'); }
+    const md = XNET.myDisco; if (md && WANTED.lv > 0 && !inR(P.x, P.z) && !md.drop && NET.now() - (XNET.discoDrop || -1e9) > 60000) { const cops = ACT.some(a => a.police && a.st !== 2 && inR(a.x, a.z)) || PCARS.some(c => c.crew > 0 && inR(c.x, c.z)); if (cops) { md.drop = true; XNET.discoDrop = NET.now(); WANTED.lv = Math.max(0, WANTED.lv - 1); if (!WANTED.lv) clearWanted(); else toast('The police are dancing. Wanted ' + '★'.repeat(WANTED.lv)); } } }
+}
+
+/* Tesla Tickler: hitscan, then the arc hops to the nearest unhit target within 9 m, 70% each hop */
+const ZAP_HOP = 9, ZAP_DMG = [30, 21, 15, 10, 7];
+function xFireZap() {
+  if (GUN.cool > 0 || GUN.rl > 0) return; if (GUN.ammo[GUN.i] <= 0) { if (XAM.coil > 0) { GUN.rl = 2.6; toast('Swapping coil pack'); } else { toast('Coil empty. Iron Works sells coil packs'); GUN.cool = 0.5; } return; }
+  GUN.ammo[GUN.i]--; GUN.cool = 0.9; GUN.shots++; const r = xRay(90, 0.3), pts = [[r.a.mx, r.a.my, r.a.mz]], hitL = [];
+  if (r.hit) { let cur = r.hit; const used = new Set(), key = t => t.r || t.n || t.pc || t.atk && 'atk' || t.ven || (t.pp && (t.pp.a || t.pp.off || t.pp.ped || t.pp.e)) || t; for (let h = 0; h < 5 && cur; h++) { used.add(key(cur)); hitL.push(cur); pts.push([cur.x, cur.y, cur.z]); if (cur.atk) break; let nb = null, nd = ZAP_HOP; for (const t of xTargets()) { if (used.has(key(t)) || t.atk) continue; const d = Math.hypot(t.x - cur.x, t.y - cur.y, t.z - cur.z); if (d < nd) { nd = d; nb = t; } } cur = nb; } }
+  else pts.push([r.x, r.y, r.z]);
+  hitL.forEach((t, h) => xZapHit(t, ZAP_DMG[h]));
+  xFx(3, pts.flat(), hitL.length && hitL[0].r ? hitL[0].r.id : null); personSound(P.x, P.z, 0.5, 2600); xCrimeShot(); if (GUN.ammo[GUN.i] <= 0 && XAM.coil > 0) { GUN.rl = 2.6; }
+}
+function xZapHit(t, d) {
+  MYHIT = performance.now(); xCrime(t);
+  if (t.r) { NET.dm.set(t.r.id, (NET.dm.get(t.r.id) || 0) + d); xSt(t.r.id, 'stun', 0.6); return; }
+  if (t.atk) { atkHit(60, 'zap'); return; }
+  if (t.n) { dmgNpc(t.n, (t.n.type === 'truck' ? 180 : 100) * 0.15); if (t.n.live && t.n.mode !== 6) xNpc(t.n, 'zap'); return; }
+  if (t.pc) { dmgPoliceCar(t.pc, d); t.pc.xst = Math.max(t.pc.xst || 0, 0.6); return; }
+  if (t.ven) { t.ven.hit(t); return; }
+  if (t.pp) { hitPerson(t, d, P.x, P.z); const a = t.pp.a || null; if (a && a.st !== 2) xActor(a, 'stun', 0.6); }
+}
+const boltMat = new T.LineBasicMaterial({ color: 0x8ff3ff, transparent: true, opacity: 1, blending: T.AdditiveBlending, depthWrite: false });
+function xZapFx(pts) {
+  const segs = []; for (let i = 0; i + 1 < pts.length; i++) { const a = pts[i], b = pts[i + 1]; let px = a[0], py = a[1], pz = a[2]; const n = 7;
+    for (let k = 1; k <= n; k++) { const f = k / n, j = k < n ? 0.45 : 0, nx = a[0] + (b[0] - a[0]) * f + (Math.random() - 0.5) * j, ny = a[1] + (b[1] - a[1]) * f + (Math.random() - 0.5) * j, nz = a[2] + (b[2] - a[2]) * f + (Math.random() - 0.5) * j; segs.push(px, py, pz, nx, ny, nz); px = nx; py = ny; pz = nz; }
+    if (i > 0) puffAt(a[0], a[1], a[2], 0x9fe8ff); }
+  const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(segs, 3)); const l = new T.LineSegments(g, boltMat.clone()); l.frustumCulled = false; scene.add(l);
+  return xAdd({ root: l, at: pts[pts.length - 1], max: 1, kill: () => { scene.remove(l); g.dispose(); l.material.dispose(); }, step(dt, age) { l.material.opacity = Math.max(0, 1 - age / 0.25); return age < 0.25; } });
+}
+
+/* ── playing an event: the same code for our own shots and for everyone else's ── */
+function xPlay(e, r, mine) {
+  const ty = e[0], t0 = e[2], id = typeof e[e.length - 1] === 'string' ? e[e.length - 1] : null, v = e.slice(3, id ? e.length - 1 : e.length);
+  if (ty === 4) {                                    // duck balloons: v = [x, y, z, targetKind, ref]
+    const tk = v[3], ref = v[4]; let anchor;
+    if (tk === 1) anchor = id === String(NET.me) ? () => [P.x, P.y + (CAR.foot ? 1.2 : 1.2), P.z] : () => { const q = NET.rem.get(id); return q ? [q.pred.x, q.pred.y + 1.2, q.pred.z] : null; };
+    else if (tk === 2) { anchor = () => { const c = TR.cars[ref]; const n = c && c.act; return n && n.live ? [n.x, n.y + 1.4, n.wz] : null; }; }
+    else if (tk === 3) anchor = () => ATK.vis ? [ATK.x, ATK.y + 3.4 + (ATK.lift || 0), ATK.z] : null;
+    else if (tk === 4) anchor = () => { const c = mine ? PCARS[ref] : null; return c ? [c.x, c.y + 1.5 + (c.xl || 0), c.z] : null; };
+    else { const la = mine ? XDUCKREF.get('a') : null; XDUCKREF.delete('a'); const y0 = v[1]; let tt = 0, lt = time; anchor = la ? () => la.st !== 2 && la.xs ? [la.x, la.y + 1.2, la.z] : null : () => { tt += Math.max(0, time - lt); lt = time; return [v[0], y0 + 1.2 + 1.2 + 2 * Math.min(15, tt), v[2]]; }; }
+    const prev = XFX.find(f => f.duckKey && f.duckKey === tk + ':' + (id || ref)); if (prev && tk !== 5) { prev.add(1); prev.max = Math.max(prev.max, prev.age + 18); return; }
+    const f = xBalloons(anchor, tk === 3 ? 1 : tk === 1 || tk === 5 ? 2 : 3, tk === 3 ? 30 : 15, Math.random() * 6); f.duckKey = tk + ':' + (id || ref); return;
+  }
+  if (ty === 6) { xDiscoFx(v[0], v[1], v[2], v[3], v[4], v[5], v[6] | 0, t0, mine); return; }
+  if (ty === 3) { const pts = []; for (let i = 0; i + 2 < v.length && pts.length < 6; i += 3) pts.push([v[i], v[i + 1], v[i + 2]]); if (!mine) { for (let i = 1; i + 1 < pts.length; i++) if (Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][2] - pts[i][2]) > ZAP_HOP + 0.5) { XNET.rejected++; return; } } xZapFx(pts); return; }
+  if (XPLAY[ty]) XPLAY[ty](v, t0, id, r, mine);
+}
+const XPLAY = {};
+/* ── batch two: Sawmerang, Swapshot, Snowglobe Singularity, Shrinkinator, Yeet Beam ── */
+const xFwd = () => ({ fx: -Math.sin(AIM.yaw), fz: -Math.cos(AIM.yaw), rx: Math.cos(AIM.yaw), rz: -Math.sin(AIM.yaw) });
+function xMoveMe(x, y, z) { P.x = x; P.z = z; P.y = y; P.vx = P.vy = P.vz = 0; P.onHC = false; camSnap = true; }
+function xFreeSpot(x, z, y) { if (inMall(x) || inBank(x, z) || inBunk(x, z) || inSpace(x)) return null; const g = groundAt(x, z, y + 1.5); if (g < -0.5 && !(CRN && craterAt(x, z) !== null)) return null; return [x, g + 0.1, z]; }
+
+/* Sawmerang: a fixed loop out 25 m and back over 2.2 s, a pure function of {origin, yaw, t0} */
+const SAW_T = 2.2;
+const sawAt = (o, u) => { const f = 25 * Math.sin(Math.PI * u), l = 1.8 * Math.sin(2 * Math.PI * u), fx = -Math.sin(o.yaw), fz = -Math.cos(o.yaw); return [o.x + fx * f + Math.cos(o.yaw) * l, o.y + 0.4 * Math.sin(Math.PI * u), o.z + fz * f - Math.sin(o.yaw) * l]; };
+const sawGeo = (() => { const b = new GB(); b.cylX(0, 0, 0, 0.42, 0.02, 16, C('#c9ced6')); for (let k = 0; k < 10; k++) { const a = k / 10 * TAU; b.box(-0.025, 0.025, Math.cos(a) * 0.45 - 0.05, Math.cos(a) * 0.45 + 0.05, Math.sin(a) * 0.45 - 0.05, Math.sin(a) * 0.45 + 0.05, C('#e8e6dd')); } b.cylX(0, 0, 0, 0.12, 0.04, 8, C('#ff6a2a')); const g = b.geo(); g.rotateZ(Math.PI / 2); return g; })();
+XWEAP.saw = press => { if (!press || GUN.cool > 0) return; if (!xNeed(XG.saw, 'The blade is still out')) return; GUN.cool = 0.4; xFx(8, [P.x, P.y + 1.2, P.z, AIM.yaw]); personSound(P.x, P.z, 0.4, 700); xCrimeShot(); };
+XPLAY[8] = (v, t0, id, r, mine) => {
+  const o = { x: v[0], y: v[1], z: v[2], yaw: v[3] }, m = new T.Mesh(sawGeo, propMat); scene.add(m); const hits = { o: new Set(), i: new Set() }; const off = Math.max(0, Math.min(0.5, (xNow() - t0) / 1000));
+  xAdd({ root: m, max: SAW_T + 1, kill: () => scene.remove(m), step(dt, age) { const u = (age + off) / SAW_T; if (u >= 1) { if (mine) { XC[XG.saw].n = 1; toast('Caught the Sawmerang'); } return false; }
+    const p = sawAt(o, u); m.position.set(p[0], p[1], p[2]); m.rotation.y = age * 40; this.at = p;
+    if (mine) { const hs = u < 0.5 ? hits.o : hits.i; for (const t of xTargets()) { const key = t.r || t.n || t.pc || (t.atk && 'atk') || (t.pp && (t.pp.a || t.pp.off || t.pp.ped)) || t; if (hs.has(key)) continue; if (Math.hypot(t.x - p[0], (t.y - p[1]) * 0.6, t.z - p[2]) > t.R + 1.0) continue; hs.add(key); xSawHit(t, p); } }
+    return true; } });
+};
+const XPIECE = [];
+function xSawHit(t, p) {
+  for (let k = 0; k < 6; k++) puffAt(p[0], p[1], p[2], 0xffa040); personSound(p[0], p[2], 0.5, 2000); MYHIT = performance.now(); xCrime(t);
+  if (t.r) { NET.dm.set(t.r.id, (NET.dm.get(t.r.id) || 0) + (t.r.car.foot ? 35 : 25)); if (!t.r.car.foot) xSt(t.r.id, 'saw', 1); return; }
+  if (t.atk) { atkHit(40, 'saw'); return; }
+  if (t.pc) { dmgPoliceCar(t.pc, 20); t.pc.xst = Math.max(t.pc.xst || 0, 3); return; }
+  if (t.n) { dmgNpc(t.n, (t.n.type === 'truck' ? 180 : 100) * 0.2); if (t.n.live && t.n.mode !== 6) { xNpc(t.n, 'zap'); if (Math.random() < 0.25) xRoof(t.n); } return; }
+  if (t.pp) hitPerson(t, 35, p[0], p[2]);
+}
+function xRoof(n) {                                   // the roof comes off and tumbles away
+  const m = new T.Mesh(new T.BoxGeometry(1.5, 0.12, 1.8), new T.MeshLambertMaterial({ color: 0x3a3d44 })); m.position.set(n.x, n.y + 1.5, n.wz); scene.add(m); if (XPIECE.length > 9) { const o = XPIECE.shift(); o.kill(); }
+  const vx = (Math.random() - 0.5) * 6, vz = (Math.random() - 0.5) * 6; let vy = 6; const f = xAdd({ root: m, max: 3.5, kill: () => { scene.remove(m); m.geometry.dispose(); m.material.dispose(); }, step(dt, age) { vy -= 18 * dt; m.position.x += vx * dt; m.position.z += vz * dt; m.position.y = Math.max(groundAt(m.position.x, m.position.z, m.position.y + 1) + 0.06, m.position.y + vy * dt); m.rotation.x += dt * 5; m.rotation.z += dt * 3; if (age > 2) { m.material.transparent = true; m.material.opacity = Math.max(0, 1 - (age - 2)); } return age < 3; } }); XPIECE.push(f);
+}
+
+/* Swapshot: hitscan, and you trade places with what you hit */
+XWEAP.swap = press => { if (!press || GUN.cool > 0) return; if (!xCan()) { toast('Not here'); return; } if (!xNeed(XG.swap, 'Swapshot recharging')) return; GUN.cool = 0.4;
+  const r = xRay(120, 0.25), t = r.hit; if (!t) { xFx(5, [r.a.mx, r.a.my, r.a.mz, r.x, r.y, r.z, 0]); return; }
+  const me = [P.x, P.y, P.z], dest = xFreeSpot(t.x, t.z, t.y + (t.n || t.pc || t.atk ? 1.6 : 0)); if (!dest) { toast('Cannot swap there'); XC[XG.swap].n++; return; }
+  if (t.r) { xSt(t.r.id, 'swap', me[0], me[1], me[2]); xMoveMe(t.r.pred.x, t.r.pred.y + 0.3, t.r.pred.z); }
+  else if (t.n) { const n = t.n; xMoveMe(n.x, n.y + 2.0, n.wz); n.x = me[0]; n.wz = me[2]; n.y = groundAt(me[0], me[2], me[1] + 1.5); xNpc(n, 'stall', 1); }
+  else if (t.pc) { const c = t.pc; xMoveMe(c.x, c.y + 2.0, c.z); c.x = me[0]; c.z = me[2]; c.y = groundAt(me[0], me[2], me[1] + 1.5); c.xst = 1; wantedAtLeast(1); }
+  else if (t.atk) { atkHit(0, 'swap'); xMoveMe(ATK.x, ATK.y + 3.4, ATK.z); wantedAtLeast(2); toast('On the armored truck. The guards are not happy'); }
+  else if (t.ven) { t.ven.hit(t); }
+  else { const a = xActorOf(t); if (a) { xMoveMe(a.x, a.y + 0.1, a.z); a.x = me[0]; a.z = me[2]; a.y = groundAt(me[0], me[2], me[1] + 1); a.m.position.set(a.x, a.y, a.z); if (a.police) WANTED.seenT = -1e9; } }
+  shake = Math.min(1, shake + 0.4); xFx(5, [me[0], me[1] + 1, me[2], t.x, t.y, t.z, 1]); xCrimeShot(); };
+XPLAY[5] = v => { for (const [x, y, z] of [[v[0], v[1], v[2]], [v[3], v[4], v[5]]]) xPortal(x, y, z); };
+const portalGeo = new T.TorusGeometry(1.1, 0.06, 6, 28).rotateX(Math.PI / 2);
+function xPortal(x, y, z) { const g = new T.Group(); g.position.set(x, y - 0.8, z); scene.add(g); const rs = [0x3ee8c8, 0xff4fd0, 0x3ee8c8].map((c, i) => { const m = new T.Mesh(portalGeo, xMat(c, true)); m.material.opacity = 0.7; m.position.y = i * 0.8; g.add(m); return m; });
+  xAdd({ root: g, at: [x, y, z], max: 1.2, kill: () => { scene.remove(g); rs.forEach(m => m.material.dispose()); }, step(dt, age) { rs.forEach((m, i) => { m.rotation.y += dt * (3 + i); m.scale.setScalar(1 + age * 0.5); m.material.opacity = 0.7 * (1 - age); }); return age < 1; } }); }
+
+/* Snowglobe Singularity: lobbed, then a 6 s black hole, 14 m pull. Every client pulls its own player and car from the same event */
+const HOLE_R = 14, HOLE_T = 6, HOLE_FUSE = 1.8;
+XWEAP.hole = press => { if (!press || GUN.cool > 0) return; if (XCOOL.hole > 0) { toast('Next globe in ' + Math.ceil(XCOOL.hole) + ' s'); return; } if (XAM.globe <= 0) { toast('No snowglobes. Iron Works sells them under Experimental'); return; }
+  if (XFX.some(f => f.hole && f.mine)) { toast('Your black hole is still open'); return; }
+  XAM.globe--; xSave(); XCOOL.hole = 20; GUN.cool = 1; const a = xAim(), r = xRay(30); let px = P.x + a.fx * 18, pz = P.z + a.fz * 18; if (r.d < 30) { px = r.x; pz = r.z; } xFx(2, [px, groundAt(px, pz, P.y + 4) + 1.6, pz, P.x, P.y + 1.4, P.z]); xCrimeShot(); };
+const holeCoreMat = new T.MeshBasicMaterial({ color: 0x000000 }), holeRingGeo = new T.TorusGeometry(2.2, 0.08, 6, 36).rotateX(Math.PI / 2 - 0.3);
+XPLAY[2] = (v, t0, id, r, mine) => {
+  if (XFX.filter(f => f.hole).length >= 3) return;                                   // three holes at most in the room
+  const [px, py, pz, ox, oy, oz] = v, off = Math.max(0, Math.min(0.5, (xNow() - t0) / 1000)), g = new T.Group(); scene.add(g);
+  const globe = new T.Mesh(new T.SphereGeometry(0.3, 10, 8), new T.MeshLambertMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.8 })); g.add(globe);
+  const core = new T.Mesh(new T.SphereGeometry(1, 16, 12), holeCoreMat); core.visible = false; g.add(core);
+  const rings = [0xb05aff, 0xff4fd0].map((c, i) => { const m = new T.Mesh(holeRingGeo, xMat(c, true)); m.material.opacity = 0.5; m.visible = false; m.rotation.z = i * 0.7; g.add(m); return m; });
+  const deb = new T.InstancedMesh(new T.BoxGeometry(0.5, 0.5, 0.5), new T.MeshLambertMaterial({ color: 0x8a8f98 }), 18); deb.visible = false; deb.frustumCulled = false; g.add(deb);
+  const crater = new T.Mesh(new T.CircleGeometry(5, 20).rotateX(-Math.PI / 2), new T.MeshBasicMaterial({ color: 0x15121c, transparent: true, opacity: 0, depthWrite: false })); crater.position.set(px, groundAt(px, pz, py + 2) + 0.05, pz); scene.add(crater);
+  const m4 = new T.Matrix4(), q = new T.Quaternion(), e3 = new T.Euler(), sc = new T.Vector3(1, 1, 1), vv = new T.Vector3(); let popped = false;
+  xAdd({ hole: true, mine, root: g, at: [px, py, pz], max: HOLE_FUSE + HOLE_T + 3, kill: () => { scene.remove(g); scene.remove(crater); crater.geometry.dispose(); crater.material.dispose(); deb.geometry.dispose(); deb.material.dispose(); globe.geometry.dispose(); globe.material.dispose(); core.geometry.dispose(); rings.forEach(m => m.material.dispose()); },
+    step(dt, age0) { const age = age0 + off;
+      if (age < 0.6) { const k = age / 0.6; globe.position.set(ox + (px - ox) * k, oy + (py - oy) * k + Math.sin(k * Math.PI) * 3, oz + (pz - oz) * k); return true; }
+      if (age < HOLE_FUSE) { globe.position.set(px, py + Math.sin(age * 20) * 0.05, pz); return true; }
+      const h = age - HOLE_FUSE; globe.visible = false;
+      if (h < HOLE_T) { const grow = Math.min(1, h / 0.3); core.visible = true; core.position.set(px, py, pz); core.scale.setScalar(1.2 * grow + 0.1 * Math.sin(h * 12)); rings.forEach((m, i) => { m.visible = true; m.position.set(px, py, pz); m.rotation.y += dt * (2 + i); m.scale.setScalar(grow * (1 + 0.15 * Math.sin(h * 3 + i))); });
+        deb.visible = true; for (let k = 0; k < 18; k++) { const a = k / 18 * TAU + h * (1.5 + (k % 3) * 0.4), rr = 3 + (k % 5) * 0.9; e3.set(h * 2 + k, h + k, 0); q.setFromEuler(e3); m4.compose(vv.set(px + Math.cos(a) * rr, py + Math.sin(a * 2 + k) * 1.2, pz + Math.sin(a) * rr), q, sc); deb.setMatrixAt(k, m4); } deb.instanceMatrix.needsUpdate = true;
+        crater.material.opacity = 0.7 * grow; xHolePull(px, py, pz, h, dt, mine); return true; }
+      if (!popped) { popped = true; xHolePop(px, py, pz, mine); core.visible = false; rings.forEach(m => { m.visible = false; }); }
+      const f = (h - HOLE_T) / 2; deb.visible = f < 0.5; crater.material.opacity = 0.7 * (1 - f); return f < 1; } });
+};
+function xHolePull(px, py, pz, h, dt, mine) {
+  const d = Math.hypot(P.x - px, P.z - pz); if (d < HOLE_R && xCan()) { const k = (1 - d / HOLE_R), ux = (px - P.x) / (d || 1), uz = (pz - P.z) / (d || 1);
+    if (CAR.foot) { const s = 14 * k * k + 3; P.vx += ux * s * dt; P.vz += uz * s * dt; if (d < 2) { damage(15 * dt); P.vy = Math.max(P.vy, 2); } }
+    else if (!CAR.ufo) { P.vx += (ux * 6 * k + -uz * 9 * k) * dt; P.vz += (uz * 6 * k + ux * 9 * k) * dt; if (d < 3) damage(30 * dt); } XS.inHole = 0.2; }
+  if (!mine) return;
+  for (const a of ACT) { if (a.st === 2) continue; const e = Math.hypot(a.x - px, a.z - pz); if (e < HOLE_R) { const k = 1 - e / HOLE_R; a.x += (px - a.x) / (e || 1) * 6 * k * dt; a.z += (pz - a.z) / (e || 1) * 6 * k * dt; a.y += (py - 1 - a.y) * k * dt; if (e < 2) { MYHIT = performance.now(); hurtActor(a, 15 * dt, px, pz); } } }
+  for (const n of npcs) { if (!n.live || n.mode === 6) continue; const e = Math.hypot(n.x - px, n.wz - pz); if (e < HOLE_R) { if (n.mode !== 9) xNpc(n, 'orbit', { t: HOLE_T - h, f: xOrbit, px, pz, py }); if (e < 3) dmgNpc(n, 30 * dt); } }
+  for (const c of PCARS) if (c.st !== 'parked' && c.st !== 'gone' && c.st !== 'wreck' && Math.hypot(c.x - px, c.z - pz) < HOLE_R) c.xst = Math.max(c.xst || 0, 0.3);
+  if (ATK.vis && Math.hypot(ATK.x - px, ATK.z - pz) < HOLE_R) atkHit(30 * dt, 'hole');
+}
+function xOrbit(n, dt, s) { const dx = n.x - s.px, dz = n.wz - s.pz, d = Math.hypot(dx, dz) || 1, a = Math.atan2(dz, dx) + dt * 0.9, nd = Math.max(2.5, d - dt * 1.2); n.x = s.px + Math.cos(a) * nd; n.wz = s.pz + Math.sin(a) * nd; n.y += (s.py - 0.5 - n.y) * dt; n.yaw += dt * 1.5; if (s.t <= 0) { n.xs = null; n.mode = 5; n.vyF = 7; n.x += Math.cos(a) * 3; n.wz += Math.sin(a) * 3; } n.z = n.wz; n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(Math.sin(s.tt * 3) * 0.4, n.yaw, 0); return true; }
+function xHolePop(px, py, pz, mine) {
+  boomFx(px, py, pz); const d = Math.hypot(P.x - px, P.z - pz);
+  if (d < HOLE_R && xCan()) { const ux = (P.x - px) / (d || 1), uz = (P.z - pz) / (d || 1); P.vx += ux * 16; P.vz += uz * 16; P.vy += CAR.foot ? 8 : 6; P.grounded = false; if (CAR.foot) damage(20); }
+  if (mine) for (const a of ACT) { const e = Math.hypot(a.x - px, a.z - pz); if (e < HOLE_R && a.st !== 2) { MYHIT = performance.now(); hurtActor(a, 20, px, pz); a.vy = 6; a.air = true; } }
+}
+
+/* Shrinkinator: hold 0.8 s to charge, release a ray. Targets go to 30% for 10 s (12 s for cars) */
+XWEAP.shrink = (press, trig, dt) => { if (press) { if (XC[XG.shrink].n < 1) { toast('Shrinkinator recharging'); return; } XHOLD.on = true; XHOLD.k = 'shrink'; XHOLD.t = 0; XHOLD.release = () => { XHOLD.on = false; if (XHOLD.t >= 0.8) xFireShrink(); else toast('Hold to charge'); }; personSound(P.x, P.z, 0.2, 500); }
+  if (XHOLD.on && XHOLD.k === 'shrink') { XHOLD.t += dt; if (XHOLD.t >= 0.8 && !XHOLD.ready) { XHOLD.ready = true; personSound(P.x, P.z, 0.25, 1600); } } };
+function xFireShrink() { XHOLD.ready = false; if (!xNeed(XG.shrink)) return; GUN.cool = 0.5; const r = xRay(70, 0.3), t = r.hit;
+  xFx(7, [r.a.mx, r.a.my, r.a.mz, r.x, r.y, r.z]); xCrimeShot(); if (!t) return; xCrime(t);
+  if (t.r) xSt(t.r.id, 'shrink', 0.3, t.r.car.foot ? 10 : 12);
+  else if (t.n) { t.n.xsh = 12; } else if (t.pc) { t.pc.xsh = 12; } else if (t.atk) { atkHit(0, 'shrink'); ATK.xsh = 8; }
+  else { const a = xActorOf(t); if (a) a.xsh = 10; } }
+XPLAY[7] = v => { const g = new T.Group(); scene.add(g); const n = 10, rs = []; for (let k = 0; k < n; k++) { const m = new T.Mesh(portalGeo, xMat(0xffa02a, true)); m.material.opacity = 0.6; m.scale.setScalar(0.35); g.add(m); rs.push(m); }
+  const ax = v[0], ay = v[1], az = v[2], bx = v[3], by = v[4], bz = v[5]; for (let k = 0; k < n; k++) { const f = (k + 0.5) / n; rs[k].position.set(ax + (bx - ax) * f, ay + (by - ay) * f, az + (bz - az) * f); rs[k].lookAt(bx, by, bz); rs[k].rotateX(Math.PI / 2); }
+  xAdd({ root: g, at: [bx, by, bz], max: 0.6, kill: () => { scene.remove(g); rs.forEach(m => m.material.dispose()); }, step(dt, age) { rs.forEach(m => { m.material.opacity = 0.6 * (1 - age / 0.4); }); return age < 0.4; } }); };
+function xShrinkFrame(dt) {
+  const sc = XS.shrink ? XS.shrink.s : 1; if (playerModel && Math.abs(playerModel.scale.x - sc) > 0.001) playerModel.scale.setScalar(sc);
+  for (const n of npcs) { if (n.xsh > 0) { n.xsh -= dt; n.mesh.scale.setScalar(n.xsh > 0 ? 0.3 : 1); if (n.mode === 0 || n.mode === 2) n.speed = Math.min(n.speed, 8); } }
+  for (const c of PCARS) if (c.xsh > 0) { c.xsh -= dt; if (c.m) c.m.scale.setScalar(c.xsh > 0 ? 0.3 : 1); }
+  for (const a of ACT) if (a.xsh > 0) { a.xsh -= dt; a.m.scale.setScalar(a.xsh > 0 ? 0.3 : 1); if (a.xsh > 0 && CAR.foot && Math.hypot(a.x - P.x, a.z - P.z) < 0.7 && !(a.stomp > 0) && a.st !== 2) { a.stomp = 1; MYHIT = performance.now(); hurtActor(a, 15, P.x, P.z); toast('Stomp'); } if (a.stomp > 0) a.stomp -= dt; }
+  if (ATK.xsh > 0) { ATK.xsh -= dt; if (ATK.m) ATK.m.scale.setScalar(ATK.xsh > 0 ? 0.5 : 1); }
+}
+
+/* Yeet Beam: hold to lift something 4 m up in front of you, release to fling it at 45 m/s */
+const YEET_V = 45;
+XWEAP.yeet = (press, trig, dt) => {
+  if (press) { if (XC[XG.yeet].n < 1) { toast('Yeet Beam recharging'); return; } const r = xRay(40, 1.2), t = r.hit; if (!t) { toast('Nothing to grab'); return; }
+    if (t.atk) { atkHit(0, 'yeet'); toast('Too heavy. The beam only nudges the armored truck'); XC[XG.yeet].n--; return; }
+    if (t.ven && t.ven.lab) { XC[XG.yeet].n--; XHOLD.on = true; XHOLD.k = 'yeet'; XHOLD.t = 0; XHOLD.tg = t; XHOLD.max = 3; XHOLD.release = xYeetRelease; t.ven.lab.held = true; return; }
+    if (t.r && RIDE === t.r) return; XC[XG.yeet].n--; XHOLD.on = true; XHOLD.k = 'yeet'; XHOLD.t = 0; XHOLD.tg = t; XHOLD.max = t.r ? (t.r.car.foot ? 1.5 : 3) : t.pp ? 1.5 : 3; XHOLD.release = xYeetRelease; xCrime(t);
+    if (t.pp) { const a = xActorOf(t); if (!a) { XHOLD.on = false; return; } XHOLD.tg = { a }; xActor(a, 'yeet', { t: 30, f: xActorYeet, hold: true }); }
+    if (t.n) xNpc(t.n, 'yeet', { t: 30, f: xNpcYeet, hold: true });
+    personSound(P.x, P.z, 0.3, 300); xFx(1, [P.x, P.y + 1.4, P.z, t.x, t.y, t.z, 3]); }
+  if (XHOLD.on && XHOLD.k === 'yeet') { XHOLD.t += dt; const f = xFwd(), hx = P.x + f.fx * 6, hy = P.y + 4.2, hz = P.z + f.fz * 6, t = XHOLD.tg; XHOLD.pt = [hx, hy, hz];
+    if (t.r) XHOLD.beam = { targetId: t.r.id, point: [r2(hx), r2(hy - 1), r2(hz)], strength: 2, seq: NET.seq };
+    if (t.ven && t.ven.lab) { const c = t.ven.lab, k = Math.min(1, dt * 5); c.x += (hx - c.x) * k; c.y += (hy - 1.2 - c.y) * k; c.z += (hz - c.z) * k; }
+    if (t.pc) { const c = t.pc; c.xst = 0.5; c.x += (hx - c.x) * Math.min(1, dt * 5); c.z += (hz - c.z) * Math.min(1, dt * 5); c.xl = 0; c.y += (hy - 1 - c.y) * Math.min(1, dt * 5); }
+    xBeamDraw(hx, hy, hz); if (XHOLD.t > XHOLD.max) XHOLD.release(); }
+};
+function xYeetRelease() { if (!XHOLD.on || XHOLD.k !== 'yeet') return; XHOLD.on = false; XHOLD.beam = null; const t = XHOLD.tg; XHOLD.tg = null; if (XBEAM.m) XBEAM.m.visible = false;
+  const a = xAim(), v = [a.fx * YEET_V, a.fy * YEET_V + 6, a.fz * YEET_V];
+  if (t.ven && t.ven.lab) { const c = t.ven.lab; c.held = false; c.v = v.slice(); }
+  else if (t.r) xSt(t.r.id, 'yeet', v[0], v[1], v[2]);
+  else if (t.n && t.n.xs && t.n.xs.k === 'yeet') { const s = t.n.xs; s.hold = false; s.v = v.slice(); s.t = 4; }
+  else if (t.a && t.a.xs && t.a.xs.k === 'yeet') { const s = t.a.xs; s.hold = false; s.v = v.slice(); s.t = 3; MYHIT = performance.now(); hurtActor(t.a, 25, P.x, P.z); }
+  else if (t.pc) { const c = t.pc; c.xf = { v: v.slice(), t: 3 }; wantedAtLeast(Math.min(3, WANTED.lv + 1)); }
+  personSound(P.x, P.z, 0.6, 180); shake = Math.min(1, shake + 0.2); xFx(1, [P.x, P.y + 1.4, P.z, 0, 0, 0, 0]); }
+function xNpcYeet(n, dt, s) {
+  if (s.hold) { const p = XHOLD.pt; if (!XHOLD.on || !p) { s.hold = false; s.v = [0, 0, 0]; s.t = 4; } else { n.x += (p[0] - n.x) * Math.min(1, dt * 5); n.y += (p[1] - 1.2 - n.y) * Math.min(1, dt * 5); n.wz += (p[2] - n.wz) * Math.min(1, dt * 5); n.yaw += dt; } }
+  else if (s.stuck > 0) { s.stuck -= dt; if (s.stuck <= 0) { n.xs = null; n.mode = 6; n.t = 1.5; n.wreck = true; } }
+  else { s.v[1] -= GRAV * dt; n.x += s.v[0] * dt; n.y += s.v[1] * dt; n.wz += s.v[2] * dt; n.yaw += dt * 2;
+    for (const o of npcs) if (o !== n && o.live && o.mode !== 6 && Math.hypot(o.x - n.x, o.wz - n.wz) < 3 && Math.abs(o.y - n.y) < 2.5) { dmgNpc(o, 60); s.v[0] *= 0.5; s.v[2] *= 0.5; }
+    for (const a of ACT) if (a.st !== 2 && Math.hypot(a.x - n.x, a.z - n.wz) < 2.4 && Math.abs(a.y - n.y) < 2.5) { MYHIT = performance.now(); hurtActor(a, 60, n.x, n.wz); }
+    const g = groundAt(n.x, n.wz, n.y + 1); if (n.y <= g && s.v[1] < 0) { n.y = g - 0.6; dmgNpc(n, (n.type === 'truck' ? 180 : 100) * 0.35); s.stuck = 5; xYeetRing(n.x, g, n.wz); } }
+  n.z = n.wz; n.mesh.position.set(n.x, n.y, n.wz); n.mesh.rotation.set(s.stuck > 0 ? -0.9 : s.hold ? Math.sin(s.tt * 3) * 0.1 : -0.3, n.yaw, 0); if (s.stuck > 0) n.mesh.position.y = n.y - 0.6 * Math.max(0, 1 - s.stuck / 1.5); return true;
+}
+function xActorYeet(a, dt, s) {
+  if (s.hold) { const p = XHOLD.pt; if (!XHOLD.on || !p) { s.hold = false; s.v = [0, 0, 0]; s.t = 3; } else { a.x += (p[0] - a.x) * Math.min(1, dt * 5); a.y += (p[1] - 1 - a.y) * Math.min(1, dt * 5); a.z += (p[2] - a.z) * Math.min(1, dt * 5); } a.m.position.set(a.x, a.y, a.z); return true; }
+  s.v[1] -= GRAV * dt; a.x += s.v[0] * dt; a.y += s.v[1] * dt; a.z += s.v[2] * dt; const g = groundAt(a.x, a.z, a.y + 1);
+  if (a.y <= g && s.v[1] < 0) { a.y = g; a.xs = null; MYHIT = performance.now(); hurtActor(a, Math.min(40, Math.abs(s.v[1]) * 1.2), a.x + 0.3, a.z); a.stag = 1; return false; } a.m.position.set(a.x, a.y, a.z); a.m.rotation.x += dt * 6; return true;
+}
+const XBEAM = {};
+function xBeamDraw(hx, hy, hz) { if (!XBEAM.m) { XBEAM.m = new T.Mesh(new T.CylinderGeometry(0.12, 0.35, 1, 8, 1, true).translate(0, 0.5, 0).rotateX(Math.PI / 2), xMat(0xb05aff, true)); XBEAM.m.material.opacity = 0.35; XBEAM.m.frustumCulled = false; scene.add(XBEAM.m); }
+  const a = xAim(), m = XBEAM.m; m.visible = true; m.position.set(a.mx, a.my, a.mz); const d = Math.hypot(hx - a.mx, hy - a.my, hz - a.mz); m.scale.set(1, 1, d); m.lookAt(hx, hy, hz); }
+function xYeetRing(x, y, z) { const m = new T.Mesh(new T.RingGeometry(0.5, 1.4, 32).rotateX(-Math.PI / 2), xMat(0xb05aff, true)); m.position.set(x, y + 0.08, z); scene.add(m); for (let k = 0; k < 8; k++) puffAt(x + (Math.random() - 0.5) * 3, y + 0.5, z + (Math.random() - 0.5) * 3, 0x6a5038);
+  xAdd({ root: m, at: [x, y, z], max: 2, kill: () => { scene.remove(m); m.geometry.dispose(); m.material.dispose(); }, step(dt, age) { m.scale.setScalar(1 + age * 6); m.material.opacity = 0.5 * (1 - age / 1.2); return age < 1.2; } }); }
+XPLAY[1] = (v, t0, id, r, mine) => { if (mine || !r) return; if (v[6] === 3) { XBEAM.rem = XBEAM.rem || new Map(); XBEAM.rem.set(r.id, 3); } else if (XBEAM.rem) XBEAM.rem.delete(r.id); };
+
+/* statuses on our own player for the batch-two weapons (validated in xStIn first) */
+function xSelfB(kind, a, b, c, who) {
+  if (kind === 'swap') { const s = xFreeSpot(a, c, b); if (!s || Math.hypot(a - P.x, c - P.z) > 135) return false; if (!CAR.foot && !CAR.ufo) { XS.stun = { t: 3 }; toast(who + ' tried to swap with you'); return true; } xMoveMe(s[0], s[1], s[2]); xPortal(s[0], s[1] + 1, s[2]); shake = 0.5; toast('Swapped by ' + who); return true; }
+  if (kind === 'shrink') { XS.shrink = { t: clamp(b || 10, 1, XCAP.shrink), s: clamp(a || 0.3, 0.25, 1) }; toast('Shrunk by ' + who); return true; }
+  if (kind === 'yeet') { const sp = Math.hypot(a, b, c), k = sp > YEET_V + 8 ? (YEET_V + 8) / sp : 1; P.vx = a * k; P.vy = b * k; P.vz = c * k; P.grounded = false; P.air = !CAR.foot; XS.yeet = { t: 2.5, car: !CAR.foot, flying: 0 }; toast('Yeeted by ' + who); return true; }
+  if (kind === 'saw') { if (CAR.foot) return false; XS.slow = { t: 8 }; toast('Tyres shredded'); return true; }
+  return false;
+}
+/* ── unlock venues, at run time: pedestals, light pillars, challenges. Challenge state is per player and never synced ── */
+const XVEN = [];
+function xVenDefs() {
+  const poi = id => POI.find(q => q.id === id), pr = poi('pier'), vo = poi('volt'), cx0 = -CITY.E + XV_CLUB.bi * CITY.P + 8, cz0 = -CITY.E + XV_CLUB.bj * CITY.P + 8;
+  if (pr) XVEN.push({ id: 'pier', gun: XG.duck, col: 0xffd23a, x: pr.x, y: pr.h + 0.6, z: pr.z, what: 'Duck gallery: 25 ducks in 30 s with the pistol' });
+  XVEN.push({ id: 'club', gun: XG.disco, col: 0xff3ea5, x: cx0 + 1.7, y: CITY.y + 0.18 + 0.5, z: cz0 + 19.1, what: 'Dance-off: get past the bouncer (3 stars of heat)' });
+  xVenDefsC();
+  if (vo) XVEN.push({ id: 'volt', gun: XG.zap, col: 0x5fe8ff, x: vo.x - 23.8, y: vo.h + 0.6, z: vo.z + 15.2, what: 'Restore power: arc all 5 transformers in 20 s' });
+}
+const pillarGeo = new T.CylinderGeometry(0.9, 0.9, 1, 12, 1, true).translate(0, 0.5, 0);
+function xVenInit() {
+  if (VEN.ready) return; VEN.ready = true; xVenDefs();
+  for (const v of XVEN) { const g = new T.Group(); g.position.set(v.x, v.y, v.z); scene.add(g); v.g = g;
+    const top = new T.Mesh(new T.CylinderGeometry(1.0, 1.1, 0.18, 6), new T.MeshBasicMaterial({ color: v.col })); top.position.y = 0.09; g.add(top);
+    const gm = gunMesh(v.gun, false); gm.rotation.x = -Math.PI / 2; const holder = new T.Group(); holder.add(gm); holder.position.y = 1.2; holder.scale.setScalar(1.6); g.add(holder); v.holder = holder;
+    const pil = new T.Mesh(pillarGeo, new T.MeshBasicMaterial({ color: v.col, transparent: true, opacity: 0.1, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide })); pil.scale.y = 120; g.add(pil); v.pil = pil; }
+  const pier = XVEN.find(v => v.id === 'pier');
+  if (pier) { const w = new T.Group(), b = new GB(), cols = [C('#ff3ea5'), C('#3edcff'), C('#ffe23e'), C('#6dff5a'), C('#ff8a3e'), C('#b05aff')];   // the ferris wheel turns as one group
+    for (let i = 0; i < 24; i++) { const a0 = i / 24 * TAU, a1 = (i + 1) / 24 * TAU; for (const zz of [-1.4, 1.4]) b.hex([[Math.cos(a0) * 11.6, Math.sin(a0) * 11.6, zz - 0.12], [Math.cos(a1) * 11.6, Math.sin(a1) * 11.6, zz - 0.12], [Math.cos(a1) * 11.6, Math.sin(a1) * 11.6, zz + 0.12], [Math.cos(a0) * 11.6, Math.sin(a0) * 11.6, zz + 0.12], [Math.cos(a0) * 12, Math.sin(a0) * 12, zz - 0.12], [Math.cos(a1) * 12, Math.sin(a1) * 12, zz - 0.12], [Math.cos(a1) * 12, Math.sin(a1) * 12, zz + 0.12], [Math.cos(a0) * 12, Math.sin(a0) * 12, zz + 0.12]], C('#ff3ea5')); }
+    for (let i = 0; i < 12; i++) { const a = i / 12 * TAU, ca = Math.cos(a), sa = Math.sin(a), w = 0.07; for (const zz of [-1.4, 1.4]) b.hex([[-sa * w, ca * w, zz - 0.06], [ca * 11.7 - sa * w, sa * 11.7 + ca * w, zz - 0.06], [ca * 11.7 + sa * w, sa * 11.7 - ca * w, zz - 0.06], [sa * w, -ca * w, zz - 0.06], [-sa * w, ca * w, zz + 0.06], [ca * 11.7 - sa * w, sa * 11.7 + ca * w, zz + 0.06], [ca * 11.7 + sa * w, sa * 11.7 - ca * w, zz + 0.06], [sa * w, -ca * w, zz + 0.06]], C('#e8e6dd')); }
+    b.box(-0.5, 0.5, -0.5, 0.5, -1.6, 1.6, C('#c9ced6'));
+    const wm = new T.Mesh(b.geo(), propMat); w.add(wm); w.userData.cabs = [];
+    for (let i = 0; i < 8; i++) { const cb = new GB(); cb.box(-0.9, 0.9, -1.6, 0, -1.0, 1.0, cols[i % 6]); cb.box(-0.95, 0.95, 0, 0.12, -1.05, 1.05, C('#e8e6dd')); const cm = new T.Mesh(cb.geo(), propMat); w.add(cm); w.userData.cabs.push({ m: cm, a: i / 8 * TAU }); }
+    for (const c of w.userData.cabs) c.m.position.set(Math.cos(c.a) * 12, Math.sin(c.a) * 12, 0);
+    w.position.set(pier.x + 27, pier.y - 0.6 + 14.5, pier.z - 4); w.rotation.y = Math.PI / 2; scene.add(w); VEN.wheel = w;
+    VEN.gal = { x: pier.x + 12, y: pier.y - 0.6 + 2.2, z: pier.z + 8.2, ducks: [] };
+    for (let k = 0; k < 7; k++) { const m = new T.Mesh(duckGeo, duckMat); m.scale.setScalar(0.85); scene.add(m); VEN.gal.ducks.push({ m, k, up: true, down: 0 }); } }
+  const club = XVEN.find(v => v.id === 'club');
+  if (club) { const sign = new T.Group(), fx = club.x + 2.3; for (let k = 0; k < 4; k++) { const sq = new T.Mesh(new T.BoxGeometry(0.1, 1.4, 1.4), new T.MeshBasicMaterial({ color: DISCO_COLS[k] })); sq.position.set(fx - 0.06, CITY.y + 7.4, club.z - 12 + k * 2); sign.add(sq); }
+    const ball = new T.Mesh(discoBallGeo, discoBallMat); ball.scale.setScalar(1.3); ball.position.set(fx - 1.2, CITY.y + 10.6, club.z - 9); sign.add(ball); VEN.cball = ball;
+    const frame = new T.Mesh(new T.BoxGeometry(0.08, 0.14, 22), new T.MeshBasicMaterial({ color: 0xff3ea5 })); frame.position.set(fx - 0.05, CITY.y + 9.6, club.z - 4.1); sign.add(frame); const f2 = frame.clone(); f2.position.y = CITY.y + 0.6; sign.add(f2);
+    const bnc = makeCar('walker', '#16171a', false, false, { hat: '', hatCol: '', shirt: '#16171a', jacket: '#16171a', pants: '#16171a', glasses: 'black', chain: 'gold', shoe: 'classic', lace: '#16171a' }); bnc.position.set(fx - 1.6, CITY.y + 0.18, club.z - 5.5); bnc.rotation.y = Math.PI / 2; VEN.bouncer = bnc;
+    scene.add(sign); SOLIDS.push([fx - 1.6, club.z - 5.5, 0.5, CITY.y + 2]); }
+  xVenInitC();
+  const volt = XVEN.find(v => v.id === 'volt'); if (volt) { const vo = POI.find(q => q.id === 'volt'); VEN.tf = []; for (let k = 0; k < 5; k++) VEN.tf.push({ x: vo.x - 2 + k * 6.5, y: vo.h + 3.6, z: vo.z + 6, on: false }); }
+}
+/* ── the other five venues: Skyhook Rooftop, Moon Base Gravity Lab, Frostbank Vault, UFO Crash Site, Sawtooth Scrapyard ── */
+let XHEISTS = 0; try { XHEISTS = Math.max(0, parseInt(localStorage.getItem('dd-xheists') || '0', 10) || 0); } catch (e) { /* storage unavailable */ }
+function xHeistDone() { XHEISTS++; try { localStorage.setItem('dd-xheists', String(XHEISTS)); } catch (e) { /* storage unavailable */ } if (XHEISTS >= 3) xUnlock('frost'); else toast('Heists ' + XHEISTS + ' of 3 toward the Snowglobe Singularity'); }
+let xAirT = -1e9;                                    // when we were last flying: the rooftop has to be reached on foot
+const SKY = {};
+function xVenDefsC() {
+  let best = null, bk = 0; for (let i = 0; i < 400; i++) for (const q of CITY.boxes[i] || []) if (!best || q[4] > best[4]) { best = q; bk = i; }
+  if (best) { const arr = CITY.boxes[bk], full = arr.filter(q => q !== best && q[0] <= best[0] && q[1] >= best[1] && q[2] <= best[2] && q[3] >= best[3]).sort((a, b) => b[4] - a[4])[0] || best;
+    Object.assign(SKY, { top: best, full, bk, cx: (best[0] + best[1]) / 2, cz: (best[2] + best[3]) / 2 });
+    XVEN.push({ id: 'sky', gun: XG.swap, col: 0x3ee8c8, x: SKY.cx, y: best[4] + 0.5 + 0.6, z: SKY.cz, what: 'Take the Swapshot (you climbed up here on foot)' }); const pq = POI.find(q => q.id === 'sky'); if (pq) { pq.x = SKY.cx; pq.z = SKY.cz; } }
+  const L = LSTN; if (L && L.x) { const lx = L.x + 70, lz = L.z, ly = groundAt(lx, lz, 999); VEN.lab = { x: lx, y: ly, z: lz, tx: lx + 34, tz: lz + 22 }; VEN.lab.ty = groundAt(VEN.lab.tx, VEN.lab.tz, 999); XVEN.push({ id: 'grav', gun: XG.yeet, col: 0xb05aff, x: lx - 14, y: ly + 0.6, z: lz, what: 'Low-g car test: fling 3 cars into the red cube in 90 s' }); }
+  const bk2 = POI.find(q => q.id === 'bank'); if (bk2) { const fx = bk2.x + 24, fz = bk2.z + 48; XVEN.push({ id: 'frost', gun: XG.hole, col: 0xff4fd0, x: fx, y: CITY.y + 0.18 + 0.6, z: fz, what: 'Complete 3 heists at the bank' }); VEN.frost = { x: fx, z: fz }; }
+  const uf = POI.find(q => q.id === 'ufo2'); if (uf) { XVEN.push({ id: 'ufo', gun: XG.shrink, col: 0xffa02a, x: uf.x - 25, y: uf.h + 0.6, z: uf.z, what: 'Search the wreck (midnight to 4 am, no stars)' }); VEN.ufo = uf; }
+  const sc = POI.find(q => q.id === 'scrap'); if (sc) { XVEN.push({ id: 'scrap', gun: XG.saw, col: 0xff6a2a, x: sc.x - 25, y: sc.h + 0.6, z: sc.z + 15, what: 'Sawmill job: shove 10 wrecks into the saw in 3 min' }); VEN.scrap = sc; }
+}
+function xVenInitC() {
+  if (SKY.top) {                                      // a tower crane beside the tallest tower: climb the mast, step onto the hanging platform, cross the plank over the 6 m gap
+    const t = SKY.top, f = SKY.full, b = new GB(), pink = C('#ff4fd0'), yel = C('#e8a92a'), grey = C('#8c949c'), y0 = CITY.y + 0.18, yTop = t[4] + 0.5, ledge = f[4] + 0.5;
+    const mx = f[0] - 7.5, mz = SKY.cz, mh = 0.75, yJ = yTop + 7;                                                    // mast centre, half width, jib height
+    for (const [ax, az] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) b.box(mx + ax * mh - 0.09, mx + ax * mh + 0.09, y0, yJ + 2.5, mz + az * mh - 0.09, mz + az * mh + 0.09, yel);   // lattice mast
+    for (let yy = y0 + 1.5; yy < yJ; yy += 3) { for (const az of [-1, 1]) b.obox(mx, yy, yy + 0.12, mz + az * mh, 1, 0, mh, 0.05, yel); for (const ax of [-1, 1]) b.obox(mx + ax * mh, yy, yy + 0.12, mz, 0, 1, 0.05, mh, yel);
+      for (const az of [-1, 1]) b.hex([[mx - mh, yy, mz + az * mh - 0.04], [mx - mh, yy, mz + az * mh + 0.04], [mx - mh + 0.1, yy, mz + az * mh + 0.04], [mx - mh + 0.1, yy, mz + az * mh - 0.04], [mx + mh - 0.1, yy + 3, mz + az * mh - 0.04], [mx + mh - 0.1, yy + 3, mz + az * mh + 0.04], [mx + mh, yy + 3, mz + az * mh + 0.04], [mx + mh, yy + 3, mz + az * mh - 0.04]], yel); }
+    SOLIDS.push([mx, mz, 1.0, yJ + 2.5]);
+    SKYG = { x: mx, z: mz, steps: [] }; const sides = [[1.25, 0], [0, 1.25], [-1.25, 0], [0, -1.25]], n = Math.ceil((yTop + 0.6 - y0) / 0.95);   // grey rungs bolted round the mast, one face higher each time
+    for (let k = 1; k <= n; k++) { const sd = sides[k % 4], sx = mx + sd[0], sz = mz + sd[1], sy = Math.min(yTop + 0.6, y0 + k * 0.95), hx = sd[0] ? 0.5 : 0.75, hz = sd[1] ? 0.5 : 0.75;
+      b.box(sx - hx, sx + hx, sy - 0.14, sy, sz - hz, sz + hz, grey); SKYG.steps.push([sx - hx - 0.15, sx + hx + 0.15, sz - hz - 0.15, sz + hz + 0.15, sy]);
+      if (k % 6 === 0) b.box(sx - 0.15, sx + 0.15, sy, sy + 0.3, sz - 0.15, sz + 0.15, pink); }                       // small pink cubes mark the way up
+    b.box(mx - 3, mx + 26, yJ, yJ + 0.9, mz - 0.6, mz + 0.6, yel); b.box(mx - 10, mx - 3, yJ, yJ + 0.7, mz - 0.6, mz + 0.6, yel);                      // the jib and the counter-jib
+    b.box(mx - 10, mx - 6.5, yJ - 1.6, yJ, mz - 1.0, mz + 1.0, C('#55606a')); b.box(mx - 1.1, mx + 1.1, yJ - 2.2, yJ, mz - 1.2, mz + 1.2, C('#d9dde2')); b.box(mx - 1.0, mx + 1.0, yJ - 1.6, yJ - 0.8, mz - 1.25, mz - 1.2, C('#3f6f8f'));   // counterweight, operator cab
+    b.box(mx - 0.5, mx + 0.5, yJ + 0.9, yJ + 3.4, mz - 0.5, mz + 0.5, yel); b.obox((mx - 9 + mx) / 2, yJ + 2.2, yJ + 2.25, mz, 1, 0, 4.5, 0.03, grey); b.obox((mx + 22 + mx) / 2, yJ + 2.2, yJ + 2.25, mz, 1, 0, 11, 0.03, grey);   // tower top and tie bars
+    const px = f[0] - 3.2, py = yTop + 0.75; b.box(px - 1.4, px + 1.4, py - 0.18, py, mz - 1.4, mz + 1.4, C('#55606a')); DECKS.push({ x0: px - 1.4, x1: px + 1.4, z0: mz - 1.4, z1: mz + 1.4, y: py });   // the hanging platform
+    for (const [ax, az] of [[-1.3, -1.3], [1.3, -1.3], [-1.3, 1.3], [1.3, 1.3]]) b.obox(px + ax * 0.5, py, yJ, mz + az * 0.5, 1, 0, 0.015, 0.015, grey);    // its cables
+    b.box(px - 0.12, px + 0.12, py, py + 0.25, mz + 1.0, mz + 1.25, pink);
+    const k0 = px + 1.4, k1 = t[0] + 0.6; b.hex([[k0, py - 0.08, mz - 0.4], [k1, yTop - 0.08, mz - 0.4], [k1, yTop - 0.08, mz + 0.4], [k0, py - 0.08, mz + 0.4], [k0, py + 0.02, mz - 0.4], [k1, yTop + 0.02, mz - 0.4], [k1, yTop + 0.02, mz + 0.4], [k0, py + 0.02, mz + 0.4]], C('#a8784a'));   // the plank over the gap
+    for (let q = 0; q < 4; q++) { const a = k0 + (k1 - k0) * q / 4, c2 = k0 + (k1 - k0) * (q + 1) / 4; DECKS.push({ x0: a, x1: c2, z0: mz - 0.45, z1: mz + 0.45, y: py + (yTop - py) * (q + 0.5) / 4 }); }
+    { const lx0 = f[0] + 0.4, lx1 = t[0] - 0.4; for (let k = 0; k < 4; k++) { const hz = f[2] + 3 + k * ((f[3] - f[2] - 6) / 3); b.box(lx0 + 0.1, lx1 - 0.1, ledge, ledge + 1.1, hz - 1.0, hz + 1.0, C('#9aa0a6')); b.box(lx0 + 0.6, lx1 - 0.6, ledge + 1.1, ledge + 1.2, hz - 0.6, hz + 0.6, C('#4a4f55')); }   // air-con units on the lower roof
+      b.box(lx0 + 0.6, lx0 + 0.9, ledge, ledge + 0.3, mz + 3, mz + 3.3, pink); }
+    for (const [ax, az] of [[3, 3], [-3, 3], [3, -3], [-3, -3]]) b.box(SKY.cx + ax - 0.05, SKY.cx + ax + 0.05, yTop, yTop + 6, SKY.cz + az - 0.05, SKY.cz + az + 0.05, C('#c9ced6'));   // antennas keep helicopters off
+    b.box(SKY.cx - 1.1, SKY.cx + 1.1, yTop, yTop + 0.6, SKY.cz - 1.1, SKY.cz + 1.1, C('#22252b'));
+    const m = new T.Mesh(b.geo(), propMat); m.castShadow = true; scene.add(m);
+    const dome = new T.Mesh(new T.SphereGeometry(1.5, 20, 12, 0, TAU, 0, Math.PI / 2), new T.MeshBasicMaterial({ color: 0x3ee8c8, transparent: true, opacity: 0.18, depthWrite: false, side: T.DoubleSide })); dome.position.set(SKY.cx, yTop + 0.6, SKY.cz); scene.add(dome); }
+  if (VEN.lab) { const L = VEN.lab, dome = new T.Mesh(new T.SphereGeometry(13, 24, 12, 0, TAU, 0, Math.PI / 2), new T.MeshLambertMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.22, depthWrite: false, side: T.DoubleSide })); dome.position.set(L.x, L.y, L.z); scene.add(dome);
+    const col = new T.Mesh(new T.CylinderGeometry(2.4, 2.4, 22, 16, 1, true), xMat(0xb05aff, true)); col.material.opacity = 0.1; col.material.side = T.DoubleSide; col.position.set(L.x, L.y + 11, L.z); scene.add(col);
+    const cube = new T.Mesh(new T.BoxGeometry(5, 5, 5), new T.MeshLambertMaterial({ color: 0xd8333a, transparent: true, opacity: 0.75 })); cube.position.set(L.tx, L.ty + 2.5, L.tz); scene.add(cube); L.cube = cube;
+    L.cars = [0, 1, 2].map(k => { const m = makeCar('sedan', ['#e2b33c', '#2f7fd0', '#3fae5a'][k], false); m.children.filter(c => c.material === beamPoolMat).forEach(c => m.remove(c)); const c = { m, hx: L.x - 4 + k * 4, hz: L.z - 6, x: 0, y: 0, z: 0, v: null, held: false }; c.reset = () => { c.x = c.hx; c.z = c.hz; c.y = groundAt(c.x, c.z, L.y + 5); c.v = null; c.held = false; }; c.reset(); return c; }); }
+  if (VEN.frost) { const F = VEN.frost, b = new GB(); b.box(F.x - 3, F.x + 3, CITY.y + 0.18, CITY.y + 1.3, F.z + 2, F.z + 2.8, C('#7a5433')); b.box(F.x - 3, F.x + 3, CITY.y + 1.3, CITY.y + 1.38, F.z + 1.9, F.z + 2.9, C('#5a3a20')); b.box(F.x - 1.1, F.x + 1.1, CITY.y + 0.18, CITY.y + 0.78, F.z - 1.1, F.z + 1.1, C('#22252b')); scene.add(new T.Mesh(b.geo(), propMat));
+    for (let k = 0; k < 5; k++) { const g = new T.Mesh(new T.SphereGeometry(0.28, 12, 8), new T.MeshLambertMaterial({ color: k === 2 ? 0x15121c : 0xbfe9ff, transparent: k !== 2, opacity: 0.7 })); g.position.set(F.x - 2.4 + k * 1.2, CITY.y + 1.66, F.z + 2.4); scene.add(g); } }
+  if (VEN.ufo) { const U = VEN.ufo, s = makeCar('ufo', '#aeb6bd', false); s.children.filter(c => c.material === beamPoolMat).forEach(c => s.remove(c)); s.position.set(U.x, U.h + 0.6, U.z); s.rotation.set(0.32, 0.6, 0.18); s.scale.setScalar(2.2); SOLIDS.push([U.x, U.z, 7, U.h + 5]);
+    const cop = makeCar('walker', '#1d3a6b', false, false, { hat: 'cap', hatCol: '#16233d', shirt: '#2f4f8f', jacket: '#1d3a6b', pants: '#16233d', glasses: '', chain: '', shoe: 'classic', lace: '#16171a' }); cop.position.set(U.x - 22, U.h, U.z + 4); cop.rotation.y = -Math.PI / 2; VEN.ufoCop = cop; }
+  if (VEN.scrap) { const S = VEN.scrap, saw = new T.Mesh(sawGeo, propMat); saw.scale.setScalar(9); saw.rotation.y = Math.PI / 2; saw.position.set(S.x + 18, S.h + 10.6, S.z + 2); scene.add(saw); VEN.bigSaw = saw;
+    VEN.wrecks = []; for (let k = 0; k < 6; k++) { const m = new T.Mesh(new T.BoxGeometry(2, 1.2, 3.8), new T.MeshLambertMaterial({ color: [0x7a4a2a, 0x55606a, 0x8a6a45][k % 3] })); scene.add(m); m.visible = false; const w = { m, k, x: 0, z: 0, vx: 0, vz: 0 }; w.home = () => { w.x = S.x - 20 + (k % 3) * 7; w.z = S.z + 4 + Math.floor(k / 3) * 7; w.vx = w.vz = 0; }; w.home(); VEN.wrecks.push(w); } }
+}
+const VSTART = {
+  sky: v => { if (performance.now() - xAirT < 30000) { toast('Nice try. The Skyhook only counts on foot. Climb the crane'); return; } xUnlock('sky', true); if (!OWN.has(XG.swap)) { OWN.add(XG.swap); saveKit(); setGun(XG.swap); } toast('You made it up the Skyhook. The Swapshot is yours, free'); alarmSound(); },
+  frost: () => toast('Heists done: ' + XHEISTS + ' of 3. The Snowglobe Singularity unlocks at three'),
+  ufo: () => { const hr = ((tod * 24) % 24 + 24) % 24; if (hr >= 4) { toast('The cop is wide awake. Come back between midnight and 4 am'); return; } if (WANTED.lv > 0) { toast('Not with the police after you'); return; } VCH.on = { id: 'ufo', t: 0 }; toast('Searching the wreck... stay close'); },
+  grav: () => { if (!VEN.lab) return; VCH.on = { id: 'grav', t: 90, n: 0, had: OWN.has(XG.yeet), prev: GUN.i }; OWN.add(XG.yeet); setGun(XG.yeet); XC[XG.yeet].n = 3; for (const c of VEN.lab.cars) c.reset(); toast('Lab beam on. Fling three cars into the red cube'); },
+  scrap: () => { if (!VEN.wrecks) return; VCH.on = { id: 'scrap', t: 180, n: 0 }; for (const w of VEN.wrecks) { w.home(); w.m.visible = true; } toast('Shove the wrecks into the dark intake under the giant saw'); }
+};
+function xVenTgC(tg, c) {
+  if (c.id === 'grav' && VEN.lab) for (const car of VEN.lab.cars) if (!car.v) tg.push({ ven: { hit() {}, lab: car }, x: car.x, y: car.y + 0.8, z: car.z, R: 1.8 });
+}
+function xVenFrameC(dt) {
+  if (CAR.heli || CAR.plane || CAR.ufo || (CAR.jet && P.air)) xAirT = performance.now();
+  if (VEN.bigSaw) VEN.bigSaw.rotation.x += dt * (VCH.on && VCH.on.id === 'scrap' ? 6 : 1.5);
+  if (VEN.ufoCop) VEN.ufoCop.rotation.y = -Math.PI / 2 + Math.sin(time * 0.5) * 0.8;
+  const L = VEN.lab; if (L && Math.abs(P.x - L.x) < 2000) for (const car of L.cars) { if (car.v) { car.v[1] -= gravAt(car.x) * dt; car.x += car.v[0] * dt; car.y += car.v[1] * dt; car.z += car.v[2] * dt; const g = groundAt(car.x, car.z, car.y + 1);
+      if (Math.abs(car.x - L.tx) < 3.4 && Math.abs(car.z - L.tz) < 3.4 && car.y < L.ty + 6) { const c = VCH.on; if (c && c.id === 'grav') { c.n++; toast('Bullseye ' + c.n + ' of 3'); if (c.n >= 3) venEnd(true); } for (let k = 0; k < 8; k++) puffAt(car.x, car.y + 1, car.z, 0xd8333a); car.reset(); }
+      else if (car.y <= g && car.v[1] < 0) { car.y = g; car.v = null; setTimeout(() => car.reset(), 1500); } }
+    car.m.position.set(car.x, car.y, car.z); car.m.rotation.set(car.v ? car.v[1] * 0.02 : 0, car.held || car.v ? time * 1.2 : 0, 0); }
+  const c = VCH.on; if (!c) return;
+  if (c.id === 'grav') { c.t -= dt; XC[XG.yeet].n = Math.max(XC[XG.yeet].n, 1); VCH.el.textContent = 'Low-g car test · ' + c.n + '/3 · ' + Math.max(0, Math.ceil(c.t)) + ' s'; if (c.t <= 0) venEnd(false); }
+  if (c.id === 'ufo') { const U = VEN.ufo, v = XVEN.find(q => q.id === 'ufo'); c.t += dt; VCH.el.textContent = 'Searching the wreck · ' + Math.min(100, Math.round(c.t / 4 * 100)) + '%'; if (Math.hypot(P.x - v.x, P.z - v.z) > 6 || WANTED.lv > 0) { venEnd(false); return; } if (c.t >= 4) venEnd(true); }
+  if (c.id === 'scrap') { c.t -= dt; const S = VEN.scrap, ix0 = S.x + 7.6, ix1 = S.x + 10.6, iz = S.z + 2;
+    for (const w of VEN.wrecks) { const dx = w.x - P.x, dz = w.z - P.z, d = Math.hypot(dx, dz), rr = CAR.foot ? 2.2 : 3.3;
+      if (d < rr && d > 0.01) { const ux = dx / d, uz = dz / d, push = (rr - d); w.x += ux * push; w.z += uz * push; const pv = P.vx * ux + P.vz * uz; if (pv > 0) { w.vx += ux * pv * 0.9; w.vz += uz * pv * 0.9; } }
+      w.x += w.vx * dt; w.z += w.vz * dt; const fr = Math.exp(-2.2 * dt); w.vx *= fr; w.vz *= fr; w.x = clamp(w.x, S.x - 29, S.x + 11); w.z = clamp(w.z, S.z - 19, S.z + 19);
+      const y = groundAt(w.x, w.z, S.h + 2); w.m.position.set(w.x, y + 0.6, w.z); w.m.rotation.y = Math.atan2(w.vx, w.vz) || w.m.rotation.y;
+      if (w.x > ix0 && w.x < ix1 && Math.abs(w.z - iz) < 2.6) { c.n++; for (let k = 0; k < 10; k++) puffAt(ix1, S.h + 1 + Math.random() * 2, iz, 0xffa040); personSound(ix1, iz, 0.8, 300); w.home(); if (c.n >= 10) { venEnd(true); return; } toast('Shredded ' + c.n + ' of 10'); } }
+    VCH.el.textContent = 'Sawmill job · ' + c.n + '/10 · ' + Math.max(0, Math.ceil(c.t)) + ' s'; if (c.t <= 0 || Math.hypot(P.x - S.x, P.z - S.z) > 90) venEnd(false); }
+}
+const VCH = { el: null };                            // the running challenge, if any
+function venUi() { if (VCH.el) return; const h = document.createElement('div'); h.id = 'venHud'; h.hidden = true; document.body.appendChild(h); VCH.el = h;
+  const g = document.createElement('div'); g.id = 'venGame'; g.hidden = true; g.innerHTML = '<b id="venArrow"></b><div id="venBar"><i></i></div><div class="venPad"><button type="button" data-d="0" aria-label="Left">&#9664;</button><button type="button" data-d="1" aria-label="Up">&#9650;</button><button type="button" data-d="2" aria-label="Down">&#9660;</button><button type="button" data-d="3" aria-label="Right">&#9654;</button></div>'; document.body.appendChild(g);
+  for (const btn of g.querySelectorAll('button')) btn.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); venArrow(+btn.dataset.d); }); }
+function venStart(v) {
+  venUi(); if (VCH.on) return; if (VSTART[v.id]) { VSTART[v.id](v); return; }
+  if (v.id === 'club') { if (WANTED.lv < 3) { toast('The bouncer looks you over: come back with 3 stars of heat'); return; } VCH.on = { id: 'club', t: 0, step: 0, ok: 0, want: Math.floor(Math.random() * 4), tw: 1.3 }; $('venGame').hidden = false; toast('Dance-off! Match the arrows (arrow keys, WASD, D-pad or the buttons)'); venShowArrow(); return; }
+  if (v.id === 'pier') { VCH.on = { id: 'pier', t: 30, n: 0 }; if (OWN.has(0)) setGun(0); toast('Duck gallery! 25 ducks in 30 seconds. Pistol only'); return; }
+  if (v.id === 'volt') { VCH.on = { id: 'volt', t: 20, had: OWN.has(XG.zap), prev: GUN.i }; OWN.add(XG.zap); setGun(XG.zap); GUN.ammo[XG.zap] = 8; for (const t of VEN.tf) t.on = false; toast('Restore power: arc all five transformers in 20 seconds. The lab Tickler is yours until then'); return; }
+}
+function venEnd(win) { const c = VCH.on; if (!c) return; VCH.on = null; VCH.el.hidden = true; $('venGame').hidden = true;
+  if (c.id === 'grav' && !c.had) { OWN.delete(XG.yeet); if (GUN.i === XG.yeet) setGun(OWN.has(c.prev) ? c.prev : 4); }
+  if (c.id === 'volt' && !c.had) { OWN.delete(XG.zap); if (GUN.i === XG.zap) setGun(OWN.has(c.prev) ? c.prev : 4); }
+  if (win) xUnlock(c.id); else toast(c.id === 'pier' ? 'Time! ' + c.n + ' of 25 ducks' : c.id === 'club' ? 'The bouncer shakes his head. Try again' : 'The grid stayed dark. Try again'); }
+const VARROW = ['◀', '▲', '▼', '▶'];
+function venShowArrow() { const c = VCH.on; $('venArrow').textContent = VARROW[c.want]; $('venArrow').style.color = '#' + DISCO_COLS[c.step % 6].toString(16).padStart(6, '0'); }
+function venArrow(d) { const c = VCH.on; if (!c || c.id !== 'club') return; if (d === c.want) c.ok++; else { c.miss = (c.miss || 0) + 1; shake = Math.min(1, shake + 0.2); } c.step++; c.t = 0; c.want = Math.floor(Math.random() * 4); c.tw = Math.max(0.75, c.tw - 0.05);
+  if (c.ok >= 10) return venEnd(true); if ((c.miss || 0) >= 3) return venEnd(false); venShowArrow(); }
+function venKey() { const v = VEN.near; if (!v || !CAR.foot) return false; if (VCH.on) { toast('Finish the challenge first'); return true; }
+  if (XUN[v.id]) { const i = v.gun; if (OWN.has(i)) { setGun(i); toast(GUNS[i].name + ' equipped'); } else if (pay(GUNS[i].price, GUNS[i].name)) { OWN.add(i); xBought(i); saveKit(); setGun(i); toast('Bought the ' + GUNS[i].name); } return true; }
+  venStart(v); return true; }
+VEN.tg = tg => { const c = VCH.on; if (!c) return; xVenTgC(tg, c);
+  if (c.id === 'pier' && VEN.gal) for (const d of VEN.gal.ducks) if (d.up) tg.push({ ven: { hit: () => { if (GUN.i !== 0) { toast('Pistol only'); return; } d.up = false; d.down = 0.6; c.n++; personSound(d.m.position.x, d.m.position.z, 0.3, 1800); if (c.n >= 25) venEnd(true); } }, x: d.m.position.x, y: d.m.position.y + 0.2, z: d.m.position.z, R: 0.45 });
+  if (c.id === 'volt') for (const t of VEN.tf) if (!t.on) tg.push({ ven: { hit: () => { if (t.on || GUN.i !== XG.zap) return; t.on = true; puffAt(t.x, t.y + 0.5, t.z, 0x9fe8ff); if (VEN.tf.every(q => q.on)) venEnd(true); else toast(VEN.tf.filter(q => q.on).length + ' of 5 transformers'); } }, x: t.x, y: t.y, z: t.z, R: 1.6 }); };
+VEN.frame = dt => {
+  if (!VEN.ready) { if (started) xVenInit(); return; }
+  VEN.near = null; for (const v of XVEN) { const d = Math.hypot(P.x - v.x, P.z - v.z), far = d > 1500; v.g.visible = !far; if (far) continue; v.holder.rotation.y += dt * 1.2; v.holder.position.y = 1.25 + Math.sin(time * 2) * 0.12; v.pil.material.opacity = 0.06 + 0.04 * Math.sin(time * 1.7) + (d < 30 ? -0.04 : 0);
+    v.pil.visible = !(XUN[v.id] && OWN.has(v.gun)); if (d < 2.6 && Math.abs(P.y - v.y) < 2.5 && CAR.foot) VEN.near = v; }
+  if (VEN.wheel) VEN.wheel.rotation.z += dt * 0.12, VEN.wheel.userData.cabs.forEach(c => c.m.rotation.z = -VEN.wheel.rotation.z);
+  if (VEN.cball) VEN.cball.rotation.y += dt * 1.4;
+  const bp = $('venP'), v = VEN.near; bp.hidden = !v || !!VCH.on;
+  if (v && !VCH.on) { const g = GUNS[v.gun], key = touchMode ? '' : '  (' + (GP.pad ? 'D-pad up' : 'F') + ')'; bp.textContent = (XUN[v.id] ? (OWN.has(v.gun) ? 'Equip the ' + g.name : 'Buy the ' + g.name + ' ' + $$(g.price)) : v.what) + key; }
+  xVenFrameC(dt);
+  const c = VCH.on; if (!c) return; const hud = VCH.el; hud.hidden = false;
+  if (c.id === 'pier') { c.t -= dt; const G = VEN.gal; for (const d of G.ducks) { if (!d.up) { d.down -= dt; if (d.down <= 0) d.up = true; } const u = ((time * 0.35 + d.k / G.ducks.length) % 1), lane = d.k % 2; d.m.position.set(G.x - 5.4 + u * 10.8 * (lane ? 1 : -1) + (lane ? 0 : 10.8), G.y + lane * 0.9 + (d.up ? 0 : -1.2), G.z - lane * 0.3); d.m.rotation.y = lane ? -Math.PI / 2 : Math.PI / 2; }
+    hud.textContent = 'Duck gallery · ' + c.n + '/25 · ' + Math.max(0, Math.ceil(c.t)) + ' s'; if (c.t <= 0 || Math.hypot(P.x - G.x, P.z - G.z) > 40) venEnd(false); }
+  else if (c.id === 'club') { c.t += dt; $('venBar').firstChild.style.width = Math.max(0, 100 - c.t / c.tw * 100) + '%'; if (c.t > c.tw) { c.miss = (c.miss || 0) + 1; c.step++; c.t = 0; c.want = Math.floor(Math.random() * 4); if (c.miss >= 3) venEnd(false); else venShowArrow(); }
+    if (VCH.on) hud.textContent = 'Dance-off · ' + c.ok + '/10 · misses ' + (c.miss || 0) + '/3'; if (VEN.bouncer) VEN.bouncer.rotation.y = Math.PI / 2 + Math.sin(time * 8) * 0.3; }
+  else if (c.id === 'volt') { c.t -= dt; GUN.ammo[XG.zap] = 8; hud.textContent = 'Restore power · ' + VEN.tf.filter(q => q.on).length + '/5 · ' + Math.max(0, Math.ceil(c.t)) + ' s';
+    for (const t of VEN.tf) if (t.on && Math.random() < dt * 6) puffAt(t.x + (Math.random() - 0.5), t.y + 0.6, t.z, 0x9fe8ff); if (c.t <= 0) venEnd(false); }
+  if (VCH.on && (HP.dead > 0 || !CAR.foot)) venEnd(false);
+};
+
+/* ── per frame ── */
+function xFrame(dt) {
+  for (const k in XC) { const c = XC[k]; if (c.n < c.max && c.rt > 0) { c.t += dt; if (c.t >= c.rt) { c.t = 0; c.n++; } } }
+  if (GUN.rl > 0 && xIsX(GUN.i) && GUNS[GUN.i].exp === 'zap') { GUN.rl -= dt; if (GUN.rl <= 0) { GUN.rl = 0; if (XAM.coil > 0) { XAM.coil--; xSave(); GUN.ammo[GUN.i] = 8; toast('Coil charged'); } } }
+  if (ATK.duckT > 0) { ATK.duckT -= dt; ATK.lift = Math.min(3, (ATK.lift || 0) + dt * 1.5); if (ATK.duckT <= 0) { ATK.duckT = 0; ATK.ducks = 0; ATK.lift = 0; atkHit(100, 'duck'); toast('The armored truck dropped'); } }
+  for (const c of PCARS) if (c.xl && !(c.xst > 0)) c.xl = 0;
+  if (XCOOL.hole > 0) XCOOL.hole -= dt; xShrinkFrame(dt);
+  for (const c of PCARS) if (c.xf) { const f = c.xf; f.v[1] -= GRAV * dt; c.x += f.v[0] * dt; c.y += f.v[1] * dt; c.z += f.v[2] * dt; c.xst = 0.2; const g = groundAt(c.x, c.z, c.y + 1); if (c.y <= g && f.v[1] < 0) { c.y = g; c.xf = null; MYHIT = performance.now(); dmgPoliceCar(c, 60); xYeetRing(c.x, g, c.z); } }
+  xStepDucks(dt); xSelfFrame(dt); xLanded(); xFxFrame(dt); if (VEN.frame) VEN.frame(dt);
+}
+function xHud() { const g = GUNS[GUN.i], c = XC[GUN.i];
+  if (g.exp === 'duck') return 'Quackzooka · ' + XAM.duck + ' ducks';
+  if (g.exp === 'zap') return 'Tesla Tickler ' + (GUN.rl > 0 ? 'charging' : GUN.ammo[GUN.i] + '/8') + ' · ' + XAM.coil + ' packs';
+  if (g.exp === 'hole') return g.name + ' · ' + XAM.globe + (XCOOL.hole > 0 ? ' · ' + Math.ceil(XCOOL.hole) + ' s' : '');
+  return g.name + (c ? ' · ' + c.n + '/' + c.max + (c.n < c.max && c.rt ? ' (' + Math.ceil(c.rt - c.t) + ' s)' : '') : ''); }
+
 const FINISH = { camo: ['#4f5a3a', '#6b6a4a', '#8a7a5a'], pink: ['#d0569a', '#ff6fd0', '#ffd0ea'], chrome: ['#9aa3ad', '#c9ced6', '#eef1f4'], gold: ['#b8902a', '#e2b33c', '#f2d27a'] };
 const gunMesh = (i, view, at) => { if (!GM[i] || !GM[i].length) return new T.Group(); const gb = new GB(), fin = at && FINISH[at.fin], map = { '#16171a': 0, '#2a2d31': 1, '#8a9098': 2 };
   const put = (x0, x1, y0, y1, z0, z1, col) => { if (view) gb.box(x0, x1, -z1, -z0, y0, y1, col); else gb.box(x0, x1, y0, y1, z0, z1, col); };
@@ -6103,14 +6867,14 @@ function dmgNpc(n, d) {
 /* guns: hitscan with a little aim help, usable on foot or riding as a passenger */
 const tracers = []; for (let i = 0; i < 12; i++) { const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(new Float32Array(6), 3)); const l = new T.Line(g, new T.LineBasicMaterial({ color: 0xffe9a0, transparent: true, opacity: 0 })); l.frustumCulled = false; l.visible = false; l.userData.life = 0; scene.add(l); tracers.push(l); }
 let tracerI = 0, mfire = false;
-function cycleGun(dir) { let k = GUNSLOT.indexOf(GUN.i); for (let n = 0; n < 10; n++) { k = (k + dir + 10) % 10; if (OWN.has(GUNSLOT[k])) return setGun(GUNSLOT[k]); } }
+function cycleGun(dir) { const L = GUNSLOT.length; let k = GUNSLOT.indexOf(GUN.i); for (let n = 0; n < L; n++) { k = (k + dir + L) % L; if (OWN.has(GUNSLOT[k])) return setGun(GUNSLOT[k]); } }
 /* the weapon bar: what you carry, what is in your hands, one click or tap to switch. On a phone, tap the weapon name to open it */
 const WBAR = { sig: '', open: false, wT: 0 };
 function wbarUpdate() {
   const box = $('wbar'); if (!box) return; if (!CAR.foot) WBAR.open = false;
   box.hidden = !(CAR.foot && started && (!touchMode || WBAR.open)); const am = $('ammo'); if (am) am.classList.toggle('tap', touchMode && CAR.foot && started);
   if (box.hidden) return;
-  const items = []; GUNSLOT.forEach((i, k) => { if (!OWN.has(i)) return; const g = GUNS[i]; items.push({ key: String((k + 1) % 10), name: g.name, ammo: g.melee ? '' : g.rocket ? GUN.ammo[i] + '/1 \u00B7 ' + ROCK.v : GUN.ammo[i] + '/' + magOf(i), on: !MINE.tool && GUN.i === i, empty: !g.melee && GUN.ammo[i] <= 0 && !g.rocket, pick: () => setGun(i) }); });
+  const items = []; GUNSLOT.forEach((i, k) => { if (!OWN.has(i)) return; const g = GUNS[i]; const xc = XC[i]; items.push({ key: k < 10 ? String((k + 1) % 10) : '\u21E7' + (k - 9), name: g.name, ammo: g.exp ? (g.exp === 'duck' ? XAM.duck + '' : g.exp === 'zap' ? GUN.ammo[i] + '/8 \u00B7 ' + XAM.coil : g.exp === 'hole' ? XAM.globe + '' : xc ? xc.n + '/' + xc.max : '') : g.melee ? '' : g.rocket ? GUN.ammo[i] + '/1 \u00B7 ' + ROCK.v : GUN.ammo[i] + '/' + magOf(i), on: !MINE.tool && GUN.i === i, empty: !g.melee && !g.exp && GUN.ammo[i] <= 0 && !g.rocket, pick: () => setGun(i) }); });
   if (MINE.own) items.push({ key: 'Y', name: 'Drill', ammo: MINE.carry + ' ore', on: !!MINE.tool, empty: false, pick: () => drillToggle() });
   const sig = items.map(q => q.key + q.name + q.ammo + q.on).join('|'); if (sig === WBAR.sig) return; WBAR.sig = sig; box.textContent = '';
   for (const q of items) { const b = document.createElement('button'); b.type = 'button'; b.className = 'wslot' + (q.on ? ' on' : '') + (q.empty ? ' empty' : ''); const k = document.createElement('i'); k.textContent = q.key; const n = document.createElement('b'); n.textContent = q.name; const a = document.createElement('span'); a.textContent = q.ammo; b.append(k, n, a);
@@ -6122,10 +6886,11 @@ addEventListener('wheel', e => {                  // the mouse wheel flicks thro
   if (!CAR.foot || !started || PLACE.on || HP.dead > 0 || !e.deltaY || document.querySelector('#shop:not([hidden]),#hack:not([hidden]),#map:not([hidden]),#travel:not([hidden]),#servers:not([hidden]),#impBox:not([hidden]),#orb:not([hidden]),#tvRemote:not([hidden]),#mineUI:not([hidden])')) return;
   const t = performance.now(); if (t - WBAR.wT < 140) return; WBAR.wT = t; cycleGun(e.deltaY > 0 ? 1 : -1);
 }, { passive: true });
-function setGun(i) { if (!CAR.foot) return; i = (i + GUNS.length) % GUNS.length; if (!OWN.has(i)) return; if (MINE.tool && started) MINE.tool = false; GUN.i = i; GUN.cool = Math.max(GUN.cool, 0.25); GUN.rl = 0; GUN.bloom = 0; toast(GUNS[GUN.i].name); }
+function setGun(i) { if (!CAR.foot) return; if (XHOLD.on) XHOLD.release(); i = (i + GUNS.length) % GUNS.length; if (!OWN.has(i)) return; if (MINE.tool && started) MINE.tool = false; GUN.i = i; GUN.cool = Math.max(GUN.cool, 0.25); GUN.rl = 0; GUN.bloom = 0; toast(GUNS[GUN.i].name); }
 function fireGun() {
   if (!CAR.foot || GUN.cool > 0 || GUN.rl > 0 || !started || HP.dead > 0 || (P.frozenT > 0 && !RIDE)) return; const gn = GUNS[GUN.i];
   if (gn.melee) { if (!RIDE) punch(gn); return; }
+  if (gn.exp) return;                                 // experimental guns fire through xTrig
   if (GUN.ammo[GUN.i] <= 0) { if (gn.rocket && ROCK.v <= 0) { toast('Out of rockets. Iron Works sells more'); GUN.cool = 0.5; return; } reloadGun(); return; }
   GUN.cool = gn.rate; GUN.shots++; GUN.ammo[GUN.i]--;
   const AT = ATT[GUN.i] || {}, atS = (POSE.v === 2 ? 0.5 : POSE.v === 1 ? 0.7 : 1) * (AT.grip ? 0.85 : 1) * (AT.laser && !GUN.ads ? 0.75 : 1) * (AT.dot && GUN.ads ? (GUN.rdot ? 0.45 : 0.7) : 1), mvF = Math.min(1, Math.hypot(P.vx, P.vz) / 9.6), spread = atS * (GUN.scoped && P.grounded ? gn.spread * 0.2 * (1 + 2 * mvF) : (gn.spread * (1 + 1.3 * mvF + (P.grounded || RIDE ? 0 : 1.5)) + GUN.bloom) * (GUN.ads ? 0.45 : 1));   // moving, jumping and spraying open the pattern; aiming tightens it
@@ -6133,7 +6898,7 @@ function fireGun() {
   const t0 = Math.max(0.3, (P.x - cm.x) * fx + (P.y + 1.4 - cm.y) * fy + (P.z - cm.z) * fz + 0.7), ox = cm.x + fx * t0, oy = cm.y + fy * t0, oz = cm.z + fz * t0;   // shots leave along the crosshair line, starting just past the character
   const ml = 0.35 + gn.len, mx = P.x + fx * ml + Math.cos(AIM.yaw) * 0.3, my = P.y + (RIDE ? 1.3 : POSE.v === 2 ? 0.3 : POSE.v === 1 ? 0.95 : 1.43) + fy * ml, mz = P.z + fz * ml - Math.sin(AIM.yaw) * 0.3;   // the muzzle
   const tg = []; for (const n of npcs) if (n.live && n.mode !== 6) tg.push({ n, x: n.x, y: n.y + 0.85, z: n.wz, R: n.type === 'truck' ? 2.3 : 1.55 }); if (ATK.vis) tg.push({ atk: 1, x: ATK.x, y: ATK.y + 1.3, z: ATK.z, R: 2.6 });
-  peopleTargets(tg, 0.47); for (const c of PCARS) if (c.st !== 'parked' && c.st !== 'gone' && c.st !== 'wreck' || c.st === 'parked' && c.m) tg.push({ pc: c, x: c.x, y: c.y + 0.8, z: c.z, R: 1.7 });
+  peopleTargets(tg, 0.47); for (const c of PCARS) if (c.st !== 'parked' && c.st !== 'gone' && c.st !== 'wreck' || c.st === 'parked' && c.m) tg.push({ pc: c, x: c.x, y: c.y + 0.8, z: c.z, R: 1.7 }); if (VEN.tg) VEN.tg(tg);
   for (const r of NET.rem.values()) if (r.init && r !== RIDE && r.pres.rd !== 1 && r.pres.w !== 1) { const cr = r.pres.cr === 1 || r.pres.cr === 2 ? r.pres.cr : 0; if (r.car.foot) tg.push({ r, head: true, x: r.pred.x - (cr === 2 ? r.fx * 1.4 : 0), y: r.pred.y + [1.68, 1.2, 0.3][cr], z: r.pred.z - (cr === 2 ? r.fz * 1.4 : 0), R: 0.17 }); tg.push(r.car.foot ? { r, x: r.pred.x - (cr === 2 ? r.fx * 0.7 : 0), y: r.pred.y + [1.0, 0.72, 0.25][cr], z: r.pred.z - (cr === 2 ? r.fz * 0.7 : 0), R: cr === 2 ? 0.6 : 0.46 } : { r, x: r.pred.x, y: r.pred.y + 0.85, z: r.pred.z, R: r.car.ufo || r.car.heli ? 2.6 : 1.6 }); }   // other players, in a vehicle or on foot
   /* aim assist: if the crosshair is within about 12 degrees of another player, the shot is pulled 10% of the way toward the nearest one */
   let ax = fx, ay = fy, az = fz, bd = 1e9, pull = null;
@@ -6148,8 +6913,8 @@ function fireGun() {
   for (let k = 0; k < gn.n; k++) {
     const ya = (Math.random() - 0.5) * 2 * spread, c = Math.cos(ya), sn = Math.sin(ya); let dx = ax * c - az * sn, dz = ax * sn + az * c, dy = ay + (Math.random() - 0.5) * 2 * spread; const l = Math.hypot(dx, dy, dz); dx /= l; dy /= l; dz /= l;
     let ht = gn.range, hit = null; for (const t of tg) { const cx = t.x - ox, cy = t.y - oy, cz = t.z - oz, tt = cx * dx + cy * dy + cz * dz; if (tt <= 0 || tt > ht) continue; if (cx * cx + cy * cy + cz * cz - tt * tt < t.R * t.R) { ht = tt; hit = t; } }
-    if (hit) { GUN.hits++; anyHit = true; const dmg = gn.dmg * (AT.supp ? 0.95 : 1) * (hit.head ? (GUN.i === 3 ? 3 : 2) : 1); if (hit.head) { headHit = true; GUN.heads = (GUN.heads || 0) + 1; }   // a headshot: double, or triple with the rifle, which one-taps
-      if (hit.atk) atkHit(dmg, 'gun'); else if (hit.pc) { MYHIT = performance.now(); dmgPoliceCar(hit.pc, dmg); } else if (hit.n) dmgNpc(hit.n, dmg); else if (hit.pp) hitPerson(hit, dmg, ox, oz); else { const was = NET.dm.get(hit.r.id) || 0; NET.dm.delete(hit.r.id); NET.dm.set(hit.r.id, was + dmg); } puffAt(ox + dx * ht, oy + dy * ht, oz + dz * ht); }
+    if (hit) { GUN.hits++; anyHit = true; const dmg = (XS.shrink ? 0.3 : 1) * gn.dmg * (AT.supp ? 0.95 : 1) * (hit.head ? (GUN.i === 3 ? 3 : 2) : 1); if (hit.head) { headHit = true; GUN.heads = (GUN.heads || 0) + 1; }   // a headshot: double, or triple with the rifle, which one-taps
+      if (hit.ven) hit.ven.hit(hit); else if (hit.atk) atkHit(dmg, 'gun'); else if (hit.pc) { MYHIT = performance.now(); dmgPoliceCar(hit.pc, dmg); } else if (hit.n) dmgNpc(hit.n, dmg); else if (hit.pp) hitPerson(hit, dmg, ox, oz); else { const was = NET.dm.get(hit.r.id) || 0; NET.dm.delete(hit.r.id); NET.dm.set(hit.r.id, was + dmg); } puffAt(ox + dx * ht, oy + dy * ht, oz + dz * ht); }
     const tr = tracers[tracerI = (tracerI + 1) % tracers.length], a = tr.geometry.attributes.position.array; a[0] = mx; a[1] = my; a[2] = mz; a[3] = ox + dx * ht; a[4] = oy + dy * ht; a[5] = oz + dz * ht; tr.geometry.attributes.position.needsUpdate = true; tr.userData.life = 0.07; tr.visible = true;
   }
   peoplePanic(P.x, P.z, AT.supp ? 8 : 30);
@@ -6175,13 +6940,13 @@ const gunView = new T.Group(); gunView.visible = false; camera.add(gunView);
   gunView.userData.guns = GM.map((q, i) => { const m = gunMesh(i, true); m.position.set(0, 0, -0.02); m.visible = i === 0; gunView.add(m); return m; });   // barrel runs away from the eye
   gunView.scale.setScalar(1); gunView.position.set(0.17, -0.2, -0.08); }
 const flash = new T.Mesh(new T.OctahedronGeometry(0.16), new T.MeshBasicMaterial({ color: 0xffd98a, transparent: true, opacity: 0.95, blending: T.AdditiveBlending, depthWrite: false })); flash.visible = false; flash.userData.life = 0; scene.add(flash);
-function reloadGun() { const gn = GUNS[GUN.i]; if (gn.rocket && ROCK.v <= 0) return; if (gn.melee || !CAR.foot || GUN.rl > 0 || GUN.ammo[GUN.i] >= magOf(GUN.i)) return; GUN.rl = gn.rl; }
+function reloadGun() { const gn = GUNS[GUN.i]; if (gn.exp) { if (gn.exp === 'zap' && XAM.coil > 0 && GUN.ammo[GUN.i] < 8 && !(GUN.rl > 0) && CAR.foot) GUN.rl = 2.6; return; } if (gn.rocket && ROCK.v <= 0) return; if (gn.melee || !CAR.foot || GUN.rl > 0 || GUN.ammo[GUN.i] >= magOf(GUN.i)) return; GUN.rl = gn.rl; }
 function footFrame(dt) {
   laserFrame();
   if (GUN.cool > 0) GUN.cool -= dt; if (GUN.punch > 0) GUN.punch = Math.max(0, GUN.punch - dt);
   const trig = CAR.foot && started && !PLACE.on && !MINE.tool && !SIT.on && (keys.KeyX || touch.f || mfire || gpFireHeld);
-  if (trig && (GUNS[GUN.i].auto || !GUN.trig || GUN.i >= 2)) fireGun(); GUN.trig = !!trig;                    // the pistol fires once per press; the SMG sprays; shotgun and rifle cycle as fast as they can
-  if (GUN.rl > 0) { GUN.rl -= dt; if (GUN.rl <= 0) { GUN.rl = 0; if (GUNS[GUN.i].rocket) { if (ROCK.v > 0) { ROCK.v--; GUN.ammo[GUN.i] = 1; saveKit(); } } else GUN.ammo[GUN.i] = magOf(GUN.i); } }
+  if (GUNS[GUN.i].exp) xTrig(trig && !xNoFire(), dt); else if (trig && !xNoFire() && (GUNS[GUN.i].auto || !GUN.trig || GUN.i >= 2)) fireGun(); GUN.trig = !!trig;                    // the pistol fires once per press; the SMG sprays; shotgun and rifle cycle as fast as they can
+  if (GUN.rl > 0 && !GUNS[GUN.i].exp) { GUN.rl -= dt; if (GUN.rl <= 0) { GUN.rl = 0; if (GUNS[GUN.i].rocket) { if (ROCK.v > 0) { ROCK.v--; GUN.ammo[GUN.i] = 1; saveKit(); } } else GUN.ammo[GUN.i] = magOf(GUN.i); } }
   { const r = GUN.rec * (1 - Math.exp(-7 * dt)); AIM.pitch -= r; GUN.rec -= r; GUN.bloom *= Math.exp(-5 * dt); }
   if (flash.visible) { flash.userData.life -= dt; if (flash.userData.life <= 0) { flash.visible = false; if (gunView.userData.fl) gunView.userData.fl.visible = false; } }
   if (CAR.foot) { showGun(playerModel, MINE.tool ? -1 : GUN.i); showGun(gunView, MINE.tool ? -1 : GUN.i); showDrill(playerModel, MINE.tool); gunView.position.y = -0.2 - (GUN.rl > 0 ? Math.sin(Math.min(1, GUN.rl / GUNS[GUN.i].rl) * Math.PI) * 0.25 : 0) + GUN.rec * 0.3; gunView.position.x = GUN.ads ? 0.0 : 0.17; gunView.position.z = -0.08 + GUN.rec * 0.5 - (GUN.punch > 0 ? Math.sin((1 - GUN.punch / 0.3) * Math.PI) * 0.32 : 0); if (GUNS[GUN.i].melee) gunView.position.x = 0.15;
@@ -6210,7 +6975,7 @@ function footFrame(dt) {
   else if (!w.hidden) w.hidden = true;
   GUN.scoped = CAR.foot && started && GUN.ads && (GUN.i === 3 || !!(ATT[GUN.i] && ATT[GUN.i].long)) && !RIDE && HP.dead <= 0; GUN.rdot = !GUN.scoped && CAR.foot && started && GUN.ads && camMode === 2 && !!(ATT[GUN.i] && ATT[GUN.i].dot) && !RIDE && HP.dead <= 0; $('rdot').hidden = !GUN.rdot;   // a red dot in first person: look through the sight
   $('scope').hidden = !GUN.scoped; $('xhair').hidden = !(CAR.foot && started) || GUN.scoped || GUN.rdot;
-  wbarUpdate(); if (CAR.foot) $('ammo').textContent = MINE.tool ? 'Mining drill \u00B7 ' + MINE.carry + ' ore' : GUNS[GUN.i].rocket ? 'Bazooka ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/1') + ' \u00B7 ' + ROCK.v + ' rockets' : GUNS[GUN.i].melee ? 'Fists' : GUNS[GUN.i].name + ' ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/' + magOf(GUN.i));
+  wbarUpdate(); if (CAR.foot) $('ammo').textContent = GUNS[GUN.i].exp && !MINE.tool ? xHud() : MINE.tool ? 'Mining drill \u00B7 ' + MINE.carry + ' ore' : GUNS[GUN.i].rocket ? 'Bazooka ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/1') + ' \u00B7 ' + ROCK.v + ' rockets' : GUNS[GUN.i].melee ? 'Fists' : GUNS[GUN.i].name + ' ' + (GUN.rl > 0 ? 'reloading' : GUN.ammo[GUN.i] + '/' + magOf(GUN.i));
   PH.hurtT += dt; if (CAR.foot && HP.dead <= 0 && PH.hurtT > 6 && PH.v < PH.max) PH.v = Math.min(PH.max, PH.v + 9 * dt);   // health comes back after six seconds without being hit
   $('arm').hidden = !(CAR.foot && ARM.v > 0.5); $('armFill').style.width = Math.round(ARM.v) + '%';
   const hf = $('hpFill'), pc = CAR.foot ? PH.v / PH.max : HP.v / HP.max; hf.style.width = Math.round(pc * 100) + '%'; hf.style.background = pc < 0.3 ? '#e2483a' : pc < 0.6 ? '#ffc44d' : '#7ee04b';
@@ -6230,10 +6995,12 @@ function frame(now) {
 function runFrame(now, dt, last0, draw) {
   time += dt;
   readInput(dt); if (auto && !CAR.foot) autoInput();
+  xInput();
   if (NET.wasPulled) { inp.steer = inp.thr = inp.brk = inp.jump = inp.boost = inp.hb = inp.pitch = 0; }   // held in a saucer beam: no way to drive, fly or run off
   if (HP.dead > 0) { inp.steer = inp.thr = inp.jump = inp.roll = inp.pitch = 0; inp.brk = 0; inp.hb = 1; inp.boost = CAR.heli || CAR.ufo ? 1 : 0; if (CAR.plane) P.throttle = 0; }   // wrecked: no control until the respawn
-  if (started && prCap > 1 && !document.hidden && Math.min(devicePixelRatio || 1, prCap) > 1) {   // GitHub-only (perf): every device, every mode: averaging under about 28 fps for 1.5 s, render at a lower resolution
-    const ft = now - last0; if (ft < 500) { ftA += (ft - ftA) * 0.08; slowT = ftA > 36 ? slowT + ft : Math.max(0, slowT - ft); }
+  if (started && !document.hidden && now - last0 < 500) ftAvg += (now - last0 - ftAvg) * 0.1;   // smoothed frame time
+  if (started && prCap > 1 && !document.hidden && Math.min(devicePixelRatio || 1, prCap) > 1) {   // any device: under about 28 fps for 1.5 s, render at a lower resolution
+    slowT = ftAvg > 36 ? slowT + (now - last0) : 0;
     if (slowT > 1500) { slowT = 0; prCap = Math.max(1, prCap - 0.25); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, prCap)); resize(); }
   }
   if (POST && started && !document.hidden && (prCap <= 1 || (devicePixelRatio || 1) <= 1)) {   // ultra still too slow at the lowest resolution: shed the expensive effects one at a time
@@ -6305,7 +7072,7 @@ function runFrame(now, dt, last0, draw) {
   }
 
   if (!inSpace(P.x)) { planChunks(P.x, P.z, false); pumpChunks(5); } updateRoads(P.z, false);
-  if (GRASS) GRASS.frame(dt); footFrame(dt); peopleFrame(dt); moneyFrame(dt); shopFrame(dt); heistFrame(dt); gasFrame(dt); policeFrame(dt); homeFrame(dt); bunkFrame(dt); strikeFrame(dt); moonFrame(dt); tvFrame(dt); atkFrame(dt); bloodFrame(dt); stepRockets(dt); remoteBooms(); wantedHud(); updateSmoke(dt); updatePlaces(dt); updateBeam(); bleedTick(dt); updateMissiles(dt); netUpdate(dt); netSend();
+  if (GRASS) GRASS.frame(dt); footFrame(dt); peopleFrame(dt); moneyFrame(dt); shopFrame(dt); heistFrame(dt); gasFrame(dt); policeFrame(dt); homeFrame(dt); bunkFrame(dt); strikeFrame(dt); moonFrame(dt); tvFrame(dt); atkFrame(dt); xFrame(dt); bloodFrame(dt); stepRockets(dt); remoteBooms(); wantedHud(); updateSmoke(dt); updatePlaces(dt); updateBeam(); bleedTick(dt); updateMissiles(dt); netUpdate(dt); netSend();
   if (playerModel.userData.ice) playerModel.userData.ice.visible = P.frozenT > 0; else if (P.frozenT > 0) { const ft = CAR.foot, im = new T.Mesh(ft ? new T.BoxGeometry(1.15, 2.15, 1.15) : new T.BoxGeometry(2.6, 2, 5.2), iceMat); im.position.y = ft ? 1.05 : 1; im.renderOrder = 2; playerModel.add(im); playerModel.userData.ice = im; }
   if (!respawning) {
     if (auto && Math.abs(P.z) > REND - 45) respawn(true);                                   // auto-drive turns round at the harbours
@@ -6323,7 +7090,7 @@ function runFrame(now, dt, last0, draw) {
   if (inSpace(P.x)) { _s3.copy(SP.F).negate(); _sm.makeBasis(SP.R, SP.U, _s3); playerMesh.position.set(P.x, P.y, P.z); playerMesh.quaternion.setFromRotationMatrix(_sm); }
   updateCamera(dt, time);
   if (ULTRA) { envTick(dt); if (POST) { POST.bloom.value = POST.lvl ? 0 : 0.2 + night * 0.12; POST.th = 0.9 - night * 0.1; } }
-  if (draw) present();
+  if (draw) { shN++; renderer.shadowMap.autoUpdate = false; renderer.shadowMap.needsUpdate = shN % 2 === 0 || Math.hypot(P.vx, P.vz) > 6 || Math.abs(P.vy) > 2 || camMode === 2; present(); }   // nearly still: the shadow map refreshes every other frame
   updateAudio();
 
   hudT -= dt;
@@ -6341,7 +7108,7 @@ function runFrame(now, dt, last0, draw) {
     $('odo').textContent = (P.odo / 1000).toFixed(1) + ' km';
   }
 }
-window.__drive = { camera, roofAt, ROOFG, ri: () => ({ calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures, progs: renderer.info.programs.length }), wreckOut, getIn, getOut, actorHitBy, hurtActor, ATK, atkStartNow, atkHit, atkPress, atkKey, atkCancel, atkWin: () => atkDoorsDone(true), atkFail: () => atkDoorsDone(false), atkGrab, atkDeliver, atkPos, ATK_DROP, MINE, ORES, LSTN, SIT, TVP, moonKey, mineStart, mineStrike, sitDown, standUp, tvCmd, drillToggle, craterAt, crimeKill, RUNHIT, dispatch, STRIKES, ORB, SAT, BUNK, BUNKI, bunkGo, orbOpen, orbFire, addStrike, buySat, NZ, shopStock, closeShop, HOUSES, HOME, PLACE, FURN, homeKey, homeStore, placeIt, cancelPlace, startPlace, REMPC: () => REMPC, coverCam, camShot, cashierHit, camLive, WANTED, PSTN, PCARS, wantedAtLeast, clearWanted, GS, crackSafe, POSE, H, BNK, BANKI, bankZone: () => BANKZONE, bankDoor: () => BANKDOOR, drop: () => DROP, heistSnap, hackGate, gateNear: () => GATENEAR, openShop, FIT, ATT, UPG, DEC, WARD, applyUpg, carLook, tgtCar, rebuildWalker, mallAlarm, cops: () => ACT.filter(a => a.cop), OWN, ROCK, ARM, ROCKETS: () => ROCKETS, BOOMS: () => BOOMS, shopPick, shopMove, SHOPS, SHOP, openShop, shopNear: () => SHOPNEAR, REMCASHN: () => REMCASH.size, MONEY, CASH, ATMS, HACK, tryRob, hackKey, dropCash, addCash, atmNear: () => ATMNEAR, cam: () => camera, fovNow: () => camera.fov, ACT, PEOPLE, REMA, exitDriver, spawnActor, pedAt, MALLI, door: () => MALLDOOR, SP, SPC, MOON, TR, trSample, HULL, PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => present(), GFXQ: () => GFXQ, POST: () => POST, noPost: () => { POST = null; }, scene: () => scene, ENVQ, P, npcs, setTod: v => { todFix = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap, keys, lockCands, carIndex: id => CARS.findIndex(c => c.id === id), startBleed, bleedTick, bloods, drops, FREEZE_T, BLEED_T, fireBlick, updateMissiles };
+window.__drive = { camera, SKYG: () => SKYG, SKY, VSTART, XHEISTS: () => XHEISTS, xHeistDone, setTodRaw: v => { tod = v; }, LSTN, XVEN, VCH, venKey, venStart, venEnd, venArrow, POI, xTrig, XP, XG, XNET, XS, XUN, XAM, XC, XFX, xSelf, xFx, xSt, xTargets, xRay, xUnlock, xSave, VEN, xFrame, ATKx: () => ATK, roofAt, ROOFG, ri: () => ({ calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures, progs: renderer.info.programs.length }), wreckOut, getIn, getOut, actorHitBy, hurtActor, ATK, atkStartNow, atkHit, atkPress, atkKey, atkCancel, atkWin: () => atkDoorsDone(true), atkFail: () => atkDoorsDone(false), atkGrab, atkDeliver, atkPos, ATK_DROP, MINE, ORES, LSTN, SIT, TVP, moonKey, mineStart, mineStrike, sitDown, standUp, tvCmd, drillToggle, craterAt, crimeKill, RUNHIT, dispatch, STRIKES, ORB, SAT, BUNK, BUNKI, bunkGo, orbOpen, orbFire, addStrike, buySat, NZ, shopStock, closeShop, HOUSES, HOME, PLACE, FURN, homeKey, homeStore, placeIt, cancelPlace, startPlace, REMPC: () => REMPC, coverCam, camShot, cashierHit, camLive, WANTED, PSTN, PCARS, wantedAtLeast, clearWanted, GS, crackSafe, POSE, H, BNK, BANKI, bankZone: () => BANKZONE, bankDoor: () => BANKDOOR, drop: () => DROP, heistSnap, hackGate, gateNear: () => GATENEAR, openShop, FIT, ATT, UPG, DEC, WARD, applyUpg, carLook, tgtCar, rebuildWalker, mallAlarm, cops: () => ACT.filter(a => a.cop), OWN, ROCK, ARM, ROCKETS: () => ROCKETS, BOOMS: () => BOOMS, shopPick, shopMove, SHOPS, SHOP, openShop, shopNear: () => SHOPNEAR, REMCASHN: () => REMCASH.size, MONEY, CASH, ATMS, HACK, tryRob, hackKey, dropCash, addCash, atmNear: () => ATMNEAR, cam: () => camera, fovNow: () => camera.fov, ACT, PEOPLE, REMA, exitDriver, spawnActor, pedAt, MALLI, door: () => MALLDOOR, SP, SPC, MOON, TR, trSample, HULL, PH, mesh: () => playerMesh, AIM, HP, GUN, toggleFoot, fireGun, setGun, damage, park: () => PARK, ride: () => RIDE, LB, NET, DTMAX, tick: dt => runFrame(performance.now(), dt, performance.now() - dt * 1000, false), draw: () => { renderer.shadowMap.needsUpdate = true; present(); }, GFXQ: () => GFXQ, POST: () => POST, noPost: () => { POST = null; }, scene: () => scene, ENVQ, P, npcs, setTod: v => { todFix = v; }, warp: z => { placeOnRoad(z, 1); camSnap = true; lastCC = null; planChunks(P.x, P.z, true); updateRoads(P.z, true); }, bridgeAt, hwAt, begin, setCar, rampAt, rampSide, groundAt, POI, lap, toggleMap, terrainH, CITY, travelTo, inCity, SUS, RW, BOXES, SOLIDS, unlock, UNL, setAuto, inp, PL, MSL, fireMissile, HC, onDeck, hcLX, hcLZ, setBeam, held: () => held, sim: secs => { for (let i = 0; i < secs * 120; i++) stepPlayer(1 / 120); }, autoSt: () => autoSt, plane: () => AIRPLANE, ufo: () => UFOSPOT, trailDist, car: () => CAR.id, sig: () => [sigNS(), sigEW(), sigT],  roadX, roadY, trailDist, touch, isTouch: () => touchMode, setTouchMode, prCap: () => prCap, keys, lockCands, carIndex: id => CARS.findIndex(c => c.id === id), startBleed, bleedTick, bloods, drops, FREEZE_T, BLEED_T, fireBlick, updateMissiles };
 requestAnimationFrame(frame);
 })();
 </script>
@@ -6351,7 +7118,7 @@ requestAnimationFrame(frame);
 (() => {
   'use strict';
   const $ = id => document.getElementById(id), box = $('impBox'), txt = $('impTxt'), msg = $('impMsg'); if (!box || !txt) return;
-  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn', 'dd-sat', 'dd-mine', 'dd-atk'], NUM = { 'dd-cash': 1e9, 'dd-armour': 100, 'dd-rockets': 99 }, KEYS = [...SETS, ...STATE, 'dd-unlock', ...Object.keys(NUM), 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
+  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn', 'dd-sat', 'dd-mine', 'dd-atk', 'dd-xam', 'dd-xunlock'], NUM = { 'dd-cash': 1e9, 'dd-armour': 100, 'dd-rockets': 99, 'dd-xheists': 9999 }, KEYS = [...SETS, ...STATE, 'dd-unlock', ...Object.keys(NUM), 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
   const rd = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const wr = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, v); return true; } catch (e) { return false; } };
   const jp = (t, d) => { try { const v = JSON.parse(t); return v === null || v === undefined ? d : v; } catch (e) { return d; } };
@@ -6438,7 +7205,7 @@ window.DD_FIREBASE = {
   if (!btn || !cfg || !cfg.apiKey) return;
   btn.hidden = false;
   const V = '10.12.2', SDK = ['app', 'auth', 'firestore'].map(n => 'https://www.gstatic.com/firebasejs/' + V + '/firebase-' + n + '-compat.js');
-  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn', 'dd-sat', 'dd-mine', 'dd-atk'], NUM = ['dd-cash', 'dd-armour', 'dd-rockets'], KEYS = [...SETS, ...STATE, 'dd-unlock', ...NUM, 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
+  const SETS = ['dd-poi', 'dd-guns', 'dd-ward', 'dd-attown', 'dd-homes'], STATE = ['dd-fit', 'dd-att', 'dd-upg', 'dd-dec', 'dd-inv', 'dd-furn', 'dd-sat', 'dd-mine', 'dd-atk', 'dd-xam', 'dd-xunlock'], NUM = ['dd-cash', 'dd-armour', 'dd-rockets', 'dd-xheists'], KEYS = [...SETS, ...STATE, 'dd-unlock', ...NUM, 'dd-car', 'dd-name', 'dd-lap', 'dd-laps'];
   const rd = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const wr = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } };
   const jp = (t, d) => { try { const v = JSON.parse(t); return v === null || v === undefined ? d : v; } catch (e) { return d; } };
