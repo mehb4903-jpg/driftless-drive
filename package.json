@@ -1,6 +1,6 @@
 {
   "name": "driftless-drive-android",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "private": true,
   "description": "Experimental Android wrapper (Capacitor) for the Chaos Coast web game. The web game itself is index.html at the repo root.",
   "scripts": {
