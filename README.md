@@ -1,6 +1,6 @@
-# Rampage Road (online)
+# Chaos Coast (online)
 
-A standalone copy of the Rampage Road browser game. It is one file, `index.html`, so any static web host works.
+A standalone copy of the Chaos Coast browser game. It is one file, `index.html`, so any static web host works.
 Multiplayer runs peer to peer over WebRTC through [PeerJS](https://peerjs.com/) 1.5.4. PeerJS's free public server only
 introduces players to each other. The game data goes directly between browsers.
 
@@ -44,7 +44,7 @@ Opening the file directly with `file://` also works.
 
 ## Install on iPhone / iPad (fullscreen)
 
-Open the site in **Safari**, tap **Share**, then **Add to Home Screen**. Launch it from the new Rampage Road icon and it runs as a full-screen app with no browser bars (iPhones have no browser fullscreen button, so this is the way). On Android, tap the **Install app** button in the game's menu (or Chrome's menu, **Install app**) for the same effect.
+Open the site in **Safari**, tap **Share**, then **Add to Home Screen**. Launch it from the new Chaos Coast icon and it runs as a full-screen app with no browser bars (iPhones have no browser fullscreen button, so this is the way). On Android, tap the **Install app** button in the game's menu (or Chrome's menu, **Install app**) for the same effect.
 
 ## Android app (experimental)
 
@@ -52,7 +52,7 @@ There is an **experimental Android APK** with ads. It is not on Google Play; Git
 whenever a tag like `v0.1.0-exp` is pushed (or `main` is pushed to the `android-release` branch) and attaches it to a **pre-release** on the
 [Releases page](https://github.com/mehb4903-jpg/driftless-drive/releases).
 
-- **Install:** on your phone open the newest *Experimental* pre-release, download `rampage-road-<version>.apk`, open it and
+- **Install:** on your phone open the newest *Experimental* pre-release, download `chaos-coast-<version>.apk`, open it and
   allow **Install unknown apps** for your browser when Android asks.
 - **Ads:** one after you tap Start driving, then at most one every 2 minutes on every 2nd death, never over the YouTube TV or
   during a heist. They are Google **test ads** for now (`USE_TEST_ADS: true` in `DD_ADS_CONFIG` in `index.html`); the real

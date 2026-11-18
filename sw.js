@@ -1,4 +1,4 @@
-/* Rampage Road service worker: network first (so every push is picked up at once), the cached copy only when offline. */
+/* Chaos Coast service worker: network first (so every push is picked up at once), the cached copy only when offline. */
 const CACHE = 'dd-shell-v1';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

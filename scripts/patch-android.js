@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Patches the Capacitor-generated android/ project (created in CI by `npx cap add android`) for Rampage Road.
+/* Patches the Capacitor-generated android/ project (created in CI by `npx cap add android`) for Chaos Coast.
    Idempotent: safe to run again after every `npx cap sync android`.
    - AdMob APPLICATION_ID meta-data, read from DD_ADS_CONFIG.appId in index.html (the one place for ad ids)
    - Google sign in: intent filter for com.driftless.drive://auth on MainActivity (singleTask), see docs/ANDROID.md

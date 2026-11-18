@@ -103,7 +103,7 @@ jobs:
             PASS="$(openssl rand -hex 16)"
             echo "::add-mask::$PASS"
             keytool -genkeypair -keystore "$KS" -alias experimental -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass "$PASS" -keypass "$PASS" -dname "CN=Rampage Road Experimental" -noprompt
+              -storepass "$PASS" -keypass "$PASS" -dname "CN=Chaos Coast Experimental" -noprompt
             echo "SIGNING=a throwaway keystore made in this build (uninstall the old app before installing a newer build)" >> "$GITHUB_ENV"
             echo "DD_KS_PASS=$PASS" >> "$GITHUB_ENV"
             echo "DD_KEY_ALIAS=experimental" >> "$GITHUB_ENV"
@@ -123,7 +123,7 @@ jobs:
 
       - name: Collect APK
         run: |
-          APK="rampage-road-${TAG}.apk"
+          APK="chaos-coast-${TAG}.apk"
           cp android/app/build/outputs/apk/release/app-release.apk "$APK"
           "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$APK" | head -3
           sha256sum "$APK" | tee "$APK.sha256"
@@ -132,15 +132,15 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: rampage-road-apk
-          path: rampage-road-*.apk*
+          name: chaos-coast-apk
+          path: chaos-coast-*.apk*
 
       - name: Publish GitHub prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           cat > notes.md <<NOTES
-          **Experimental Android build** of Rampage Road (not on Google Play). Shows ads (AdMob, Google's test ids unless real ones were set in index.html).
+          **Experimental Android build** of Chaos Coast (not on Google Play). Shows ads (AdMob, Google's test ids unless real ones were set in index.html).
 
           Install: download \`${APK}\` on your Android phone, open it and allow *Install unknown apps* for your browser or file manager when asked.
           See docs/ANDROID.md in the repository for details.

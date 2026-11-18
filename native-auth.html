@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Rampage Road sign in</title>
+<title>Chaos Coast sign in</title>
 <style>
 :root{--bg:#1b2a38;--panel:#243749;--ink:#f3ead8;--dim:#b7c0c8;--amber:#f2a33a;--bad:#ff8a7a}
 *{box-sizing:border-box}
@@ -20,13 +20,13 @@ p{margin:8px 0;color:var(--dim)}
 </head>
 <body>
 <main>
-  <h1>Rampage Road</h1>
+  <h1>Chaos Coast</h1>
   <p id="msg">Signing you in…</p>
   <button id="go" class="btn" type="button" hidden>Continue with Google</button>
   <a id="back" class="btn alt" href="com.driftless.drive://auth" hidden>Return to the game</a>
 </main>
 <script>
-/* Google sign in for the Rampage Road Android app (it is not used by the website).
+/* Google sign in for the Chaos Coast Android app (it is not used by the website).
    The app opens this page in the phone's browser with ?nonce=<random>. Here the normal Firebase Google sign in runs (popup, or redirect
    if the popup is blocked); then the Google id and access tokens go back to the app through the link
    com.driftless.drive://auth#id_token=...&access_token=...&nonce=<the same nonce>. The app only accepts the link if the nonce is the one
@@ -58,7 +58,7 @@ window.DD_FIREBASE = {   // the same public web config as index.html
   let nonce = new URLSearchParams(location.search).get('nonce');
   if (okNonce(nonce)) { try { sessionStorage.setItem('rr-auth-nonce', nonce); } catch (e) { /* ignore */ } }
   else { try { nonce = sessionStorage.getItem('rr-auth-nonce'); } catch (e) { nonce = null; } }
-  if (!okNonce(nonce)) { say('Open this page from the Rampage Road app: tap Sign in with Google in the game menu.', true); back(LINK); return; }
+  if (!okNonce(nonce)) { say('Open this page from the Chaos Coast app: tap Sign in with Google in the game menu.', true); back(LINK); return; }
 
   let done = false;
   function finish(cred) {

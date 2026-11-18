@@ -1,4 +1,4 @@
-# Rampage Road: how the systems work
+# Chaos Coast: how the systems work
 
 Working notes for whoever picks this up next (including me after a context reset). Read this before touching the game.
 Keep it current: when a system changes, update its section here in the same step.
@@ -143,7 +143,7 @@ Then copy it to the GitHub clone `/home/user/driftless-drive-repo` (branch `syst
   starts a 15 s report timer (`GS.report`). One punch knocks him out (`cashierHit`, melee) and cancels it; a bullet kills him (2 stars only
   if the camera is live). Shooting the camera sends him running for the back door (`GS.flee`); if he gets out he reports you (1 star) and is
   gone until restock. Timers (till, safe, camera broken, camera covered) shared via presence `gs` [reg, safe, camBroke, camCover].
-- Bank job (`H`, `heistFrame`, `startHeist`, `heistStage`): ring outside Rampage Savings, 10 s lobby, stages 1 guards, 2 gate keypad,
+- Bank job (`H`, `heistFrame`, `startHeist`, `heistStage`): ring outside Chaos Savings, 10 s lobby, stages 1 guards, 2 gate keypad,
   3 drill (100 s, runs while crew is inside), crew members who go down come back up at the bank doors, 4 pallets, 5 drop-off at (360,-120), 6 done ($15,000 split), 7 failed (12 min).
   Lowest crew id runs it and broadcasts `hs`; lobby via `hl`; non-leader gate hack via `hk`; closed-until via `bk`. Interior at BANKI.
 

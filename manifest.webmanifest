@@ -1,6 +1,6 @@
 {
-  "name": "Rampage Road",
-  "short_name": "Rampage",
+  "name": "Chaos Coast",
+  "short_name": "Chaos Coast",
   "description": "A multiplayer 3D open-world driving game.",
   "start_url": "./index.html",
   "scope": "./",
