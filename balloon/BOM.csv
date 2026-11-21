@@ -1,0 +1,24 @@
+ref,subsystem,part,mfr_pn_or_spec,qty,unit_mass_g,unit_cost_usd,flight,notes
+U1,compute,Raspberry Pi Pico (RP2040 2MB flash),SC0915,1,2.60,4.00,Y,Stock Pico ~3.0 g; USB micro-B (~0.35 g) and BOOTSEL removed after first flash -> SWD only
+PCB1,structure,Flex carrier PCB 2L polyimide 0.11 mm with FR4 stiffener under U3/U4,custom (JLCPCB flex),1,0.25,5.00,Y,5 pcs ~$25; 51x21 mm body + 40 mm tail to GPS antenna
+U2,camera,OV5640 5 MP DVP module 24-pin FPC fixed-focus 68 deg,generic OV5640-24P-FF,1,1.20,9.00,Y,JPEG on-sensor encoder; 2560x1920 mode for SSDV
+J1,camera,24-pin 0.5 mm FPC connector bottom-contact,Hirose FH12-24S-0.5SH(55),1,0.15,1.20,Y,
+U3,gnss,u-blox MAX-M10S GNSS module,MAX-M10S-00B,1,0.40,17.00,Y,Airborne <2g dynamic model; ~25 mW tracking
+AE1,gnss,Passive GPS L1 ceramic patch 10x10x4 mm,generic 1575.42 MHz,1,1.20,2.00,Y,Faces zenith; on stiffened tail
+U4,radio,HopeRF RFM96W LoRa 433 MHz (SX1276),RFM96W-433S2,1,1.00,8.00,Y,10 dBm SSDV + LoRa-APRS position; amateur licence required
+AE2,radio,1/4-wave 433 MHz wire radiator + counterpoise,0.2 mm enamelled Cu 2x164 mm,1,0.06,0.10,Y,
+U5,storage,W25Q128JV 16 MB SPI NOR flash,W25Q128JVPIQ (WSON-8),1,0.05,1.80,Y,Image store survives nightly brown-out
+U6,power,Voltage supervisor 3.0 V open-drain on RUN,TPS3840DL30DBVR,1,0.01,0.60,Y,Holds RP2040 in reset until VSYS > 3.0 V
+U7,light,Nano-power timer for night beacon,TPL5010DDCR,1,0.01,1.10,Y,35 nA; WAKE pulse -> RC-differentiated to ~2 ms LED flash
+Q1-Q3,power,N-MOSFET SOT-723 (cam/GNSS load switch + LED),DMG1012UW / P-FET for high side,3,0.003,0.15,Y,
+C_SC,light,Supercapacitor 0.22 F 3.3 V coin,Elna DSK-3R3H224U-HL,1,0.30,1.50,Y,Night beacon reservoir; low-temp ESR risk (see RISKS)
+D1,light,High-efficiency LED white 0603 / red,OSRAM KW 0603 / Kingbright APTD1608SURCK,1,0.005,0.30,Y,
+D2,power,5.6 V TVS / zener clamp on VSYS,BZT52C5V6,1,0.01,0.10,Y,Cold-Voc clamp
+PASS,misc,Passives 0402 (decoupling 2x100uF X5R 0805 etc),various,1,0.10,1.00,Y,
+PV1-5,power,Mono-Si solar cells cut 38x19 mm ~0.18 mm 5S,SunPower/Maxeon C60 strip,5,0.30,1.20,Y,~0.13 W each at 0.6 cos; tabbed with 0.1x2 mm ribbon
+STR,structure,Carbon rod 0.5 mm frame,0.5 mm pultruded CF,1,0.15,2.00,Y,2 rails x ~150 mm + cross pieces
+MISC,misc,Solder + Kapton 25um + CA + conformal coat + tabbing,various,1,0.40,2.00,Y,
+BAL,envelope,SAG/Yokohama 32in clear sphere foil balloon,SAG Orbs 32in Clear,1,47.0,11.83,ENV,Envelope not counted in payload; ~0.25 m3 stretched
+GAS,envelope,Hydrogen (or helium) lift gas,H2 99.9% / He,1,0,10.00,ENV,
+GND1,ground,LoRa ground station RFM96W + Pico + 70 cm Yagi,DIY,1,0,45.00,N,SSDV decoding + upload to SondeHub
+TOOL,ground,Pre-stretch / fill rig (manometer + neck lift scale 0.01 g),DIY,1,0,35.00,N,
